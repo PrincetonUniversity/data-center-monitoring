@@ -220,3 +220,6 @@ pip-log.txt
 
 # Node.js Binaries
 **/node_modules/*
+
+# PyCharm Files
+**/.idea/*
