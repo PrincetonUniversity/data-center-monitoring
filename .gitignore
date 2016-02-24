@@ -215,4 +215,8 @@ pip-log.txt
 #Mr Developer
 .mr.developer.cfg
 
+# OS X System Files
 **/_DS_Store
+
+# Node.js Binaries
+**/node_modules/*
