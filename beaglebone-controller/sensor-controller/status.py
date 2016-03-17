@@ -9,7 +9,7 @@ class Status:
             'mac' : get_mac(),
             'err' : False,
             'type' : '',
-            'err' : '',
+            'msg' : '',
             'ioerr_addr' : -1,
             'num_tries' : 0
         }
