@@ -14,6 +14,7 @@ app.use(bodyParser.json());
 app.post('/', function (req, res) {
   console.log('data received');
   console.log(req.body);
+  console.log(req.body.length + ' readings received');
   res.end();
 });
 
