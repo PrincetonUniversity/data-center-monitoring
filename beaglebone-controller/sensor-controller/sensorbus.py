@@ -3,10 +3,13 @@
 import string
 import smbus
 import subprocess
+import time
+import calendar
 
 class SensorBus:
 
-    def __init__(self, bus):
+    def __init__(self, bus, status):
+        self.status = status
         if bus == 1 or bus == 2:
             self.busnum = bus
             self.bus = smbus.SMBus(bus)
@@ -20,8 +23,8 @@ class SensorBus:
         # Start reading i2cdetect output
         f = open("scanoutput.txt", "r")
 
-        # Skip some lines
-        line = f.readline()
+        # Skip the top line line
+        f.readline()
         line = f.readline()
 
         # Parse text for device addresses, place them in array
@@ -46,19 +49,39 @@ class SensorBus:
         return addresses
 
     def get_readings(self, addrs):
+
+        readings = []
+
         if len(addrs) > 0:
-            readings = []
+
             i= 0
 
             # Read temp data (in degrees C) for each sensor in addrs
-            while i < len(addrs):
-                # Issue command to take a reading
-                self.bus.write_byte_data(addrs[i], 01, 96)
-                # Read back the returned reading
-                tmp = self.bus.read_word_data(addrs[i], 00)
-                # Convert to degrees C
-                output = (tmp & 255) + ((tmp >> 12) * (1/16.0))
-                readings.append(output)
-                i+=1
 
-            return readings
+            timestamp = int(time.time())
+
+            try:
+                while i < len(addrs):
+                    # Issue command to take a reading
+                    self.bus.write_byte_data(addrs[i], 01, 96)
+                    # Read back the returned reading
+                    tmp = self.bus.read_word_data(addrs[i], 00)
+                    # Convert to degrees C
+                    temperature = (tmp & 255) + ((tmp >> 12) * (1/16.0))
+                    reading = {
+                        'controller' : self.status['mac'],
+                        'bus' : self.busnum,
+                        'sensor_addr' : addrs[i],
+                        'time' : timestamp,
+                        'temp' : temperature
+                    }
+                    readings.append(reading)
+                    i+=1
+            except IOError, err:
+                self.status['err'] = True
+                self.status['type'] = "IOError"
+                self.status['err'] = err
+                self.status['ioerr_addr'] = addrs[i]
+                self.status['num_tries'] += 1
+
+        return readings
