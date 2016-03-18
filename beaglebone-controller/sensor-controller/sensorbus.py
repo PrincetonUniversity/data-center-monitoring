@@ -58,7 +58,7 @@ class SensorBus:
 
             # Read temp data (in degrees C) for each sensor in addrs
 
-            timestamp = int(time.time())
+            timestamp = time.time()
 
             try:
                 while i < len(addrs):
