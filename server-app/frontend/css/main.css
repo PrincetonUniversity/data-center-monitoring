@@ -1,22 +1,86 @@
+body
+{
+  font-family: 'Open Sans';
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+  color: #222;
+  background: #eaeaea;
+}
 
+::-moz-selection { background: #fe57a1; color: #fff; text-shadow: none; }
+::selection { background: #fe57a1; color: #fff; text-shadow: none; }
 
-/* ==========================================================================
-   Author's custom styles
-   ========================================================================== */
+*
+{
+  cursor: default;
+}
 
+input[type=text], textarea
+{
+  cursor: text;
+}
 
+.invisible
+{
+  visibility: hidden;
+}
 
+.centered
+{
+  text-align: center;
+  margin: 0 auto;
+}
 
+#page-login h1
+{
+  font-family: Raleway;
+  font-weight: 900;
+}
 
+#page-login .jumbotron
+{
+  background: url('../img/splash.jpg') no-repeat fixed center 50%;
+  background-size: cover;
+  color: white;
+  padding: 0;
+}
 
+#page-login .jumbotron #screen
+{
+  background: rgba(0,0,0,.7);
+  padding: 7em 0 2em 0;
+}
 
+#page-login #login-box
+{
+  max-width: 30em;
+  margin: 0 auto;
+}
 
+#page-login .info-block
+{
+  display: inline-block;
+  vertical-align: top;
+  width: 22em;
+  margin: 2em;
+}
 
+#page-login .info-block h4
+{
+  text-align: center;
+}
 
+#page-login .info-block .icon img
+{
+  height: 7em;
+}
 
+#page-login .info-block .icon .fa
+{
+  font-size: 7em;
+}
 
-
-
-
-
-
+#page-login .info-block .text p
+{
+  text-align: justify;
+}

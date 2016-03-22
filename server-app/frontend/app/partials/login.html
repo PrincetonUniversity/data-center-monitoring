@@ -1,23 +1,70 @@
-<div class="container container-fluid">
-  <h1>Login page</h1>
+<div id="page-login">
+  <div class="jumbotron">
+    <div id="screen">
+      <div class="container container-fluid">
+        <h1>Data Center Monitor</h1>
+        <h3 style="margin-bottom: 2em;">Princeton University</h3>
+        <div id="login-box">
+          <form class="form-horizontal">
+            <div class="form-group">
+              <p class="centered">Log in to your facility dashboard:</p>
+            </div>
+            <div class="form-group">
+              <label for="username" class="col-sm-3 control-label">Username</label>
+              <div class="col-sm-9">
+                <input ng-model="user.username" type="text" class="form-control" id="username" placeholder="At least 5 characters">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="password" class="col-sm-3 control-label">Password</label>
+              <div class="col-sm-9">
+                <input ng-model="user.password" type="password" class="form-control" id="password" placeholder="At least 6 characters">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-3 col-sm-9">
+                <button ng-click="login()" ng-disabled="!userValid()" class="btn btn-success" id="login-button">Log in <i class="fa fa-sign-in"></i>  </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container container-fluid">
+    <div>
+      <div class="info-block">
+        <div class="icon centered">
+          <i class="fa fa-bar-chart" style="color: #5cb85c"></i>
+        </div>
+        <div class="text">
+          <h4>Real-time data</h4>
+          <p>
+            Our sensing suite provides temperature readings across your entire facility at a 5-second time resolution. Plus, all of your historical data is available at a click, so you can always know what happened before that server failed.
+          </p>
+        </div>
+      </div><div class="info-block">
+        <div class="icon centered">
+          <i class="fa fa-server" style="color: #666"></i>
+        </div>
+        <div class="text">
+          <h4>Minimal Infrastructure</h4>
+          <p>
+            With just one power outlet and one ethernet connection per group of server cabinets, our low-cost, low-power system can provide critical data with extremely low cost to install or operate.
+          </p>
+        </div>
+      </div><div class="info-block">
+        <div class="icon centered">
+          <i class="fa fa-sliders" style="color: #5695e2"></i>
+        </div>
+        <div class="text">
+          <h4>Valuable Insights</h4>
+          <p>
+            Racks change and server workloads vary. Be sure your systems are cooled optimally at all times
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <form class="form-horizontal">
-    <div class="form-group">
-      <label for="username" class="col-sm-2 control-label">Username</label>
-      <div class="col-sm-10">
-        <input ng-model="user.username" type="text" class="form-control" id="username" placeholder="At least 5 characters">
-      </div>
-    </div>
-    <div class="form-group">
-      <label for="password" class="col-sm-2 control-label">Password</label>
-      <div class="col-sm-10">
-        <input ng-model="user.password" type="password" class="form-control" id="password" placeholder="At least 6 characters">
-      </div>
-    </div>
-    <div class="form-group">
-      <div class="col-sm-offset-2 col-sm-10">
-        <button ng-click="login()" ng-disabled="!userValid()" class="btn btn-default" id="login-button">Sign in</button>
-      </div>
-    </div>
-  </form>
 </div>
