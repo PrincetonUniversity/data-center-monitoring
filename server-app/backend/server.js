@@ -153,7 +153,6 @@ app.post('/auth/login', function (req, res) {
 
 app.post('/auth/logout', function (req, res) {
   var ticket = req.body.ticket;
-  console.log(ticket);
   Ticket.findOne({username: ticket.username, ticket: ticket.ticket}, function(err, record) {
     if (err) {
       res.sendStatus(500);
@@ -164,7 +163,7 @@ app.post('/auth/logout', function (req, res) {
     else {
       var today = new Date();
       var expires = new Date(record.expires);
-      var cookieDate = new Date(req.body.ticket.expires);
+      var cookieDate = new Date(ticket.expires);
 
       if (expires.getTime() > today.getTime()
           && expires.getTime() == cookieDate.getTime()) {
@@ -176,6 +175,9 @@ app.post('/auth/logout', function (req, res) {
             res.send({msg: 'Successfully logged out.'});
           }
         });
+      }
+      else {
+        res.status(401).send({msg: 'Unauthorized'});
       }
     }
   });

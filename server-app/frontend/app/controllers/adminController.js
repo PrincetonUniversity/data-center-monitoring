@@ -9,6 +9,8 @@ cont.controller('adminController', function ($scope, $filter, $http, $location) 
     password: ''
   };
 
+  $.cookie.json = true;
+
   $scope.userValid = function () {
     return ($scope.user.username.length > 4 && $scope.user.password.length > 5);
   };
