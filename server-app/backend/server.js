@@ -7,6 +7,7 @@ var crypto = require('crypto');
 var compression = require('compression');
 var async = require('async');
 var fs = require('fs');
+
 var static = express();
 var app = express();
 
@@ -19,7 +20,7 @@ app.use(compression());
 static.use(compression());
 
 // Direct everything except /api to the frontend application
-static.use(/^(?!\/api$).*/, express.static('../frontend'));
+static.use(express.static('../frontend'));
 
 // Mount app at /api
 static.use('/api', app);
@@ -45,11 +46,163 @@ var readingSchema = mongoose.Schema({
 
 var Reading = mongoose.model('Reading', readingSchema);
 
+var userSchema = mongoose.Schema({
+  'username': String,
+  'token': String,
+  'salt': String
+});
+
+var User = mongoose.model('User', userSchema);
+
+var ticketSchema = mongoose.Schema({
+  username: String,
+  ticket: String,
+  expires: Date
+});
+
+var Ticket = mongoose.model('Ticket', ticketSchema);
 
 // Backend Request Handlers
 
 app.get('/', function (req, res) {
   res.send('<h1>This is a request handler for the root of the backend application!</h1>');
+});
+
+function randomString(length) {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for( var i=0; i < length; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+}
+
+app.post('/auth/register', function (req, res) {
+  console.log('Request to register new user received.');
+  var user = {
+    username: req.body.user.username,
+    token: '',
+    salt: randomString(20)
+  };
+
+  User.findOne({username: user.username}, function (err, record) {
+    if (record) {
+      res.status(409).send({msg: 'User already exists.'});
+    }
+    else {
+      user.token = crypto.createHmac('sha256', 'dcsense-server')
+                .update(user.username + req.body.user.password + user.salt)
+                .digest('hex');
+
+      var mUser = new User(user);
+      mUser.save(function (err) {
+        if (err) {
+          res.status(500).send({msg: 'The server could not process your request.'});
+        }
+        else {
+          console.log('User ' + user.username + ' successfully registered.');
+          res.end();
+        }
+      });
+    }
+
+  });
+});
+
+app.post('/auth/login', function (req, res) {
+  console.log('Request to login user ' + req.body.user.username);
+  var user = {
+    username: req.body.user.username,
+    password: req.body.user.password,
+    salt: ''
+  };
+
+  User.findOne({username: user.username}, function (err, record) {
+    if (err) {
+      res.sendStatus(500);
+    }
+    if (!record) {
+      res.status(401).send({msg: 'User does not exist.'});
+    }
+    else {
+      var newToken = crypto.createHmac('sha256', 'dcsense-server')
+        .update(record.username + user.password + record.salt)
+        .digest('hex');
+      var oldToken = record.token;
+      if (newToken != oldToken) {
+        res.status(401).send({msg: 'Incorrect password.'});
+      }
+      else {
+        // Log the user in
+        console.log('User ' + user.username + ' logged in.');
+        var ticket = {
+          username: user.username,
+          ticket: randomString(25),
+          expires: new Date((new Date()).getTime() + (7 * 86400000))
+        };
+        Ticket.remove({username: user.username}, function (err) {
+          var mTicket = new Ticket(ticket);
+          mTicket.save();
+          res.send({ticket: ticket});
+        });
+      }
+    }
+  });
+});
+
+app.post('/auth/logout', function (req, res) {
+  var ticket = req.body.ticket;
+  console.log(ticket);
+  Ticket.findOne({username: ticket.username, ticket: ticket.ticket}, function(err, record) {
+    if (err) {
+      res.sendStatus(500);
+    }
+    if (!record) {
+      res.status(401).send({msg: 'Unauthorized.'});
+    }
+    else {
+      var today = new Date();
+      var expires = new Date(record.expires);
+      var cookieDate = new Date(req.body.ticket.expires);
+
+      if (expires.getTime() > today.getTime()
+          && expires.getTime() == cookieDate.getTime()) {
+        console.log('User ' + ticket.username + ' logged out.');
+        Ticket.remove({username: ticket.username}, function (err) {
+          if (err)
+            res.sendStatus(500);
+          else {
+            res.send({msg: 'Successfully logged out.'});
+          }
+        });
+      }
+    }
+  });
+});
+
+app.post('/auth/sessionstatus', function (req, res) {
+  var ticket = req.body.ticket;
+  Ticket.findOne({username: ticket.username, ticket: ticket.ticket}, function(err, record) {
+    if (err) {
+      res.sendStatus(500);
+    }
+    if (!record) {
+      res.status(401).send({msg: 'Unauthorized.'});
+      console.log('User ' + ticket.username + ' is not authorized.');
+    }
+    else {
+      var today = new Date();
+      var expires = new Date(record.expires);
+      var cookieDate = new Date(req.body.ticket.expires);
+
+      if (expires.getTime() > today.getTime()
+          && expires.getTime() == cookieDate.getTime()) {
+        console.log('User ' + ticket.username + ' is authorized.');
+        res.send({msg: 'You are logged in.'});
+      }
+    }
+  });
 });
 
 app.post('/', function (req, res) {
@@ -66,4 +219,4 @@ app.post('/', function (req, res) {
 });
 
 static.listen(80);
-console.log('Server running at http://localhost:3000');
+console.log('Server running at http://localhost:80');
