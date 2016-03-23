@@ -17,6 +17,9 @@ def send_to_server(data):
                 requests.post(server, headers=headers, data=json.dumps(data))
             except ConnectionError, err:
                 sys.stderr.write('Could not contact server:\n' + str(err))
-            sys.exit()
+            os._exit(0) # Kill child process
+            print "Wasn't supposed to get here."
+        else:
+            os.waitpid(0, os.WNOHANG) # Clear zombie child process
     except OSError, err:
         sys.stderr.write('OSError on call to fork(): \n' + err)
