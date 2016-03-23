@@ -10,19 +10,20 @@ def pyrun():
     board_status = Status().status
 
     # Detect devices and get readings from all devices on both buses
+    timestamp = time.time()
     bus1 = sensorbus.SensorBus(1, board_status)
-    readings1 = bus1.get_readings(bus1.scan())
+    readings1 = bus1.get_readings(bus1.scan(), timestamp)
     bus2 = sensorbus.SensorBus(2, board_status)
-    readings2 = bus2.get_readings(bus2.scan())
+    readings2 = bus2.get_readings(bus2.scan(), timestamp)
     readings = readings1 + readings2
 
     # Traces
-    if not board_status['err']:
-        print readings
-    else:
-        print board_status['type']
-        print board_status['msg']
-        print board_status['ioerr_addr']
+    #if not board_status['err']:
+    #    print readings
+    #else:
+    #    print board_status['type']
+    #    print board_status['msg']
+    #    print board_status['ioerr_addr']
 
     # Send readings to server (non-blocking)
     com.send_to_server(readings)

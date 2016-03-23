@@ -48,7 +48,7 @@ class SensorBus:
         subprocess.check_call(['rm', '-rf', 'scanoutput.txt'])
         return addresses
 
-    def get_readings(self, addrs):
+    def get_readings(self, addrs, timestamp):
 
         readings = []
 
@@ -57,8 +57,6 @@ class SensorBus:
             i= 0
 
             # Read temp data (in degrees C) for each sensor in addrs
-
-            timestamp = time.time()
 
             try:
                 while i < len(addrs):
