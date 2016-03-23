@@ -40,6 +40,15 @@ app.config(function ($routeProvider) {
         }
       }
     })
+    .when('/dashboard', {
+      controller: 'dashController',
+      templateUrl: 'app/partials/dash.html',
+      resolve: {
+        user: function(authService) {
+          return authService.isAuthorized(accessLevels.user);
+        }
+      }
+    })
     .otherwise({
       redirectTo: '/'
     });

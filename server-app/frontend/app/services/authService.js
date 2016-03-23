@@ -40,7 +40,7 @@ var authService = serv.service('authService', function authenticate($q, $http, $
       $http.post('/api/auth/sessionstatus', {ticket: ticket})
         .success(function (data, status, headers, config) {
           if ($location.path() == '/') {
-            $location.url('/admin');
+            $location.url('/dashboard');
             $rootScope.$on('$locationChangeSuccess', function (next, current) {
                 deferred.resolve();
             });

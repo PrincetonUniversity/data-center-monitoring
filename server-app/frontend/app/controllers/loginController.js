@@ -37,7 +37,7 @@ cont.controller('loginController', function ($scope, $filter, $http, $location) 
           $location.url(desiredPath);
         }
         else {
-          $location.url('/admin'); // change this once dash page exists
+          $location.url('/dashboard'); // change this once dash page exists
         }
       })
       .error(function (data, status, headers, config) {
