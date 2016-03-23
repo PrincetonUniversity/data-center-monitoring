@@ -4,11 +4,13 @@ var app = angular.module('dcsense', [
   'ngRoute',
   'ngCookies',
   'dcsense.controllers',
-  'dcsense.services'
+  'dcsense.services',
+  'dcsense.directives'
 ]);
 
 var cont = angular.module('dcsense.controllers', [ ]);
 var serv = angular.module('dcsense.services', [ ]);
+var dir = angular.module('dcsense.directives', [ ]);
 
 var accessLevels = {
   public: 1,

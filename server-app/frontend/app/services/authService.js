@@ -1,8 +1,8 @@
 (function(){
 
-var app = angular.module('dcsense.services');
+var serv = angular.module('dcsense.services');
 
-var authService = app.service('authService', function authenticate($q, $http, $location, $rootScope, $cookies) {
+var authService = serv.service('authService', function authenticate($q, $http, $location, $rootScope, $cookies) {
 
   var authenticatedUser = null;
   var registerStatus = null;
