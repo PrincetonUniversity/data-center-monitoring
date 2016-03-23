@@ -207,7 +207,7 @@ app.post('/auth/sessionstatus', function (req, res) {
   });
 });
 
-app.post('/', function (req, res) {
+app.post('/sensors/submitreadings', function (req, res) {
   console.log('data received');
   var readings = req.body;
   console.log(readings.length + ' readings received');

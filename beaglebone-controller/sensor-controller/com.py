@@ -4,7 +4,7 @@ import json
 import sys
 import os
 
-server = 'http://192.168.234.104:3000'
+server = 'http://dcsense.ee.princeton.edu/api/sensors/submitreadings'
 
 def send_to_server(data):
 
