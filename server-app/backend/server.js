@@ -220,5 +220,60 @@ app.post('/sensors/submitreadings', function (req, res) {
   res.end();
 });
 
+app.get('/sensors/list/controllers', function (req, res) {
+  Reading.distinct('controller', function (err, controllers) {
+    res.send(controllers);
+  });
+});
+
+app.get('/sensors/list/dates/:controller/limit/:limit', function (req, res) {
+  var limit = parseInt(req.params.limit);
+  Reading.aggregate([
+    {$match: {'controller': parseInt(req.params.controller)}},
+    {$group: {_id: '$time'}}, // equivalent of distinct('time')
+    {$sort: {'_id': -1}}, // sort by newest reading first
+    {$limit: limit},
+    ],
+    function (err, dateObjs) {
+      var dates = [];
+      dateObjs.forEach(function (current, index) {
+        dates.push(current['_id']);
+      });
+      res.send(dates);
+    }
+  );
+});
+
+app.get('/sensors/list/dates/:controller/all', function (req, res) {
+
+  Reading.aggregate([
+    {$match: {'controller': parseInt(req.params.controller)}},
+    {$group: {_id: '$time'}}, // equivalent of distinct('time')
+    {$sort: {'_id': -1}}, // sort by newest reading first
+    ],
+    function (err, dateObjs) {
+      if (!err) {
+        var dates = [];
+        dateObjs.forEach(function (current, index) {
+          dates.push(current['_id']);
+        });
+        res.send(dates);
+      }
+      else {
+        console.log('Error.');
+      }
+    }
+  );
+});
+
+app.get('/sensors/readings/:controller/:time', function (req, res) {
+  Reading.find({
+    'controller': req.params.controller,
+    'time': req.params.time},
+    function (err, readings) {
+      res.send(readings);
+    })
+});
+
 static.listen(80);
 console.log('Server running at http://localhost:80');
