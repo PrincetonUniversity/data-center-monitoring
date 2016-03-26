@@ -191,20 +191,18 @@ var accessLevels = {
   admin: 3
 };
 
-function checkSessionStatus (req, res, callback) {
-  var ticket = req.body.ticket;
-  var accessLevel = req.body.accessLevel;
+function checkSessionStatus (res, ticket, accessLevel, callback) {
   Ticket.findOne({username: ticket.username, ticket: ticket.ticket}, function(err, record) {
     if (err) {
       res.sendStatus(500);
     }
-    if (!record) {
+    else if (!record) {
       res.status(401).send({msg: 'You are not logged in.', loggedIn: false});
     }
     else {
       var today = new Date();
       var expires = new Date(record.expires);
-      var cookieDate = new Date(req.body.ticket.expires);
+      var cookieDate = new Date(ticket.expires);
 
       if (expires.getTime() > today.getTime()
           && expires.getTime() == cookieDate.getTime()) {
@@ -230,10 +228,12 @@ function checkSessionStatus (req, res, callback) {
 }
 
 app.post('/auth/sessionstatus', function (req, res) {
+  var ticket = req.body.ticket;
+  var accessLevel = req.body.accessLevel;
   function ifAuthorized () {
     res.send({msg: 'You are logged in.'});
   }
-  checkSessionStatus(req, res, ifAuthorized);
+  checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
 app.post('/sensors/submitreadings', function (req, res) {
@@ -248,10 +248,15 @@ app.post('/sensors/submitreadings', function (req, res) {
   res.end();
 });
 
-app.get('/sensors/list/controllers', function (req, res) {
-  Reading.distinct('controller', function (err, controllers) {
-    res.send(controllers);
-  });
+app.post('/sensors/list/controllers', function (req, res) {
+  var ticket = req.body.ticket;
+  var accessLevel = accessLevels.admin;
+  function ifAuthorized() {
+    Reading.distinct('controller', function (err, controllers) {
+      res.send(controllers);
+    });
+  }
+  checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
 app.get('/sensors/list/dates/:controller/limit/:limit', function (req, res) {
