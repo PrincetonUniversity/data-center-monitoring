@@ -49,7 +49,8 @@ var Reading = mongoose.model('Reading', readingSchema);
 var userSchema = mongoose.Schema({
   'username': String,
   'token': String,
-  'salt': String
+  'salt': String,
+  'accessLevel': Number
 });
 
 var User = mongoose.model('User', userSchema);
@@ -83,7 +84,8 @@ app.post('/auth/register', function (req, res) {
   var user = {
     username: req.body.user.username,
     token: '',
-    salt: randomString(20)
+    salt: randomString(20),
+    accessLevel: parseInt(req.body.user.accessLevel)
   };
 
   User.findOne({username: user.username}, function (err, record) {
@@ -92,8 +94,8 @@ app.post('/auth/register', function (req, res) {
     }
     else {
       user.token = crypto.createHmac('sha256', 'dcsense-server')
-                .update(user.username + req.body.user.password + user.salt)
-                .digest('hex');
+                   .update(user.username + req.body.user.password + user.salt)
+                   .digest('hex');
 
       var mUser = new User(user);
       mUser.save(function (err) {
@@ -183,15 +185,21 @@ app.post('/auth/logout', function (req, res) {
   });
 });
 
+var accessLevels = {
+  public: 1,
+  user: 2,
+  admin: 3
+};
+
 app.post('/auth/sessionstatus', function (req, res) {
   var ticket = req.body.ticket;
+  var accessLevel = req.body.accessLevel;
   Ticket.findOne({username: ticket.username, ticket: ticket.ticket}, function(err, record) {
     if (err) {
       res.sendStatus(500);
     }
     if (!record) {
-      res.status(401).send({msg: 'Unauthorized.'});
-      console.log('User ' + ticket.username + ' is not authorized.');
+      res.status(401).send({msg: 'You are not logged in.', loggedIn: false});
     }
     else {
       var today = new Date();
@@ -200,15 +208,27 @@ app.post('/auth/sessionstatus', function (req, res) {
 
       if (expires.getTime() > today.getTime()
           && expires.getTime() == cookieDate.getTime()) {
-        console.log('User ' + ticket.username + ' is authorized.');
-        res.send({msg: 'You are logged in.'});
+
+        User.findOne({username: ticket.username}, function (err, user) {
+          if (err)
+            res.sendStatus(500);
+          else {
+            if (user.accessLevel >= accessLevel) {
+              console.log('User ' + ticket.username + ' is authorized.');
+              res.send({msg: 'You are logged in.'});
+            }
+            else {
+              console.log('User ' + ticket.username + ' is logged in, but not authorized to make current request.');
+              res.status(401).send({msg: 'You aren\'t authorized to make this request.', loggedIn: true});
+            }
+          }
+        });
       }
     }
   });
 });
 
 app.post('/sensors/submitreadings', function (req, res) {
-  console.log('data received');
   var readings = req.body;
   console.log(readings.length + ' readings received');
   readings.forEach(function (current, index) {
@@ -245,7 +265,6 @@ app.get('/sensors/list/dates/:controller/limit/:limit', function (req, res) {
 });
 
 app.get('/sensors/list/dates/:controller/all', function (req, res) {
-
   Reading.aggregate([
     {$match: {'controller': parseInt(req.params.controller)}},
     {$group: {_id: '$time'}}, // equivalent of distinct('time')

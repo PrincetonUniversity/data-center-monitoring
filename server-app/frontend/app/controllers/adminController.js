@@ -6,7 +6,8 @@ cont.controller('adminController', function ($scope, $filter, $http, $location) 
 
   $scope.user = {
     username: '',
-    password: ''
+    password: '',
+    accessLevel: '2'
   };
 
   $.cookie.json = true;
@@ -16,17 +17,17 @@ cont.controller('adminController', function ($scope, $filter, $http, $location) 
   };
 
   $scope.register = function () {
-    $('#register-button').disable();
+    $('#register-button').attr('disabled', 'disabled');
     var user = $scope.user;
     $http.post('/api/auth/register', {user: user})
       .success(function (data, status, headers, config) {
         alert('User ' + user.username + ' successfully registered.');
         $scope.user = {username: '', password: ''};
-        $('#register-button').enable();
+        $('#register-button').removeAttr('disabled');
       })
       .error(function (data, status, headers, config) {
         alert(data.msg);
-        $('#register-button').enable();
+        $('#register-button').removeAttr('disabled');
       });
   };
 

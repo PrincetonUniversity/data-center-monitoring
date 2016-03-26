@@ -27,7 +27,7 @@ app.config(function ($routeProvider) {
       templateUrl: 'app/partials/login.html',
       resolve: {
         user: function(authService) {
-          return authService.isAuthorized(accessLevels.admin);
+          return authService.isAuthorized(accessLevels.public);
         }
       }
     })
@@ -49,8 +49,14 @@ app.config(function ($routeProvider) {
         }
       }
     })
+    .when('/forbidden', {
+      templateUrl: 'app/partials/forbidden.html'
+    })
+    .when('/404', {
+      templateUrl: 'app/partials/404.html'
+    })
     .otherwise({
-      redirectTo: '/'
+      redirectTo: '/404'
     });
 
 });

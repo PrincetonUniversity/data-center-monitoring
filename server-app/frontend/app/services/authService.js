@@ -23,21 +23,29 @@ var authService = serv.service('authService', function authenticate($q, $http, $
         deferred.resolve();
       };
 
-      var disallowAccess = function () {
+      var disallowAccess = function (redirect) {
         var desiredPath = encodeURIComponent($location.path());
-        if (desiredPath) {
-          $location.url('/?r=' + desiredPath);
+        if (redirect) { // Redirect to login page
+          if (desiredPath) {
+            $location.url('/?r=' + desiredPath);
+          }
+          else {
+            $location.url('/');
+          }
+          $rootScope.$on('$locationChangeSuccess', function (next, current) {
+              deferred.resolve();
+          });
         }
-        else {
-          $location.url('/');
+        else { // Display access forbidden page
+          $location.url('/forbidden');
+          $rootScope.$on('$locationChangeSuccess', function (next, current) {
+              deferred.resolve();
+          });
         }
-        $rootScope.$on('$locationChangeSuccess', function (next, current) {
-            deferred.resolve();
-        });
       };
 
 
-      $http.post('/api/auth/sessionstatus', {ticket: ticket})
+      $http.post('/api/auth/sessionstatus', {ticket: ticket, accessLevel: requiredAccessLevel})
         .success(function (data, status, headers, config) {
           if ($location.path() == '/') {
             $location.url('/dashboard');
@@ -52,7 +60,7 @@ var authService = serv.service('authService', function authenticate($q, $http, $
           if ($location.path() == '/')
             allowAccess();
           else
-            disallowAccess();
+            disallowAccess(!data.loggedIn); // redirect the user to the login page only if they are logged out
         });
 
       return deferred.promise;
