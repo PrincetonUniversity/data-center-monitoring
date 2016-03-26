@@ -197,11 +197,9 @@ function checkSessionStatus (req, res, callback) {
   Ticket.findOne({username: ticket.username, ticket: ticket.ticket}, function(err, record) {
     if (err) {
       res.sendStatus(500);
-      callback(false);
     }
     if (!record) {
       res.status(401).send({msg: 'You are not logged in.', loggedIn: false});
-      callback(false);
     }
     else {
       var today = new Date();
@@ -214,17 +212,15 @@ function checkSessionStatus (req, res, callback) {
         User.findOne({username: ticket.username}, function (err, user) {
           if (err) {
             res.sendStatus(500);
-            callback(false);
           }
           else {
             if (user.accessLevel >= accessLevel) {
               console.log('User ' + ticket.username + ' is authorized.');
-              callback(true);
+              callback();
             }
             else {
               console.log('User ' + ticket.username + ' is logged in, but not authorized to make current request.');
               res.status(401).send({msg: 'You aren\'t authorized to make this request.', loggedIn: true});
-              callback(false);
             }
           }
         });
@@ -234,12 +230,10 @@ function checkSessionStatus (req, res, callback) {
 }
 
 app.post('/auth/sessionstatus', function (req, res) {
-  function endRequest (responseNotSent) {
-    if (responseNotSent) { // User is authorized
-      res.send({msg: 'You are logged in.'});
-    }
+  function ifAuthorized () {
+    res.send({msg: 'You are logged in.'});
   }
-  checkSessionStatus(req, res, endRequest);
+  checkSessionStatus(req, res, ifAuthorized);
 });
 
 app.post('/sensors/submitreadings', function (req, res) {
