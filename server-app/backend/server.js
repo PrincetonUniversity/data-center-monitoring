@@ -191,15 +191,17 @@ var accessLevels = {
   admin: 3
 };
 
-app.post('/auth/sessionstatus', function (req, res) {
+function checkSessionStatus (req, res, callback) {
   var ticket = req.body.ticket;
   var accessLevel = req.body.accessLevel;
   Ticket.findOne({username: ticket.username, ticket: ticket.ticket}, function(err, record) {
     if (err) {
       res.sendStatus(500);
+      callback(false);
     }
     if (!record) {
       res.status(401).send({msg: 'You are not logged in.', loggedIn: false});
+      callback(false);
     }
     else {
       var today = new Date();
@@ -210,22 +212,34 @@ app.post('/auth/sessionstatus', function (req, res) {
           && expires.getTime() == cookieDate.getTime()) {
 
         User.findOne({username: ticket.username}, function (err, user) {
-          if (err)
+          if (err) {
             res.sendStatus(500);
+            callback(false);
+          }
           else {
             if (user.accessLevel >= accessLevel) {
               console.log('User ' + ticket.username + ' is authorized.');
-              res.send({msg: 'You are logged in.'});
+              callback(true);
             }
             else {
               console.log('User ' + ticket.username + ' is logged in, but not authorized to make current request.');
               res.status(401).send({msg: 'You aren\'t authorized to make this request.', loggedIn: true});
+              callback(false);
             }
           }
         });
       }
     }
   });
+}
+
+app.post('/auth/sessionstatus', function (req, res) {
+  function endRequest (responseNotSent) {
+    if (responseNotSent) { // User is authorized
+      res.send({msg: 'You are logged in.'});
+    }
+  }
+  checkSessionStatus(req, res, endRequest);
 });
 
 app.post('/sensors/submitreadings', function (req, res) {
