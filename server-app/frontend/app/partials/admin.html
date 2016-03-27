@@ -1,6 +1,5 @@
 <div class="container container-fluid">
   <h1>Register a new user:</h1>
-
   <form class="form-horizontal">
     <div class="form-group">
       <label for="username" class="col-sm-2 control-label">Username</label>
@@ -29,5 +28,56 @@
       </div>
     </div>
   </form>
+
+  <h1>Add a new facility</h1>
+  <form class="form-horizontal">
+    <div class="form-group">
+      <label for="facility-name" class="col-sm-2 control-label">Name</label>
+      <div class="col-sm-10">
+        <input ng-model="newFacility.name" type="text" class="form-control" id="facility-name" placeholder="At least 2 characters">
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button ng-click="addFacility()" ng-disabled="!facilityValid()" class="btn btn-default" id="facility-add-button">Add</button>
+      </div>
+    </div>
+  </form>
+
+  <h1>Manage Facility Owners</h1>
+  <form class="form-horizontal">
+    <div class="form-group">
+      <label for="users-list" class="col-sm-2 control-label">Facility</label>
+      <div class="col-sm-10">
+        <select ng-model="currentFacility" ng-change="fetchFacilityOwners()" id="facility-list" class="form-control">
+          <option ng-repeat="facility in facilities" value="{{facility.name}}">{{facility.name}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <p>Current owners:
+          <span ng-repeat="user in owners track by $index">
+            {{user}}<span ng-show="$index < (owners.length - 1)">, </span>
+          </span>
+        </p>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="users-list" class="col-sm-2 control-label">User to modify</label>
+      <div class="col-sm-10">
+        <select ng-model="currentUser" id="users-list" class="form-control">
+          <option ng-repeat="user in users" value="{{user.username}}">{{user.username}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button ng-click="changeFacilityOwner('add')"    ng-disabled="userIsOwner() || currentFacility == '' || currentUser == ''"   class="btn btn-success">Add this user as owner</button>
+        <button ng-click="changeFacilityOwner('remove')" ng-disabled="!userIsOwner() || currentFacility == '' || currentUser == ''"  class="btn btn-danger">Remove this user from owners</button>
+      </div>
+    </div>
+  </form>
+
   <button logout>Logout</button>
 </div>

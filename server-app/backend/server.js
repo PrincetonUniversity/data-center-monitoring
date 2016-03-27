@@ -63,6 +63,14 @@ var ticketSchema = mongoose.Schema({
 
 var Ticket = mongoose.model('Ticket', ticketSchema);
 
+var facilitySchema = mongoose.Schema({
+  name: String,
+  controllers: [String],
+  owners: [String]
+});
+
+var Facility = mongoose.model('facility', facilitySchema);
+
 // Backend Request Handlers & Helper Functions
 
 function randomString(length) {
@@ -298,6 +306,110 @@ app.post('/sensors/readings/:controller/:time', function (req, res) {
       function (err, readings) {
         res.send(readings);
     });
+  }
+  checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
+});
+
+app.post('/facilities/add', function (req, res) {
+  var ticket = req.body.ticket;
+  var accessLevel = accessLevels.admin;
+  function ifAuthorized() {
+    var facilityDetails = req.body.facility;
+    var facility = {
+      name: facilityDetails.name,
+      controllers: [],
+      owners: []
+    }
+    Facility.findOne({name: facility.name}, function (err, record) {
+      if (err)
+        res.sendStatus(500);
+      else if (record)
+        res.status(409).send({msg: 'Facility already exists.'});
+      else {
+        var mFacility = new Facility(facility);
+        mFacility.save();
+        res.end();
+      }
+    });
+  }
+  checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
+});
+
+app.post('/facilities/list', function (req, res) {
+  var ticket = req.body.ticket;
+  var accessLevel = accessLevels.admin;
+  function ifAuthorized() {
+    Facility.find({}, 'name', {sort: {name: 1}}, function (err, facilities) {
+      if (err || !facilities) {
+        console.log('Internal Server Error');
+        res.sendStatus(500);
+      }
+      else {
+        res.send(facilities);
+      }
+    });
+  }
+  checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
+});
+
+app.post('/auth/list/users', function (req, res) {
+  var ticket = req.body.ticket;
+  var accessLevel = accessLevels.admin;
+  function ifAuthorized() {
+    User.find({}, 'username', {sort: {username: 1}}, function (err, users) {
+      if (err || !users) {
+        console.log('Internal Server Error');
+        res.sendStatus(500);
+      }
+      else {
+        res.send(users);
+      }
+    });
+  }
+  checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
+});
+
+app.post('/facilities/:facility/list/owners', function (req, res) {
+  var ticket = req.body.ticket;
+  var accessLevel = accessLevels.admin;
+  function ifAuthorized() {
+    var facility = decodeURIComponent(req.params.facility);
+    Facility.findOne({name: facility}, 'owners', function (err, record) {
+      if (err)
+        res.sendStatus(500);
+      else {
+        res.send(record.owners);
+      }
+    });
+  }
+  checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
+});
+
+app.post('/facilities/:facility/owners/:addOrRemove/:user', function (req, res) {
+  var ticket = req.body.ticket;
+  var accessLevel = accessLevels.admin;
+  function ifAuthorized() {
+    var facility = decodeURIComponent(req.params.facility);
+    var user = req.params.user;
+    var update;
+    if (req.params.addOrRemove == 'add') {
+      update = {$addToSet: {owners: user}};
+    }
+    else if (req.params.addOrRemove == 'remove') {
+      update = {$pull: {owners: user}};
+    }
+    else {
+      res.status(400).send();
+      return;
+    }
+    Facility.update({name: facility},
+                    update,
+                    function (err) {
+                      if (err)
+                        res.sendStatus(500);
+                      else
+                        res.end();
+                    });
   }
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
