@@ -63,11 +63,7 @@ var ticketSchema = mongoose.Schema({
 
 var Ticket = mongoose.model('Ticket', ticketSchema);
 
-// Backend Request Handlers
-
-app.get('/', function (req, res) {
-  res.send('<h1>This is a request handler for the root of the backend application!</h1>');
-});
+// Backend Request Handlers & Helper Functions
 
 function randomString(length) {
     var text = "";
@@ -153,38 +149,6 @@ app.post('/auth/login', function (req, res) {
   });
 });
 
-app.post('/auth/logout', function (req, res) {
-  var ticket = req.body.ticket;
-  Ticket.findOne({username: ticket.username, ticket: ticket.ticket}, function(err, record) {
-    if (err) {
-      res.sendStatus(500);
-    }
-    if (!record) {
-      res.status(401).send({msg: 'Unauthorized.'});
-    }
-    else {
-      var today = new Date();
-      var expires = new Date(record.expires);
-      var cookieDate = new Date(ticket.expires);
-
-      if (expires.getTime() > today.getTime()
-          && expires.getTime() == cookieDate.getTime()) {
-        console.log('User ' + ticket.username + ' logged out.');
-        Ticket.remove({username: ticket.username}, function (err) {
-          if (err)
-            res.sendStatus(500);
-          else {
-            res.send({msg: 'Successfully logged out.'});
-          }
-        });
-      }
-      else {
-        res.status(401).send({msg: 'Unauthorized'});
-      }
-    }
-  });
-});
-
 var accessLevels = {
   public: 1,
   user: 2,
@@ -227,6 +191,22 @@ function checkSessionStatus (res, ticket, accessLevel, callback) {
   });
 }
 
+app.post('/auth/logout', function (req, res) {
+  var ticket = req.body.ticket;
+  var accessLevel = accessLevels.user;
+  function ifAuthorized () {
+    console.log('User ' + ticket.username + ' logged out.');
+    Ticket.remove({username: ticket.username}, function (err) {
+      if (err)
+        res.sendStatus(500);
+      else {
+        res.send({msg: 'Successfully logged out.'});
+      }
+    });
+  }
+  checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
+});
+
 app.post('/auth/sessionstatus', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = req.body.accessLevel;
@@ -259,53 +239,69 @@ app.post('/sensors/list/controllers', function (req, res) {
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
-app.get('/sensors/list/dates/:controller/limit/:limit', function (req, res) {
-  var limit = parseInt(req.params.limit);
-  Reading.aggregate([
-    {$match: {'controller': parseInt(req.params.controller)}},
-    {$group: {_id: '$time'}}, // equivalent of distinct('time')
-    {$sort: {'_id': -1}}, // sort by newest reading first
-    {$limit: limit},
-    ],
-    function (err, dateObjs) {
-      var dates = [];
-      dateObjs.forEach(function (current, index) {
-        dates.push(current['_id']);
-      });
-      res.send(dates);
-    }
-  );
-});
-
-app.get('/sensors/list/dates/:controller/all', function (req, res) {
-  Reading.aggregate([
-    {$match: {'controller': parseInt(req.params.controller)}},
-    {$group: {_id: '$time'}}, // equivalent of distinct('time')
-    {$sort: {'_id': -1}}, // sort by newest reading first
-    ],
-    function (err, dateObjs) {
-      if (!err) {
+app.post('/sensors/list/dates/:controller/limit/:limit', function (req, res) {
+  var ticket = req.body.ticket;
+  var accessLevel = accessLevels.user;
+  function ifAuthorized() {
+    var limit = parseInt(req.params.limit);
+    Reading.aggregate([
+      {$match: {'controller': parseInt(req.params.controller)}},
+      {$group: {_id: '$time'}}, // equivalent of distinct('time')
+      {$sort: {'_id': -1}}, // sort by newest reading first
+      {$limit: limit},
+      ],
+      function (err, dateObjs) {
         var dates = [];
         dateObjs.forEach(function (current, index) {
           dates.push(current['_id']);
         });
         res.send(dates);
       }
-      else {
-        console.log('Error.');
+    );
+  }
+  checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
+});
+
+app.post('/sensors/list/dates/:controller/all', function (req, res) {
+  var ticket = req.body.ticket;
+  var accessLevel = accessLevels.user;
+  function ifAuthorized() {
+    Reading.aggregate([
+      {$match: {'controller': parseInt(req.params.controller)}},
+      {$group: {_id: '$time'}}, // equivalent of distinct('time')
+      {$sort: {'_id': -1}}, // sort by newest reading first
+      ],
+      function (err, dateObjs) {
+        if (!err) {
+          var dates = [];
+          dateObjs.forEach(function (current, index) {
+            dates.push(current['_id']);
+          });
+          res.send(dates);
+        }
+        else {
+          console.log('Error.');
+        }
       }
-    }
-  );
+    );
+  }
+  checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
-app.get('/sensors/readings/:controller/:time', function (req, res) {
-  Reading.find({
-    'controller': req.params.controller,
-    'time': req.params.time},
-    function (err, readings) {
-      res.send(readings);
-    })
+app.post('/sensors/readings/:controller/:time', function (req, res) {
+  var ticket = req.body.ticket;
+  var accessLevel = accessLevels.admin;
+  function ifAuthorized() {
+    Reading.find({
+      'controller': req.params.controller,
+      'time': req.params.time},
+      function (err, readings) {
+        res.send(readings);
+    });
+  }
+  checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
+// Start server on default HTTP port (you may need root privileges for this to work)
 static.listen(80);
 console.log('Server running at http://localhost:80');
