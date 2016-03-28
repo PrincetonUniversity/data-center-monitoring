@@ -1,7 +1,7 @@
 <div class="container container-fluid">
   <h1 class="centered">DCsense Administration</h1>
 
-  <h2>Register a new user</h2>
+  <h2>Register a New User</h2>
   <form class="form-horizontal">
     <div class="form-group">
       <label for="username" class="col-sm-2 control-label">Username</label>
@@ -31,7 +31,24 @@
     </div>
   </form>
 
-  <h2>Add a new facility</h2>
+  <h2>Remove a User</h2>
+  <form class="form-horizontal">
+    <div class="form-group">
+      <label for="facilitytoremove-name" class="col-sm-2 control-label">User</label>
+      <div class="col-sm-10">
+        <select ng-model="userToRemove" id="usertoremove-list" class="form-control">
+          <option ng-repeat="user in users" value="{{user.username}}">{{user.username}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button ng-click="removeUser()" ng-disabled="userToRemove == ''" class="btn btn-danger" id="user-remove-button">Delete User</button>
+      </div>
+    </div>
+  </form>
+
+  <h2>Add a New Facility</h2>
   <form class="form-horizontal">
     <div class="form-group">
       <label for="facility-name" class="col-sm-2 control-label">Name</label>
@@ -42,6 +59,23 @@
     <div class="form-group">
       <div class="col-sm-offset-2 col-sm-10">
         <button ng-click="addFacility()" ng-disabled="!facilityValid()" class="btn btn-default" id="facility-add-button">Add</button>
+      </div>
+    </div>
+  </form>
+
+  <h2>Remove a Facility</h2>
+  <form class="form-horizontal">
+    <div class="form-group">
+      <label for="facilitytoremove-name" class="col-sm-2 control-label">Facility</label>
+      <div class="col-sm-10">
+        <select ng-model="facilityToRemove" id="facilitytoremove-list" class="form-control">
+          <option ng-repeat="facility in facilities" value="{{facility.name}}">{{facility.name}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button ng-click="removeFacility()" ng-disabled="facilityToRemove == ''" class="btn btn-danger" id="facility-remove-button">Delete Facility</button>
       </div>
     </div>
   </form>

@@ -335,6 +335,50 @@ app.post('/facilities/add', function (req, res) {
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
+app.post('/facilities/:facility/remove', function (req, res) {
+  var ticket = req.body.ticket;
+  var accessLevel = accessLevels.admin;
+  function ifAuthorized() {
+    var facility = decodeURIComponent(req.params.facility);
+    Facility.remove({name: facility}, function (err, record) {
+      if (err)
+        res.sendStatus(500);
+      else if (!record)
+        res.status(409).send({msg: 'Facility doesn\'t exist.'});
+      else {
+        res.end();
+      }
+    });
+  }
+  checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
+});
+
+app.post('/auth/:user/remove', function (req, res) {
+  var ticket = req.body.ticket;
+  var accessLevel = accessLevels.admin;
+  function ifAuthorized() {
+    var user = decodeURIComponent(req.params.user);
+    User.remove({username: user}, function (err, record) {
+      if (err)
+        res.sendStatus(500);
+      else if (!record)
+        res.status(409).send({msg: 'User doesn\'t exist.'});
+      else {
+        Facility.update({},
+                        {$pull: {owners: user}},
+                        {multi: true},
+                        function (err) {
+                          if (err)
+                            res.sendStatus(500);
+                          else
+                            res.end();
+                        });
+      }
+    });
+  }
+  checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
+});
+
 app.post('/facilities/list', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = accessLevels.admin;

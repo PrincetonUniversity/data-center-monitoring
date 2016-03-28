@@ -15,6 +15,9 @@ cont.controller('adminController', function ($scope, $filter, $http, $location, 
   };
 
   $scope.currentFacility = '';
+  $scope.facilityToRemove = '';
+  $scope.currentUser = '';
+  $scope.userToRemove = '';
 
   $.cookie.json = true;
 
@@ -36,7 +39,12 @@ cont.controller('adminController', function ($scope, $filter, $http, $location, 
     $http.post('/api/auth/register', {user: user})
       .success(function (data, status, headers, config) {
         alert('User ' + user.username + ' successfully registered.');
-        $scope.user = {username: '', password: ''};
+        $scope.user = {
+          username: '',
+          password: '',
+          accessLevel: '2'
+        };
+        $scope.fetchUsers();
         $('#register-button').removeAttr('disabled');
       })
       .error(function (data, status, headers, config) {
@@ -46,19 +54,65 @@ cont.controller('adminController', function ($scope, $filter, $http, $location, 
   };
 
   $scope.addFacility = function () {
-    $('#facility-add-button').attr('disabled', 'disabled');
+    $('#facility-remove-button').attr('disabled', 'disabled');
     var newFacility = $scope.newFacility;
     var ticket = JSON.parse($cookies.get('ticket'));
+
     $http.post('/api/facilities/add', {facility: newFacility, ticket: ticket})
     .success(function (data, status, headers, config) {
-      alert('Facility ' + facility.name + ' successfully added.');
-      $scope.facility = {name: ''};
-      $('#facility-add-button').removeAttr('disabled');
+      alert('Facility ' + newFacility.name + ' successfully created.');
+      $scope.newFacility = {name: ''};
+      $scope.fetchFacilities();
+      $('#facility-remove-button').removeAttr('disabled');
     })
     .error(function (data, status, headers, config) {
       alert(data.msg);
-      $('#facility-add-button').removeAttr('disabled');
+      $('#facility-remove-button').removeAttr('disabled');
     });
+  };
+
+  $scope.removeFacility = function () {
+    $('#facility-add-button').attr('disabled', 'disabled');
+    var ticket = JSON.parse($cookies.get('ticket'));
+    var facility = encodeURIComponent($scope.facilityToRemove);
+    var warning = 'Are you sure you want to delete the facility ' + decodeURIComponent(facility) + '?\n'
+                + 'This will irreversibly delete the facility, its list of owners, '
+                + 'and any associated server racks.\n'
+                + 'All sensor data will NOT be deleted.';
+    if (confirm(warning)) {
+      $http.post('/api/facilities/' + facility + '/remove', {ticket: ticket})
+      .success(function (data, status, headers, config) {
+        alert('Facility ' + facility.name + ' successfully deleted.');
+        $scope.fetchFacilities();
+        $('#facility-remove-button').removeAttr('disabled');
+      })
+      .error(function (data, status, headers, config) {
+        alert(data.msg);
+        $('#facility-remove-button').removeAttr('disabled');
+      });
+    }
+  };
+
+  $scope.removeUser = function () {
+    $('#user-add-button').attr('disabled', 'disabled');
+    var ticket = JSON.parse($cookies.get('ticket'));
+    var user = encodeURIComponent($scope.userToRemove);
+    var warning = 'Are you sure you want to delete the user ' + decodeURIComponent(user) + '?\n'
+                + 'This will irreversibly delete the user and disassociate them from all facilities.\n'
+                + 'All sensor data will NOT be deleted.';
+    if (confirm(warning)) {
+      $http.post('/api/auth/' + user + '/remove', {ticket: ticket})
+      .success(function (data, status, headers, config) {
+        alert('User ' + user + ' successfully deleted.');
+        $scope.fetchUsers();
+        $scope.fetchFacilityOwners();
+        $('#user-remove-button').removeAttr('disabled');
+      })
+      .error(function (data, status, headers, config) {
+        alert(data.msg);
+        $('#user-remove-button').removeAttr('disabled');
+      });
+    }
   };
 
   $scope.users = [];
@@ -87,6 +141,8 @@ cont.controller('adminController', function ($scope, $filter, $http, $location, 
 
   $scope.owners = [];
   $scope.fetchFacilityOwners = function () {
+    if ($scope.currentFacility == '')
+      return;
     var ticket = JSON.parse($cookies.get('ticket'));
     var facility = encodeURIComponent($scope.currentFacility);
     $http.post('/api/facilities/' + facility + '/list/owners', {ticket: ticket})
