@@ -1,0 +1,31 @@
+{
+  "name": "dcsense-server",
+  "version": "1.0.0",
+  "description": "A server backend for the Princeton University Data Center Monitoring project that provides both sensor data collection and storage and secure, organized access to that data via the AngularJS web app found in the ../frontend directory.",
+  "main": "server.js",
+  "dependencies": {
+    "async": "^1.5.2",
+    "body-parser": "^1.15.0",
+    "compression": "^1.6.1",
+    "crypto": "^0.0.3",
+    "express": "^4.13.4",
+    "fs": "^0.0.2",
+    "json": "^9.0.3",
+    "mongoose": "^4.4.7",
+    "multer": "^1.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node server.js > ~/server.log 2> ~/server.err &",
+    "start": "node server.js > ~/server.log 2> ~/server.err &"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PrincetonUniversity/data-center-monitoring.git"
+  },
+  "author": "Ryan O'Shea",
+  "bugs": {
+    "url": "https://github.com/PrincetonUniversity/data-center-monitoring/issues"
+  },
+  "homepage": "https://github.com/PrincetonUniversity/data-center-monitoring#readme"
+}
