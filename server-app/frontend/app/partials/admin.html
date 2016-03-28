@@ -1,5 +1,7 @@
 <div class="container container-fluid">
-  <h1>Register a new user:</h1>
+  <h1 class="centered">DCsense Administration</h1>
+
+  <h2>Register a new user</h2>
   <form class="form-horizontal">
     <div class="form-group">
       <label for="username" class="col-sm-2 control-label">Username</label>
@@ -29,7 +31,7 @@
     </div>
   </form>
 
-  <h1>Add a new facility</h1>
+  <h2>Add a new facility</h2>
   <form class="form-horizontal">
     <div class="form-group">
       <label for="facility-name" class="col-sm-2 control-label">Name</label>
@@ -44,7 +46,7 @@
     </div>
   </form>
 
-  <h1>Manage Facility Owners</h1>
+  <h2>Manage Facility Owners</h2>
   <form class="form-horizontal">
     <div class="form-group">
       <label for="users-list" class="col-sm-2 control-label">Facility</label>
@@ -73,7 +75,7 @@
     </div>
     <div class="form-group">
       <div class="col-sm-offset-2 col-sm-10">
-        <button ng-click="changeFacilityOwner('add')"    ng-disabled="userIsOwner() || currentFacility == '' || currentUser == ''"   class="btn btn-success">Add this user as owner</button>
+        <button ng-click="changeFacilityOwner('add')"    ng-disabled="userIsOwner()  || currentFacility == '' || currentUser == ''"   class="btn btn-success">Add this user as owner</button>
         <button ng-click="changeFacilityOwner('remove')" ng-disabled="!userIsOwner() || currentFacility == '' || currentUser == ''"  class="btn btn-danger">Remove this user from owners</button>
       </div>
     </div>

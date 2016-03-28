@@ -377,6 +377,9 @@ app.post('/facilities/:facility/list/owners', function (req, res) {
     Facility.findOne({name: facility}, 'owners', function (err, record) {
       if (err)
         res.sendStatus(500);
+      else if (!record) {
+        res.sendStatus(400);
+      }
       else {
         res.send(record.owners);
       }

@@ -14,6 +14,8 @@ cont.controller('adminController', function ($scope, $filter, $http, $location, 
     name: ''
   };
 
+  $scope.currentFacility = '';
+
   $.cookie.json = true;
 
   $scope.userValid = function () {
