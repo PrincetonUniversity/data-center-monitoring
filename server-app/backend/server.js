@@ -247,25 +247,49 @@ app.post('/sensors/list/controllers', function (req, res) {
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
+function checkControllerAccess(res, controller, user, callback) {
+  Facility.findOne({owners: user, controllers: controller}, function (err, record) {
+    if (err)
+      res.sendStatus(500);
+    else if (!record) {
+      User.findOne({username: user, accessLevel: accessLevels.admin}, function (err, admin) {
+        if (err)
+          res.sendStatus(500);
+        else if (!admin)
+          res.status(401).send({msg: 'You aren\'t an owner of the facility where this controller lives.'});
+        else
+          callback();
+      });
+    }
+    else
+      callback();
+  });
+}
+
 app.post('/sensors/list/dates/:controller/limit/:limit', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = accessLevels.user;
   function ifAuthorized() {
-    var limit = parseInt(req.params.limit);
-    Reading.aggregate([
-      {$match: {'controller': parseInt(req.params.controller)}},
-      {$group: {_id: '$time'}}, // equivalent of distinct('time')
-      {$sort: {'_id': -1}}, // sort by newest reading first
-      {$limit: limit},
-      ],
-      function (err, dateObjs) {
-        var dates = [];
-        dateObjs.forEach(function (current, index) {
-          dates.push(current['_id']);
-        });
-        res.send(dates);
-      }
-    );
+    var user = ticket.username;
+    var controller = parseInt(req.params.controller);
+    function ifOwner() {
+      var limit = parseInt(req.params.limit);
+      Reading.aggregate([
+        {$match: {'controller': controller}},
+        {$group: {_id: '$time'}}, // equivalent of distinct('time')
+        {$sort: {'_id': -1}}, // sort by newest reading first
+        {$limit: limit},
+        ],
+        function (err, dateObjs) {
+          var dates = [];
+          dateObjs.forEach(function (current, index) {
+            dates.push(current['_id']);
+          });
+          res.send(dates);
+        }
+      );
+    }
+    checkControllerAccess(res, user, controller, ifOwner);
   }
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
@@ -274,38 +298,44 @@ app.post('/sensors/list/dates/:controller/all', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = accessLevels.user;
   function ifAuthorized() {
-    Reading.aggregate([
-      {$match: {'controller': parseInt(req.params.controller)}},
-      {$group: {_id: '$time'}}, // equivalent of distinct('time')
-      {$sort: {'_id': -1}}, // sort by newest reading first
-      ],
-      function (err, dateObjs) {
-        if (!err) {
+    var user = ticket.username;
+    var controller = parseInt(req.params.controller);
+    function ifOwner() {
+      var limit = parseInt(req.params.limit);
+      Reading.aggregate([
+        {$match: {'controller': controller}},
+        {$group: {_id: '$time'}}, // equivalent of distinct('time')
+        {$sort: {'_id': -1}}, // sort by newest reading first
+        ],
+        function (err, dateObjs) {
           var dates = [];
           dateObjs.forEach(function (current, index) {
             dates.push(current['_id']);
           });
           res.send(dates);
         }
-        else {
-          console.log('Error.');
-        }
-      }
-    );
+      );
+    }
+    checkControllerAccess(res, user, controller, ifOwner);
   }
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
 app.post('/sensors/readings/:controller/:time', function (req, res) {
   var ticket = req.body.ticket;
-  var accessLevel = accessLevels.admin;
+  var accessLevel = accessLevels.user;
   function ifAuthorized() {
-    Reading.find({
-      'controller': req.params.controller,
-      'time': req.params.time},
-      function (err, readings) {
-        res.send(readings);
-    });
+    var user = ticket.username;
+    var controller = parseInt(req.params.controller);
+    function ifOwner() {
+      Reading.find({
+        'controller': controller,
+        'time': req.params.time},
+        function (err, readings) {
+          res.send(readings);
+      });
+    }
+    checkControllerAccess(res, controller, user, ifOwner);
   }
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
@@ -381,15 +411,36 @@ app.post('/auth/:user/remove', function (req, res) {
 
 app.post('/facilities/list', function (req, res) {
   var ticket = req.body.ticket;
-  var accessLevel = accessLevels.admin;
+  var accessLevel = accessLevels.user;
   function ifAuthorized() {
-    Facility.find({}, 'name', {sort: {name: 1}}, function (err, facilities) {
-      if (err || !facilities) {
-        console.log('Internal Server Error');
+    var user = ticket.username;
+    User.findOne({username: user, accessLevel: accessLevels.admin}, function (err, admin) {
+      if (err)
         res.sendStatus(500);
+      else if (!admin) { // user is not an admin, so only send facilities of which they are owner
+        Facility.find({owners: user}, 'name', {sort: {name: 1}}, function (err, facilities) {
+          if (err) {
+            console.log('Internal Server Error');
+            res.sendStatus(500);
+          }
+          else if (!facilities) {
+            res.status(401).send({msg: 'You haven\'t been given access to any facilities yet. Please contact the site administrators for assistance.'});
+          }
+          else {
+            res.send(facilities);
+          }
+        });
       }
-      else {
-        res.send(facilities);
+      else { // User is admin, send all facilities
+        Facility.find({}, 'name', {sort: {name: 1}}, function (err, facilities) {
+          if (err || !facilities) {
+            console.log('Internal Server Error');
+            res.sendStatus(500);
+          }
+          else {
+            res.send(facilities);
+          }
+        });
       }
     });
   }
@@ -413,6 +464,26 @@ app.post('/auth/list/users', function (req, res) {
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
+// Ensures the given user is an owner of the given facility (or an admin)
+function checkFacilityAccess(res, user, facility, callback) {
+  Facility.findOne({name: facility, owners: user}, function (err, record) {
+    if (err)
+      res.sendStatus(500);
+    else if (!record) {
+      User.findOne({username: user, accessLevel: accessLevels.admin}, function (err, admin) {
+        if (err)
+          res.sendStatus(500);
+        else if (!admin)
+          res.status(401).send({msg: 'You aren\'t an owner of the specified facility.'});
+        else
+          callback();
+      });
+    }
+    else
+      callback();
+  });
+}
+
 app.post('/facilities/:facility/list/owners', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = accessLevels.admin;
@@ -432,6 +503,29 @@ app.post('/facilities/:facility/list/owners', function (req, res) {
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
+app.post('/facilities/:facility/list/controllers', function (req, res) {
+  var ticket = req.body.ticket;
+  var accessLevel = accessLevels.user;
+  function ifAuthorized() {
+    var facility = decodeURIComponent(req.params.facility);
+    var user = ticket.username;
+    function ifOwner() {
+      Facility.findOne({name: facility}, 'controllers', function (err, record) {
+        if (err)
+          res.sendStatus(500);
+        else if (!record) {
+          res.sendStatus(400);
+        }
+        else {
+          res.send(record.controllers);
+        }
+      });
+    }
+    checkFacilityAccess(res, user, facility, ifOwner);
+  }
+  checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
+});
+
 app.post('/facilities/:facility/owners/:addOrRemove/:user', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = accessLevels.admin;
@@ -444,6 +538,35 @@ app.post('/facilities/:facility/owners/:addOrRemove/:user', function (req, res) 
     }
     else if (req.params.addOrRemove == 'remove') {
       update = {$pull: {owners: user}};
+    }
+    else {
+      res.status(400).send();
+      return;
+    }
+    Facility.update({name: facility},
+                    update,
+                    function (err) {
+                      if (err)
+                        res.sendStatus(500);
+                      else
+                        res.end();
+                    });
+  }
+  checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
+});
+
+app.post('/facilities/:facility/controllers/:addOrRemove/:controller', function (req, res) {
+  var ticket = req.body.ticket;
+  var accessLevel = accessLevels.admin;
+  function ifAuthorized() {
+    var facility = decodeURIComponent(req.params.facility);
+    var controller = req.params.controller;
+    var update;
+    if (req.params.addOrRemove == 'add') {
+      update = {$addToSet: {controllers: controller}};
+    }
+    else if (req.params.addOrRemove == 'remove') {
+      update = {$pull: {controllers: controller}};
     }
     else {
       res.status(400).send();

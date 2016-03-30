@@ -15,6 +15,7 @@ cont.controller('adminController', function ($scope, $filter, $http, $location, 
   };
 
   $scope.currentFacility = '';
+  $scope.currentController = '';
   $scope.facilityToRemove = '';
   $scope.currentUser = '';
   $scope.userToRemove = '';
@@ -31,6 +32,16 @@ cont.controller('adminController', function ($scope, $filter, $http, $location, 
 
   $scope.userIsOwner = function () {
     return ($scope.owners.indexOf($scope.currentUser) != -1);
+  };
+
+  $scope.controllerInFacility = function () {
+    return ($scope.facilityControllers.indexOf($scope.currentController) != -1);
+  };
+
+  // Convert the integer MAC address stored in the db to a readable MAC address
+  $scope.controllerIDtoMac = function (id) {
+    var hex = parseInt(id).toString(16);
+    return [hex.slice(0, 2), ':', hex.slice(2,4), ':', hex.slice(4,6), ':', hex.slice(6,8), ':', hex.slice(8,10), ':', hex.slice(10,12)].join('');
   };
 
   $scope.register = function () {
@@ -139,6 +150,18 @@ cont.controller('adminController', function ($scope, $filter, $http, $location, 
     });
   };
 
+  $scope.controllers = [];
+  $scope.fetchControllers = function () {
+    var ticket = JSON.parse($cookies.get('ticket'));
+    $http.post('/api/sensors/list/controllers', {ticket: ticket})
+    .success(function (data, status, headers, config) {
+      $scope.controllers = data;
+    })
+    .error(function (data, status, headers, config) {
+      alert('Server error.');
+    });
+  };
+
   $scope.owners = [];
   $scope.fetchFacilityOwners = function () {
     if ($scope.currentFacility == '')
@@ -148,6 +171,34 @@ cont.controller('adminController', function ($scope, $filter, $http, $location, 
     $http.post('/api/facilities/' + facility + '/list/owners', {ticket: ticket})
     .success(function (data, status, headers, config) {
       $scope.owners = data;
+    })
+    .error(function (data, status, headers, config) {
+      alert('Server error.');
+    });
+  };
+
+  $scope.currentFacilityForControllers = '';
+  $scope.facilityControllers = [];
+  $scope.fetchFacilityControllers = function () {
+    if ($scope.currentFacilityForControllers == '')
+      return;
+    var ticket = JSON.parse($cookies.get('ticket'));
+    var facility = encodeURIComponent($scope.currentFacilityForControllers);
+    $http.post('/api/facilities/' + facility + '/list/controllers', {ticket: ticket})
+    .success(function (data, status, headers, config) {
+      $scope.facilityControllers = data;
+    })
+    .error(function (data, status, headers, config) {
+      alert('Server error.');
+    });
+  };
+  $scope.changeFacilityController = function (addOrRemove) {
+    var ticket = JSON.parse($cookies.get('ticket'));
+    var facility = encodeURIComponent($scope.currentFacilityForControllers);
+    var controller = $scope.currentController;
+    $http.post('/api/facilities/' + facility + '/controllers/' + addOrRemove + '/' + controller, {ticket: ticket})
+    .success(function (data, status, headers, config) {
+      $scope.fetchFacilityControllers();
     })
     .error(function (data, status, headers, config) {
       alert('Server error.');
@@ -172,6 +223,7 @@ cont.controller('adminController', function ($scope, $filter, $http, $location, 
   // On page ready:
   $scope.fetchUsers();
   $scope.fetchFacilities();
+  $scope.fetchControllers();
 
 });
 

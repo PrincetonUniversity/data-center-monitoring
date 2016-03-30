@@ -83,7 +83,7 @@
   <h2>Manage Facility Owners</h2>
   <form class="form-horizontal">
     <div class="form-group">
-      <label for="users-list" class="col-sm-2 control-label">Facility</label>
+      <label for="facility-list" class="col-sm-2 control-label">Facility</label>
       <div class="col-sm-10">
         <select ng-model="currentFacility" ng-change="fetchFacilityOwners()" id="facility-list" class="form-control">
           <option ng-repeat="facility in facilities" value="{{facility.name}}">{{facility.name}}</option>
@@ -91,7 +91,7 @@
       </div>
     </div>
     <div class="form-group">
-      <div class="col-sm-offset-2 col-sm-10">
+      <div ng-hide="currentFacility == ''" class="col-sm-offset-2 col-sm-10">
         <p>Current owners:
           <span ng-repeat="user in owners track by $index">
             {{user}}<span ng-show="$index < (owners.length - 1)">, </span>
@@ -111,6 +111,41 @@
       <div class="col-sm-offset-2 col-sm-10">
         <button ng-click="changeFacilityOwner('add')"    ng-disabled="userIsOwner()  || currentFacility == '' || currentUser == ''"   class="btn btn-success">Add this user as owner</button>
         <button ng-click="changeFacilityOwner('remove')" ng-disabled="!userIsOwner() || currentFacility == '' || currentUser == ''"  class="btn btn-danger">Remove this user from owners</button>
+      </div>
+    </div>
+  </form>
+
+  <h2>Manage Controllers</h2>
+  <form class="form-horizontal">
+    <div class="form-group">
+      <label for="facility-list-2" class="col-sm-2 control-label">Facility</label>
+      <div class="col-sm-10">
+        <select ng-model="currentFacilityForControllers" ng-change="fetchFacilityControllers()" id="facility-list-2" class="form-control">
+          <option ng-repeat="facility in facilities" value="{{facility.name}}">{{facility.name}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <div ng-hide="currentFacilityForControllers == ''" class="col-sm-offset-2 col-sm-10">
+        <p>Current controllers:
+          <span ng-repeat="controller in facilityControllers track by $index">
+            {{controllerIDtoMac(controller)}}<span ng-show="$index < (facilityControllers.length - 1)">, </span>
+          </span>
+        </p>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="controller-list" class="col-sm-2 control-label">Controller to modify</label>
+      <div class="col-sm-10">
+        <select ng-model="currentController" id="controller-list" class="form-control">
+          <option ng-repeat="controller in controllers" value="{{controller}}">{{controllerIDtoMac(controller)}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button ng-click="changeFacilityController('add')"    ng-disabled="controllerInFacility()  || currentFacilityForControllers == '' || currentController == ''"   class="btn btn-success">Add this controller to facility</button>
+        <button ng-click="changeFacilityController('remove')" ng-disabled="!controllerInFacility() || currentFacilityForControllers == '' || currentController == ''"  class="btn btn-danger">Remove this controller from facility</button>
       </div>
     </div>
   </form>

@@ -1,4 +1,12 @@
 <div class="container container-fluid">
   <h1>Dashboard</h1>
+  <h2>Your Facilities</h2>
+  <ul>
+    <li ng-repeat="facility in facilities">{{facility.name}}</li>
+  </ul>
+  <h2>{{currentFacility}}'s Controllers</h2>
+  <ul>
+    <li ng-repeat="controller in controllers">{{controller}}</li>
+  </ul>
   <button logout>Logout</button>
 </div>
