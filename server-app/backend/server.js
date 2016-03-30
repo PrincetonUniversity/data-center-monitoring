@@ -45,6 +45,7 @@ var readingSchema = mongoose.Schema({
 });
 
 var Reading = mongoose.model('Reading', readingSchema);
+var ResearchReading = mongoose.model('ResearchReading', readingSchema);
 
 var userSchema = mongoose.Schema({
   'username': String,
@@ -70,6 +71,13 @@ var facilitySchema = mongoose.Schema({
 });
 
 var Facility = mongoose.model('facility', facilitySchema);
+
+var readingCounterSchema = mongoose.Schema({
+  controller: Number,
+  counter: Number
+});
+
+var ReadingCounter = mongoose.model('ReadingCounter', readingCounterSchema);
 
 // Backend Request Handlers & Helper Functions
 
@@ -227,13 +235,47 @@ app.post('/auth/sessionstatus', function (req, res) {
 app.post('/sensors/submitreadings', function (req, res) {
   var readings = req.body;
   console.log(readings.length + ' readings received');
-  readings.forEach(function (current, index) {
-    currentReading = current;
-    currentReading['time'] = new Date(current['time']*1000);
-    var reading = new Reading(currentReading);
-    reading.save();
+  var controller = req.body[0].controller;
+  ReadingCounter.findOne({controller: req.body[0].controller}, function (err, record) {
+    if (err)
+      res.sendStatus(500);
+    else if (!record) { // Create a ReadingCounter object, then save the reading
+      var readingCounter = {controller: controller, counter: 0};
+      mReadingCounter = new ReadingCounter(readingCounter);
+      mReadingCounter.save();
+      readings.forEach(function (current, index) {
+        currentReading = current;
+        currentReading['time'] = new Date(current['time']*1000);
+        var researchReading = new ResearchReading(currentReading);
+        ResearchReading.save();
+      });
+      res.end();
+    }
+    else { // Update the ReadingCounter for this controller, then save the reading
+      var prevCounter = record.counter;
+      var update;
+      var saveToProd;
+      if (prevCounter < 120) { // Increment the counter
+        update = {$inc: {counter: 1}};
+        saveToProd = false;
+      }
+      else { // Save a reading every 10 minutes from each controller to the production collection
+        update = {counter: 0};
+        saveToProd = true;
+      }
+      readings.forEach(function (current, index) {
+        currentReading = current;
+        currentReading['time'] = new Date(current['time']*1000);
+        if (saveToProd) {
+          var reading = new Reading(currentReading);
+          reading.save();
+        }
+        var researchReading = new ResearchReading(currentReading);
+        ResearchReading.save();
+      });
+      res.end();
+    }
   });
-  res.end();
 });
 
 app.post('/sensors/list/controllers', function (req, res) {

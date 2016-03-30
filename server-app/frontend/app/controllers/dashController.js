@@ -58,7 +58,7 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
   $scope.fetchDates = function () {
     var ticket = JSON.parse($cookies.get('ticket'));
     var controller = $scope.currentController;
-    $http.post('/api/sensors/list/dates/' + controller + '/limit/1000', {ticket: ticket})
+    $http.post('/api/sensors/list/dates/' + controller + '/limit/2016', {ticket: ticket})
     .success(function (data, status, headers, config) {
       $scope.dates = data;
       if ($scope.dates) {
