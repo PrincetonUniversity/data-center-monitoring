@@ -9,8 +9,8 @@
     <li ng-repeat="controller in controllers">{{controller}}</li>
   </ul>
   <h2>Reading Timestamps for {{controllerIDtoMac(currentController)}}</h2>
-  <ul>
-    <li ng-repeat="date in dates">{{formatDate(date)}}</li>
-  </ul>
+  <p class="centered">{{formatDate(dates[dates.length - 1 - dateIdx])}}</p>
+  <input type="range" ng-model="dateIdx" ng-change="currentDate = dates[dates.length - 1 - dateIdx]" min="0" max="5" id="date-slider">
+  <p>{{readings}}</p>
   <button logout>Logout</button>
 </div>

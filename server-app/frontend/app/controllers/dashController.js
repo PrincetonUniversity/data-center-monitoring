@@ -4,6 +4,8 @@ var cont = angular.module('dcsense.controllers');
 
 cont.controller('dashController', function ($scope, $filter, $http, $location, $cookies) {
 
+  $scope.dateIdx = 0;
+
   // Convert the integer MAC address stored in the db to a readable MAC address
   $scope.controllerIDtoMac = function (id) {
     var hex = parseInt(id).toString(16);
@@ -60,7 +62,25 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     .success(function (data, status, headers, config) {
       $scope.dates = data;
       if ($scope.dates) {
+        $('#date-slider').attr('max', $scope.dates.length - 1);
+        $scope.dateIdx = $scope.dates.length - 1;
+        $scope.currentDate = $scope.dates[$scope.dates.length - 1 - $scope.dateIdx];
+        $scope.fetchReadings();
+      }
+    })
+    .error(function (data, status, headers, config) {
+      alert('Server error.');
+    });
+  };
 
+  $scope.fetchReadings = function () {
+    var ticket = JSON.parse($cookies.get('ticket'));
+    var controller = $scope.currentController;
+    var date = $scope.currentDate;
+    $http.post('/api/sensors/readings/' + controller + '/' + date, {ticket: ticket})
+    .success(function (data, status, headers, config) {
+      $scope.readings = data;
+      if ($scope.readings) {
 
       }
     })
@@ -68,6 +88,10 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
       alert('Server error.');
     });
   };
+
+  $('#date-slider').mouseup(function () {
+    $scope.fetchReadings();
+  });
 
   $scope.fetchFacilities();
 
