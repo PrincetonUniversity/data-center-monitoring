@@ -247,7 +247,7 @@ app.post('/sensors/submitreadings', function (req, res) {
         currentReading = current;
         currentReading['time'] = new Date(current['time']*1000);
         var researchReading = new ResearchReading(currentReading);
-        ResearchReading.save();
+        researchReading.save();
       });
       res.end();
     }
