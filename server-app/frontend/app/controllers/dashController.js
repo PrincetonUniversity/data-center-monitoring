@@ -4,6 +4,20 @@ var cont = angular.module('dcsense.controllers');
 
 cont.controller('dashController', function ($scope, $filter, $http, $location, $cookies) {
 
+  // Convert the integer MAC address stored in the db to a readable MAC address
+  $scope.controllerIDtoMac = function (id) {
+    var hex = parseInt(id).toString(16);
+    return [hex.slice(0, 2), ':', hex.slice(2,4), ':', hex.slice(4,6), ':', hex.slice(6,8), ':', hex.slice(8,10), ':', hex.slice(10,12)].join('');
+  };
+
+  $scope.formatDate = function (dateString) {
+    var date = new Date(dateString);
+    var localTime = date.getTime();
+    var localOffset = date.getTimezoneOffset() * 60000;
+    // obtain UTC time in msec
+    return date.toLocaleString();
+  };
+
   $scope.facilities = [];
   $scope.currentFacility = '';
   $scope.fetchFacilities = function () {
@@ -30,6 +44,23 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
       $scope.controllers = data;
       if ($scope.controllers) {
         $scope.currentController = $scope.controllers[0];
+        $scope.fetchDates();
+      }
+    })
+    .error(function (data, status, headers, config) {
+      alert('Server error.');
+    });
+  };
+
+  $scope.dates = [];
+  $scope.fetchDates = function () {
+    var ticket = JSON.parse($cookies.get('ticket'));
+    var controller = $scope.currentController;
+    $http.post('/api/sensors/list/dates/' + controller + '/limit/1000', {ticket: ticket})
+    .success(function (data, status, headers, config) {
+      $scope.dates = data;
+      if ($scope.dates) {
+
 
       }
     })

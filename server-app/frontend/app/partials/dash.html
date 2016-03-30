@@ -8,5 +8,9 @@
   <ul>
     <li ng-repeat="controller in controllers">{{controller}}</li>
   </ul>
+  <h2>Reading Timestamps for {{controllerIDtoMac(currentController)}}</h2>
+  <ul>
+    <li ng-repeat="date in dates">{{formatDate(date)}}</li>
+  </ul>
   <button logout>Logout</button>
 </div>

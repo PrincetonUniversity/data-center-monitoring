@@ -289,7 +289,7 @@ app.post('/sensors/list/dates/:controller/limit/:limit', function (req, res) {
         }
       );
     }
-    checkControllerAccess(res, user, controller, ifOwner);
+    checkControllerAccess(res, controller, user, ifOwner);
   }
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
@@ -316,7 +316,7 @@ app.post('/sensors/list/dates/:controller/all', function (req, res) {
         }
       );
     }
-    checkControllerAccess(res, user, controller, ifOwner);
+    checkControllerAccess(res, controller, user, ifOwner);
   }
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
