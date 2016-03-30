@@ -81,6 +81,7 @@ var ReadingCounter = mongoose.model('ReadingCounter', readingCounterSchema);
 
 // Backend Request Handlers & Helper Functions
 
+// Used for generating salts for new users
 function randomString(length) {
     var text = "";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -91,6 +92,7 @@ function randomString(length) {
     return text;
 }
 
+// Registers a new user account
 app.post('/auth/register', function (req, res) {
   console.log('Request to register new user received.');
   var user = {
@@ -124,6 +126,7 @@ app.post('/auth/register', function (req, res) {
   });
 });
 
+// Attempts to log in a user
 app.post('/auth/login', function (req, res) {
   console.log('Request to login user ' + req.body.user.username);
   var user = {
@@ -165,12 +168,17 @@ app.post('/auth/login', function (req, res) {
   });
 });
 
+// Authentication control levels
 var accessLevels = {
   public: 1,
   user: 2,
   admin: 3
 };
 
+// Uses 'ticket' to check whether a user is logged in and authorized to make a
+// request which requires the privileges of 'accessLevel'.
+// If unauthorized, ends the request with an HTTP 401 and provides an error message.
+// If authorized, does not end the request, but calls callback().
 function checkSessionStatus (res, ticket, accessLevel, callback) {
   Ticket.findOne({username: ticket.username, ticket: ticket.ticket}, function(err, record) {
     if (err) {
@@ -207,6 +215,7 @@ function checkSessionStatus (res, ticket, accessLevel, callback) {
   });
 }
 
+// Attempts to log a user out
 app.post('/auth/logout', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = accessLevels.user;
@@ -223,6 +232,8 @@ app.post('/auth/logout', function (req, res) {
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
+// Called before loading each page; checks whether the user is logged in and
+// has access to pages at the provided 'accessLevel'.
 app.post('/auth/sessionstatus', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = req.body.accessLevel;
@@ -232,17 +243,32 @@ app.post('/auth/sessionstatus', function (req, res) {
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
+/* Accepts temperature data from beaglebone controllers. Requests are expected
+ * from each BeagleBone every 5 seconds. Each of these readings is stored in the
+ * 'researchreadings' collection. Every 120 readings (per BeagleBone), or every
+ * 10 minutes, a reading is also saved to the 'readings' collection, which is
+ * the dataset queried by the web app. This separate collection is used to reduce
+ * the number of records in the collection used by the frontend application, since
+ * a database of readings taken every 5 minutes would quickly become too large
+ * to query quickly. The 'readingcounters' collection is used to facilitate the
+ * storage of one reading every 10 minutes for each BeagleBone separately. */
 app.post('/sensors/submitreadings', function (req, res) {
   var readings = req.body;
   console.log(readings.length + ' readings received');
   var controller = req.body[0].controller;
+
+  // Check for a existing 'readingcounter' object
   ReadingCounter.findOne({controller: controller}, function (err, record) {
     if (err)
       res.sendStatus(500);
-    else if (!record) { // Create a ReadingCounter object, then save the reading
+    else if (!record) {
+      // This is the first time we've gotten data from this BeagleBone:
+      // Create a ReadingCounter object, then save the readings
       var readingCounter = {controller: controller, counter: 0};
       mReadingCounter = new ReadingCounter(readingCounter);
       mReadingCounter.save();
+
+      // Save the readings in the research collection
       readings.forEach(function (current, index) {
         currentReading = current;
         currentReading['time'] = new Date(current['time']*1000);
@@ -251,35 +277,47 @@ app.post('/sensors/submitreadings', function (req, res) {
       });
       res.end();
     }
-    else { // Update the ReadingCounter for this controller, then save the reading
+    else {
+      // Update the ReadingCounter for this controller, then save the readings
+      // to the appropriate collection
       var prevCounter = record.counter;
       var update;
-      var saveToProd;
-      if (prevCounter < 120) { // Increment the counter
+      var saveToProd; // true if we'll also save the readings to the production collection
+      if (prevCounter < 120) { // It's been less than 10 minutes, just increment the counter
         update = {$inc: {counter: 1}};
         saveToProd = false;
       }
-      else { // Save a reading every 10 minutes from each controller to the production collection
+      else {
+        // 10 minutes has passed since our last production readings were saved for this BeagleBone
+        // Reset the counter, and indicate that we need to save this set or readings
+        // to the production collection
         update = {counter: 0};
         saveToProd = true;
       }
+
+      // Perform the counter increment or reset
       ReadingCounter.update({controller: controller}, update, function (err) {
+        // Save the readings to the research collection
+        // Also save to production collection if necessary
         readings.forEach(function (current, index) {
           currentReading = current;
           currentReading['time'] = new Date(current['time']*1000);
-          if (saveToProd) {
+          // Save to research collection
+          var researchReading = new ResearchReading(currentReading);
+          researchReading.save();
+          if (saveToProd) { // Save to production collection too
             var reading = new Reading(currentReading);
             reading.save();
           }
-          var researchReading = new ResearchReading(currentReading);
-          researchReading.save();
         });
-        res.end();
+        res.end(); // BeagleBones expect no return data
       });
     }
   });
 });
 
+// Sends a list of all controllers for which readings exist in the database.
+// Admins only.
 app.post('/sensors/list/controllers', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = accessLevels.admin;
@@ -291,6 +329,11 @@ app.post('/sensors/list/controllers', function (req, res) {
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
+
+// Checks whether the user is an owner of the facility in which the provided
+// 'controller' resides.
+// If unauthorized, ends the request with an HTTP 401 and provides an error message.
+// If authorized, does not end the request, but calls callback().
 function checkControllerAccess(res, controller, user, callback) {
   Facility.findOne({owners: user, controllers: controller}, function (err, record) {
     if (err)
@@ -310,6 +353,8 @@ function checkControllerAccess(res, controller, user, callback) {
   });
 }
 
+// Sends up to 'limit' of the most recent timestamps from readings gathered from
+// the provided 'controller'.
 app.post('/sensors/list/dates/:controller/limit/:limit', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = accessLevels.user;
@@ -338,6 +383,8 @@ app.post('/sensors/list/dates/:controller/limit/:limit', function (req, res) {
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
+// Sends all timestamps from readings gathered from the provided 'controller'
+// in reverse chronological order.
 app.post('/sensors/list/dates/:controller/all', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = accessLevels.user;
@@ -365,6 +412,7 @@ app.post('/sensors/list/dates/:controller/all', function (req, res) {
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
+// Sends the sensor readings taken on a given 'controller' at a given 'time'.
 app.post('/sensors/readings/:controller/:time', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = accessLevels.user;
@@ -384,6 +432,8 @@ app.post('/sensors/readings/:controller/:time', function (req, res) {
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
+// Adds a new facility to the system.
+// Admins only.
 app.post('/facilities/add', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = accessLevels.admin;
@@ -409,6 +459,8 @@ app.post('/facilities/add', function (req, res) {
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
+// Deletes a facility from the system.
+// Admins only.
 app.post('/facilities/:facility/remove', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = accessLevels.admin;
@@ -427,6 +479,8 @@ app.post('/facilities/:facility/remove', function (req, res) {
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
+// Deletes a user from the system.
+// Admins only.
 app.post('/auth/:user/remove', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = accessLevels.admin;
@@ -453,6 +507,8 @@ app.post('/auth/:user/remove', function (req, res) {
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
+// If admin: Sends a list of all facilities in the system.
+// If user: Sends a list of all facilities of which the user is an owner.
 app.post('/facilities/list', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = accessLevels.user;
@@ -491,6 +547,8 @@ app.post('/facilities/list', function (req, res) {
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
+// Sends a list of all users in the system.
+// Admins only.
 app.post('/auth/list/users', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = accessLevels.admin;
@@ -508,7 +566,9 @@ app.post('/auth/list/users', function (req, res) {
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
-// Ensures the given user is an owner of the given facility (or an admin)
+// Checks whether the user is an owner of the provided 'facility' (or an admin).
+// If unauthorized, ends the request with an HTTP 401 and provides an error message.
+// If authorized, does not end the request, but calls callback().
 function checkFacilityAccess(res, user, facility, callback) {
   Facility.findOne({name: facility, owners: user}, function (err, record) {
     if (err)
@@ -528,6 +588,8 @@ function checkFacilityAccess(res, user, facility, callback) {
   });
 }
 
+// Sends a list of all owners of a given 'facility'.
+// Admins only.
 app.post('/facilities/:facility/list/owners', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = accessLevels.admin;
@@ -547,6 +609,7 @@ app.post('/facilities/:facility/list/owners', function (req, res) {
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
+// Sends a list of all controllers in a given 'facility'.
 app.post('/facilities/:facility/list/controllers', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = accessLevels.user;
@@ -570,6 +633,8 @@ app.post('/facilities/:facility/list/controllers', function (req, res) {
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
+// Adds or removes a given 'user' from the list of owners of a facility.
+// Admins only.
 app.post('/facilities/:facility/owners/:addOrRemove/:user', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = accessLevels.admin;
@@ -599,6 +664,8 @@ app.post('/facilities/:facility/owners/:addOrRemove/:user', function (req, res) 
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
+// Adds or removes a given 'controller' from the list of controllers in a facility.
+// Admins only.
 app.post('/facilities/:facility/controllers/:addOrRemove/:controller', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = accessLevels.admin;
@@ -627,6 +694,12 @@ app.post('/facilities/:facility/controllers/:addOrRemove/:controller', function 
   }
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
+
+
+
+
+// RUNTIME
+
 
 // Start server on default HTTP port (you may need root privileges for this to work)
 static.listen(80);
