@@ -271,7 +271,7 @@ app.post('/sensors/submitreadings', function (req, res) {
           reading.save();
         }
         var researchReading = new ResearchReading(currentReading);
-        ResearchReading.save();
+        researchReading.save();
       });
       res.end();
     }
