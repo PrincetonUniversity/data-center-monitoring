@@ -236,7 +236,7 @@ app.post('/sensors/submitreadings', function (req, res) {
   var readings = req.body;
   console.log(readings.length + ' readings received');
   var controller = req.body[0].controller;
-  ReadingCounter.findOne({controller: req.body[0].controller}, function (err, record) {
+  ReadingCounter.findOne({controller: controller}, function (err, record) {
     if (err)
       res.sendStatus(500);
     else if (!record) { // Create a ReadingCounter object, then save the reading
@@ -263,17 +263,19 @@ app.post('/sensors/submitreadings', function (req, res) {
         update = {counter: 0};
         saveToProd = true;
       }
-      readings.forEach(function (current, index) {
-        currentReading = current;
-        currentReading['time'] = new Date(current['time']*1000);
-        if (saveToProd) {
-          var reading = new Reading(currentReading);
-          reading.save();
-        }
-        var researchReading = new ResearchReading(currentReading);
-        researchReading.save();
+      ReadingCounter.update({controller: controller}, update, function (err) {
+        readings.forEach(function (current, index) {
+          currentReading = current;
+          currentReading['time'] = new Date(current['time']*1000);
+          if (saveToProd) {
+            var reading = new Reading(currentReading);
+            reading.save();
+          }
+          var researchReading = new ResearchReading(currentReading);
+          researchReading.save();
+        });
+        res.end();
       });
-      res.end();
     }
   });
 });
