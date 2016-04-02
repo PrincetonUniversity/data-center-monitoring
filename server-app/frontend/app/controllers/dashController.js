@@ -90,7 +90,10 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
   };
 
   $('#date-slider').mouseup(function () {
-    $scope.fetchReadings();
+    $scope.fetchReadings()
+  });  // Desktop
+  $('#date-slider').on('touchend', function () {
+    $scope.fetchReadings(); // Mobile
   });
 
   $scope.fetchFacilities();
