@@ -89,11 +89,11 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     });
   };
 
-  $('#date-slider').mouseup(function () {
-    $scope.fetchReadings()
-  });  // Desktop
-  $('#date-slider').on('touchend', function () {
-    $scope.fetchReadings(); // Mobile
+  $('#date-slider').mouseup(function () { // Desktop
+    $scope.fetchReadings();
+  });
+  $('#date-slider').on('touchend', function () { // Mobile
+    $scope.fetchReadings();
   });
 
   $scope.fetchFacilities();

@@ -1,13 +1,15 @@
 <div class="container container-fluid">
   <h1>Dashboard</h1>
-  <h2>Your Facilities</h2>
-  <ul>
-    <li ng-repeat="facility in facilities">{{facility.name}}</li>
-  </ul>
+  <section id="facilities" ng-hide="facilities.length < 2">
+    <h2>Facilities</h2>
+    <select ng-model="currentFacility" ng-change="fetchControllers()">
+      <option ng-repeat="facility in facilities" value="{{facility.name}}">{{facility.name}}</option>
+    </select>
+  </section>
   <h2>{{currentFacility}}'s Controllers</h2>
-  <ul>
-    <li ng-repeat="controller in controllers">{{controller}}</li>
-  </ul>
+  <select ng-model="currentController" ng-change="fetchDates()">
+    <option ng-repeat="controller in controllers" value="{{controller}}">{{controllerIDtoMac(controller)}}</option>
+  </select>
   <h2>Reading Timestamps for {{controllerIDtoMac(currentController)}}</h2>
   <p class="centered">{{formatDate(dates[dates.length - 1 - dateIdx])}}</p>
   <input type="range" ng-model="dateIdx" ng-change="currentDate = dates[dates.length - 1 - dateIdx]" min="0" max="5" id="date-slider">
