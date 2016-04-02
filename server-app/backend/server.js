@@ -1,3 +1,9 @@
+/* BACKEND SERVER FOR DCSENSE WEB APP
+ *
+ * Handles reception and storage of sensor data and provides backend API for
+ * DCsense frontend web app.
+ */
+
 var http = require('http');
 var https = require('https');
 var express = require('express');
