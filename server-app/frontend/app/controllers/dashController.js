@@ -12,6 +12,11 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     return [hex.slice(0, 2), ':', hex.slice(2,4), ':', hex.slice(4,6), ':', hex.slice(6,8), ':', hex.slice(8,10), ':', hex.slice(10,12)].join('');
   };
 
+  $scope.CtoF = function (c) {
+    var f = parseFloat(c) * 9/5 + 32;
+    return f.toFixed(1);
+  };
+
   $scope.formatDate = function (dateString) {
     var date = new Date(dateString);
     var localTime = date.getTime();
@@ -44,8 +49,15 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     $http.post('/api/facilities/' + facility + '/list/controllers', {ticket: ticket})
     .success(function (data, status, headers, config) {
       $scope.controllers = data;
+      $scope.controllerIDs = [];
+      $scope.controllerNames = [];
       if ($scope.controllers) {
-        $scope.currentController = $scope.controllers[0];
+        $scope.controllers.forEach(function (current, index) {
+          $scope.controllerIDs.push(current.id);
+          $scope.controllerNames.push(current.name);
+        });
+        $scope.currentController = $scope.controllers[0].id;
+        $scope.newControllerName = $scope.controllers[0].name;
         $scope.fetchDates();
       }
     })
@@ -83,6 +95,23 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
       if ($scope.readings) {
 
       }
+    })
+    .error(function (data, status, headers, config) {
+      alert('Server error.');
+    });
+  };
+
+  $scope.renameController = function () {
+    var ticket = JSON.parse($cookies.get('ticket'));
+    var controller = $scope.currentController;
+    var facility = encodeURIComponent($scope.currentFacility);
+    $http.post('/api/facilities/' + facility + '/controllers/rename/' + controller,
+               {ticket: ticket, newName: $scope.newControllerName})
+    .success(function (data, status, headers, config) {
+      var controllerIdx = $scope.controllerIDs.indexOf($scope.currentController);
+      $scope.controllerNames[controllerIdx] = data.newName;
+      $scope.controllers[controllerIdx].name = data.newName;
+      $scope.controllerNameEditing = false;
     })
     .error(function (data, status, headers, config) {
       alert('Server error.');

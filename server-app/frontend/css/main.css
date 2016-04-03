@@ -177,3 +177,13 @@ input[type=text], textarea
 {
   font-size: .6em;
 }
+
+.smaller
+{
+  font-size: .5em;
+}
+
+#new-controller-name
+{
+  font-size: 2em;
+}

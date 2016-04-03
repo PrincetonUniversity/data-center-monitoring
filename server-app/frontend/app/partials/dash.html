@@ -17,16 +17,20 @@
       </a>
     </p>
     <select ng-model="currentController" ng-change="fetchDates()" ng-hide="controllerNameEditing">
-      <option ng-repeat="controller in controllers" value="{{controller}}">{{controllerIDtoMac(controller)}}</option>
+      <option ng-repeat="controller in controllers" value="{{controller.id}}">{{controller.name}}</option>
     </select>
-    <input type="text" ng-hide="!controllerNameEditing" value="{{currentController}}">
-    <a id="edit-controller-name" ng-click="controllerNameEditing = !controllerNameEditing" class="dc-tooltip" alt="Click to edit the name of this cabinet">
+    <input type="text" ng-model="newControllerName" ng-hide="!controllerNameEditing" id="new-controller-name" value="{{controllerNames[controllerIDs.indexOf(currentController)]}}">
+    <a id="edit-controller-name" ng-hide="controllerNameEditing" ng-click="controllerNameEditing = !controllerNameEditing" class="dc-tooltip" alt="Click to edit the name of this cabinet">
       <i class="fa fa-edit"></i>
     </a>
+    <a id="edit-controller-name-submit" ng-click="renameController()" ng-hide="!controllerNameEditing" class="btn btn-success btn-sm"><i class="fa fa-save"></i> Save</a>
   </section>
-  <h2>Reading Timestamps for {{controllerIDtoMac(currentController)}}</h2>
-  <p class="centered">{{formatDate(dates[dates.length - 1 - dateIdx])}}</p>
-  <input type="range" ng-model="dateIdx" ng-change="currentDate = dates[dates.length - 1 - dateIdx]" min="0" max="5" id="date-slider">
-  <p>{{readings}}</p>
+  <section>
+    <p class="centered">{{formatDate(dates[dates.length - 1 - dateIdx])}}</p>
+    <input type="range" ng-model="dateIdx" ng-change="currentDate = dates[dates.length - 1 - dateIdx]" min="0" max="5" id="date-slider">
+    <ul>
+      <li ng-repeat="reading in readings">{{reading.sensor_addr}}: {{CtoF(reading.temp)}}</li>
+    </ul>
+  </section>
   <button logout>Logout</button>
 </div>

@@ -72,7 +72,10 @@ var Ticket = mongoose.model('Ticket', ticketSchema);
 
 var facilitySchema = mongoose.Schema({
   name: String,
-  controllers: [String],
+  controllers: [{
+    id: String,
+    name: String
+  }],
   owners: [String]
 });
 
@@ -341,7 +344,7 @@ app.post('/sensors/list/controllers', function (req, res) {
 // If unauthorized, ends the request with an HTTP 401 and provides an error message.
 // If authorized, does not end the request, but calls callback().
 function checkControllerAccess(res, controller, user, callback) {
-  Facility.findOne({owners: user, controllers: controller}, function (err, record) {
+  Facility.findOne({owners: user, 'controllers.id': controller}, function (err, record) {
     if (err)
       res.sendStatus(500);
     else if (!record) {
@@ -670,20 +673,26 @@ app.post('/facilities/:facility/owners/:addOrRemove/:user', function (req, res) 
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
+// Converts a MAC address from a 48-bit integer to normal hex-colon notation
+function controllerIDtoMac (id) {
+  var hex = parseInt(id).toString(16);
+  return [hex.slice(0, 2), ':', hex.slice(2,4), ':', hex.slice(4,6), ':', hex.slice(6,8), ':', hex.slice(8,10), ':', hex.slice(10,12)].join('');
+}
+
 // Adds or removes a given 'controller' from the list of controllers in a facility.
 // Admins only.
-app.post('/facilities/:facility/controllers/:addOrRemove/:controller', function (req, res) {
+app.post('/facilities/:facility/controllers/addremove/:addOrRemove/:controller', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = accessLevels.admin;
   function ifAuthorized() {
     var facility = decodeURIComponent(req.params.facility);
-    var controller = req.params.controller;
+    var id = req.params.controller;
     var update;
     if (req.params.addOrRemove == 'add') {
-      update = {$addToSet: {controllers: controller}};
+      update = {$addToSet: {controllers: {id: id, name: controllerIDtoMac(id)}}};
     }
     else if (req.params.addOrRemove == 'remove') {
-      update = {$pull: {controllers: controller}};
+      update = {$pull: {'controllers.id': controller}};
     }
     else {
       res.status(400).send();
@@ -701,6 +710,29 @@ app.post('/facilities/:facility/controllers/:addOrRemove/:controller', function 
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
+
+app.post('/facilities/:facility/controllers/rename/:controller', function (req, res) {
+  var ticket = req.body.ticket;
+  var accessLevel = accessLevels.user;
+  function ifAuthorized() {
+    var user = ticket.username;
+    var controller = req.params.controller;
+    function ifOwner() {
+      var newName = req.body.newName;
+      var facility = decodeURIComponent(req.params.facility);
+      var update = {$set: {"controllers.$": {id: controller, name: newName}}};
+      Facility.update({name: facility, 'controllers.id': controller}, update, function (err) {
+        if (err)
+          res.sendStatus(500);
+        else {
+          res.send({newName: newName});
+        }
+      });
+    }
+    checkControllerAccess(res, controller, user, ifOwner);
+  }
+  checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
+});
 
 
 

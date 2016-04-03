@@ -35,7 +35,7 @@ cont.controller('adminController', function ($scope, $filter, $http, $location, 
   };
 
   $scope.controllerInFacility = function () {
-    return ($scope.facilityControllers.indexOf($scope.currentController) != -1);
+    return ($scope.facilityControllerIDs.indexOf($scope.currentController) != -1);
   };
 
   // Convert the integer MAC address stored in the db to a readable MAC address
@@ -179,6 +179,7 @@ cont.controller('adminController', function ($scope, $filter, $http, $location, 
 
   $scope.currentFacilityForControllers = '';
   $scope.facilityControllers = [];
+  $scope.facilityControllerIDs = [];
   $scope.fetchFacilityControllers = function () {
     if ($scope.currentFacilityForControllers == '')
       return;
@@ -187,6 +188,10 @@ cont.controller('adminController', function ($scope, $filter, $http, $location, 
     $http.post('/api/facilities/' + facility + '/list/controllers', {ticket: ticket})
     .success(function (data, status, headers, config) {
       $scope.facilityControllers = data;
+      $scope.facilityControllerIDs = [];
+      $scope.facilityControllers.forEach(function (current, index) {
+        $scope.facilityControllerIDs.push(current.id);
+      });
     })
     .error(function (data, status, headers, config) {
       alert('Server error.');
@@ -196,7 +201,7 @@ cont.controller('adminController', function ($scope, $filter, $http, $location, 
     var ticket = JSON.parse($cookies.get('ticket'));
     var facility = encodeURIComponent($scope.currentFacilityForControllers);
     var controller = $scope.currentController;
-    $http.post('/api/facilities/' + facility + '/controllers/' + addOrRemove + '/' + controller, {ticket: ticket})
+    $http.post('/api/facilities/' + facility + '/controllers/addremove/' + addOrRemove + '/' + controller, {ticket: ticket})
     .success(function (data, status, headers, config) {
       $scope.fetchFacilityControllers();
     })
