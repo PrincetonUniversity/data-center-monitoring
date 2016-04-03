@@ -734,6 +734,45 @@ app.post('/facilities/:facility/controllers/rename/:controller', function (req, 
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
+// Sends mappings from dcsense sensor board DIP switch configuration
+// (represented as a 6-bit binary string) to decimal sensor address as
+// stored in the Readings collection.
+// e.g.: mappings['001000'] returns the decimal I2C address of a sensor board
+// with only DIP switch 3 set to ON and the other 5 switches set to OFF
+// Note: Only the switch configurations shown below are valid configurations.
+// If a board has been configured with a switch layout not listed, it is
+// improperly configured and its address is undefined.
+app.get('/sensors/addressmappings', function (req, res) {
+  var mappings = {
+    "000000": 55,
+    "000001": 53,
+    "000010": 113,
+    "000011": 44,
+    "000100": 118,
+    "000101": 40,
+    "000110": 112,
+    "000111": 72,
+    "001000": 54,
+    "001010": 46,
+    "001100": 42,
+    "010000": 116,
+    "010001": 45,
+    "010100": 115,
+    "010101": 74,
+    "011000": 47,
+    "011100": 78,
+    "100000": 119,
+    "100001": 41,
+    "100010": 114,
+    "100011": 73,
+    "101000": 43,
+    "101010": 77,
+    "110000": 117,
+    "110001": 75,
+    "111000": 79
+  };
+  res.send(mappings);
+});
 
 
 // RUNTIME
