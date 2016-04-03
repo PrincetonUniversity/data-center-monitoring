@@ -84,3 +84,96 @@ input[type=text], textarea
 {
   text-align: justify;
 }
+
+#page-dash select
+{
+  background: none;
+  border: none;
+  font-size: 2em;
+}
+
+#page-dash select:focus
+{
+  outline: none;
+}
+
+#page-dash .select-label
+{
+  font-family: Raleway;
+  font-weight: 900;
+  font-variant: small-caps;
+  font-size: 1.1em;
+  text-transform: lowercase;
+  margin: 1em 0 0 0;
+}
+
+.dc-tooltip
+{
+  display: inline;
+  position: relative;
+  text-decoration: none;
+  top: 0px;
+  left: 4px;
+  color: #666;
+  font-size: .85em;
+}
+
+.dc-tooltip:hover:after
+{
+  background: #333;
+  background: rgba(0,0,0,.9);
+  border-radius: 5px;
+  top: -5px;
+  color: #fff;
+  left: 20px;
+  content: attr(alt);
+  padding: .75em 1em;
+  position: absolute;
+  z-index: 98;
+  width: 20em;
+  font-variant: normal;
+  text-transform: none;
+  font-size: .95em;
+  font-family: Raleway;
+  font-weight: 600;
+}
+
+.dc-tooltip:hover
+{
+  color: #666;
+}
+
+.dc-tooltip:after,
+.dc-tooltip:before
+{
+  opacity: 0;
+}
+
+.dc-tooltip:hover:after,
+.dc-tooltip:hover:before
+{
+  opacity: 1;
+}
+
+.dc-tooltip:hover:before
+{
+  border: solid;
+  border-color: transparent rgba(0,0,0,.9);
+  border-width: 6px 6px 6px 0;
+  bottom: 20px;
+  left: 14px;
+  content: "";
+  position: absolute;
+  z-index: 99;
+  top: 3px;
+}
+
+#edit-controller-name
+{
+  font-size: 1.5em;
+}
+
+#edit-controller-name:after
+{
+  font-size: .6em;
+}

@@ -89,6 +89,8 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     });
   };
 
+  $scope.controllerNameEditing = false;
+
   $('#date-slider').mouseup(function () { // Desktop
     $scope.fetchReadings();
   });

@@ -1,15 +1,29 @@
-<div class="container container-fluid">
-  <h1>Dashboard</h1>
+<div id="page-dash" class="container container-fluid">
   <section id="facilities" ng-hide="facilities.length < 2">
-    <h2>Facilities</h2>
+    <p class="select-label">
+      Facilities
+      <a class="dc-tooltip" alt="You can browse data from all facilities because you are an administrator.">
+        <i class="fa fa-info-circle"></i>
+      </a>
+    </p>
     <select ng-model="currentFacility" ng-change="fetchControllers()">
       <option ng-repeat="facility in facilities" value="{{facility.name}}">{{facility.name}}</option>
     </select>
   </section>
-  <h2>{{currentFacility}}'s Controllers</h2>
-  <select ng-model="currentController" ng-change="fetchDates()">
-    <option ng-repeat="controller in controllers" value="{{controller}}">{{controllerIDtoMac(controller)}}</option>
-  </select>
+  <section id="controllers">
+    <p class="select-label">Cabinets
+      <a class="dc-tooltip" alt="Server cabinets with sensors installed at your facility. Select a cabinet to see climate data.">
+        <i class="fa fa-info-circle"></i>
+      </a>
+    </p>
+    <select ng-model="currentController" ng-change="fetchDates()" ng-hide="controllerNameEditing">
+      <option ng-repeat="controller in controllers" value="{{controller}}">{{controllerIDtoMac(controller)}}</option>
+    </select>
+    <input type="text" ng-hide="!controllerNameEditing" value="{{currentController}}">
+    <a id="edit-controller-name" ng-click="controllerNameEditing = !controllerNameEditing" class="dc-tooltip" alt="Click to edit the name of this cabinet">
+      <i class="fa fa-edit"></i>
+    </a>
+  </section>
   <h2>Reading Timestamps for {{controllerIDtoMac(currentController)}}</h2>
   <p class="centered">{{formatDate(dates[dates.length - 1 - dateIdx])}}</p>
   <input type="range" ng-model="dateIdx" ng-change="currentDate = dates[dates.length - 1 - dateIdx]" min="0" max="5" id="date-slider">
