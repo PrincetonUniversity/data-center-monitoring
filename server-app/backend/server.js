@@ -43,7 +43,7 @@ db.once('open', function (callback) {
 // Schemas
 
 var readingSchema = mongoose.Schema({
-  'controller' : Number,
+  'controller' : String,
   'bus' : Number,
   'sensor_addr' : Number,
   'time' : Date,
@@ -82,7 +82,7 @@ var facilitySchema = mongoose.Schema({
 var Facility = mongoose.model('facility', facilitySchema);
 
 var readingCounterSchema = mongoose.Schema({
-  controller: Number,
+  controller: String,
   counter: Number
 });
 
@@ -369,7 +369,7 @@ app.post('/sensors/list/dates/:controller/limit/:limit', function (req, res) {
   var accessLevel = accessLevels.user;
   function ifAuthorized() {
     var user = ticket.username;
-    var controller = parseInt(req.params.controller);
+    var controller = req.params.controller;
     function ifOwner() {
       var limit = parseInt(req.params.limit);
       Reading.aggregate([
@@ -399,7 +399,7 @@ app.post('/sensors/list/dates/:controller/all', function (req, res) {
   var accessLevel = accessLevels.user;
   function ifAuthorized() {
     var user = ticket.username;
-    var controller = parseInt(req.params.controller);
+    var controller = req.params.controller;
     function ifOwner() {
       var limit = parseInt(req.params.limit);
       Reading.aggregate([
@@ -427,7 +427,7 @@ app.post('/sensors/readings/:controller/:time', function (req, res) {
   var accessLevel = accessLevels.user;
   function ifAuthorized() {
     var user = ticket.username;
-    var controller = parseInt(req.params.controller);
+    var controller = req.params.controller;
     function ifOwner() {
       Reading.find({
         'controller': controller,
@@ -673,12 +673,6 @@ app.post('/facilities/:facility/owners/:addOrRemove/:user', function (req, res) 
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
-// Converts a MAC address from a 48-bit integer to normal hex-colon notation
-function controllerIDtoMac (id) {
-  var hex = parseInt(id).toString(16);
-  return [hex.slice(0, 2), ':', hex.slice(2,4), ':', hex.slice(4,6), ':', hex.slice(6,8), ':', hex.slice(8,10), ':', hex.slice(10,12)].join('');
-}
-
 // Adds or removes a given 'controller' from the list of controllers in a facility.
 // Admins only.
 app.post('/facilities/:facility/controllers/addremove/:addOrRemove/:controller', function (req, res) {
@@ -689,7 +683,7 @@ app.post('/facilities/:facility/controllers/addremove/:addOrRemove/:controller',
     var id = req.params.controller;
     var update;
     if (req.params.addOrRemove == 'add') {
-      update = {$addToSet: {controllers: {id: id, name: controllerIDtoMac(id)}}};
+      update = {$addToSet: {controllers: {id: id, name: id}}};
     }
     else if (req.params.addOrRemove == 'remove') {
       update = {$pull: {'controllers.id': controller}};

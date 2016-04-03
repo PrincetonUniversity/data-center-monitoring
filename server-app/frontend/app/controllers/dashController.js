@@ -6,12 +6,6 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
 
   $scope.dateIdx = 0;
 
-  // Convert the integer MAC address stored in the db to a readable MAC address
-  $scope.controllerIDtoMac = function (id) {
-    var hex = parseInt(id).toString(16);
-    return [hex.slice(0, 2), ':', hex.slice(2,4), ':', hex.slice(4,6), ':', hex.slice(6,8), ':', hex.slice(8,10), ':', hex.slice(10,12)].join('');
-  };
-
   $scope.CtoF = function (c) {
     var f = parseFloat(c) * 9/5 + 32;
     return f.toFixed(1);
