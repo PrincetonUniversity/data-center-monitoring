@@ -65,11 +65,11 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     else
       return;
   };
-  $scope.currentControllerWidthChange = function (direction) {
-    if (direction == 'dec' && $scope.controllers[$scope.currentControllerIdx].width > 1)
-      $scope.controllers[$scope.currentControllerIdx].width--;
-    if (direction == 'inc' && $scope.controllers[$scope.currentControllerIdx].width < 10)
-      $scope.controllers[$scope.currentControllerIdx].width++;
+  $scope.newControllerWidthChange = function (direction) {
+    if (direction == 'dec' && $scope.newController.width > 1)
+      $scope.newController.width--;
+    if (direction == 'inc' && $scope.newController.width < 10)
+      $scope.newController.width++;
   };
   $scope.fetchControllers = function () {
     var ticket = JSON.parse($cookies.get('ticket'));
@@ -131,14 +131,14 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
 
   $scope.commitController = function () {
     var ticket = JSON.parse($cookies.get('ticket'));
-    var controller = $scope.currentController();
-    controller.name = $scope.newControllerName;
+    var controller = $scope.newController;
     var facility = encodeURIComponent($scope.currentFacility);
     $http.post('/api/facilities/' + facility + '/controllers/update',
                {ticket: ticket, controller: controller})
     .success(function (data, status, headers, config) {
       $scope.controllers[$scope.currentControllerIdx] = data.newController;
       $scope.controllerNameEditing = false;
+      $scope.newController = {};
     })
     .error(function (data, status, headers, config) {
       alert('Server error.');
@@ -146,6 +146,15 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
   };
 
   $scope.controllerNameEditing = false;
+
+  $scope.editController = function () {
+    $scope.controllerNameEditing = true;
+    $scope.newController = {
+      name: $scope.currentControllerName(),
+      id: $scope.currentControllerId(),
+      width: $scope.currentControllerWidth()
+    };
+  };
 
   $('#date-slider').mouseup(function () { // Desktop
     $scope.fetchReadings();

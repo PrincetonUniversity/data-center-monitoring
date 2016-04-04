@@ -20,23 +20,23 @@
       <select id="controller-select" ng-model="currentControllerIdx" ng-change="fetchDates()">
         <option ng-repeat="controller in controllers track by $index" value="{{$index}}" ng-selected="$first">{{controller.name}}</option>
       </select>
-      <a id="edit-controller-name" ng-click="controllerNameEditing = !controllerNameEditing" class="dc-tooltip" alt="Click to edit the name of this cabinet">
+      <a id="edit-controller-name" ng-click="editController()" class="dc-tooltip" alt="Click to edit the name of this cabinet">
         <i class="fa fa-edit"></i>
       </a>
     </div>
     <div ng-hide="!controllerNameEditing">
-      <input type="text" ng-model="newControllerName" id="new-controller-name" value="{{currentControllerName()}}">
+      <input type="text" ng-model="newController.name" id="new-controller-name">
       <a id="edit-controller-name-submit" ng-click="commitController()" class="btn btn-success btn-sm"><i class="fa fa-save"></i> Save</a>
-      <a id="edit-controller-name-cancel" ng-click="controllerNameEditing = !controllerNameEditing" class="btn btn-default btn-sm"><i class="fa fa-cancel"></i> Cancel</a>
+      <a id="edit-controller-name-cancel" ng-click="controllerNameEditing = false; newController = {}" class="btn btn-default btn-sm"><i class="fa fa-cancel"></i> Cancel</a>
       <div class="row">
         <div class="col-sm-2">
           <div class="input-group">
             <span class="input-group-btn">
-              <button ng-click="currentControllerWidthChange('dec')" class="btn btn-default" type="button"><i class="fa fa-minus"></i></button>
+              <button ng-click="newControllerWidthChange('dec')" class="btn btn-default" type="button"><i class="fa fa-minus"></i></button>
             </span>
-            <input type="text" class="form-control" disabled placeholder="{{currentControllerWidth()}}">
+            <input type="text" class="form-control" disabled placeholder="{{newController.width}}">
             <span class="input-group-btn">
-              <button ng-click="currentControllerWidthChange('inc')" class="btn btn-default" type="button"><i class="fa fa-plus"></i></button>
+              <button ng-click="newControllerWidthChange('inc')" class="btn btn-default" type="button"><i class="fa fa-plus"></i></button>
             </span>
           </div><!-- /input-group -->
         </div><!-- /.col-sm-2 -->

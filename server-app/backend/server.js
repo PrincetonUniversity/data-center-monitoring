@@ -708,6 +708,7 @@ app.post('/facilities/:facility/controllers/addremove/:addOrRemove/:controller',
 
 
 app.post('/facilities/:facility/controllers/update', function (req, res) {
+  console.log(req.body.controller);
   var ticket = req.body.ticket;
   var accessLevel = accessLevels.user;
   function ifAuthorized() {
@@ -715,7 +716,7 @@ app.post('/facilities/:facility/controllers/update', function (req, res) {
     var controller = req.body.controller;
     function ifOwner() {
       var facility = decodeURIComponent(req.params.facility);
-      Facility.findOne({'controllers.id': controller}, 'controllers', function (err, record) {
+      Facility.findOne({'controllers.id': controller.id}, 'controllers', function (err, record) {
         if (err)
           res.sendStatus(500);
         else {
