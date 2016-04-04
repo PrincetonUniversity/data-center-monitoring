@@ -97,7 +97,7 @@ input[type=text], textarea
   outline: none;
 }
 
-#page-dash .select-label
+#page-dash .dc-label
 {
   font-family: Raleway;
   font-weight: 900;
@@ -186,4 +186,65 @@ input[type=text], textarea
 #new-controller-name
 {
   font-size: 2em;
+}
+
+.input-lg
+{
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.input-group.no-stretch input.form-control
+{
+  width: initial;
+}
+
+#controller-width-selector
+{
+  width: 8em;
+}
+
+#controller-width-selector input
+{
+  text-align: center;
+  cursor: default;
+  background-color: white;
+  color: #444;
+  font-weight: bold;
+}
+
+.link-cursor,
+.link-cursor i.fa
+{
+  cursor: pointer;
+  color: #666;
+}
+
+.nav.nav-pills.dc-pills li
+{
+  font-weight: normal;
+  text-transform: uppercase;
+}
+
+.nav.nav-pills.dc-pills li a:hover
+{
+  background-color: #ddd;
+  color: #222;
+}
+
+.nav.nav-pills.dc-pills li.active a,
+.nav.nav-pills.dc-pills li.active a:hover
+{
+  background-color: #ccc;
+  color: #222;
+}
+
+#readings-display-mode-picker
+{
+  float: right;
+}
+
+.readings-display
+{
+  clear: right;
 }

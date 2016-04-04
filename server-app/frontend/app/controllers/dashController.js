@@ -156,6 +156,8 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     };
   };
 
+  $scope.displayMode = 'server';
+
   $('#date-slider').mouseup(function () { // Desktop
     $scope.fetchReadings();
   });

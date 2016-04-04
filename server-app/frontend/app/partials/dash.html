@@ -1,6 +1,6 @@
 <div id="page-dash" class="container container-fluid">
   <section id="facilities" ng-hide="facilities.length < 2">
-    <p class="select-label">
+    <p class="dc-label">
       Facilities
       <a class="dc-tooltip" alt="You can browse data from all facilities because you are an administrator.">
         <i class="fa fa-info-circle"></i>
@@ -11,44 +11,79 @@
     </select>
   </section>
   <section id="controllers">
-    <p class="select-label">Cabinets
-      <a class="dc-tooltip" alt="Server cabinets with sensors installed at your facility. Select a cabinet to see climate data.">
-        <i class="fa fa-info-circle"></i>
-      </a>
-    </p>
     <div ng-hide="controllerNameEditing">
+      <p class="dc-label">Cabinet Groups
+        <a class="dc-tooltip" alt="Sets of connected server cabinets with sensors installed at your facility. Select a cabinet to see climate data.">
+          <i class="fa fa-info-circle"></i>
+        </a>
+      </p>
       <select id="controller-select" ng-model="currentControllerIdx" ng-change="fetchDates()">
         <option ng-repeat="controller in controllers track by $index" value="{{$index}}" ng-selected="$first">{{controller.name}}</option>
       </select>
       <a id="edit-controller-name" ng-click="editController()" class="dc-tooltip" alt="Click to edit the name of this cabinet">
-        <i class="fa fa-edit"></i>
+        <i class="fa fa-pencil"></i>
       </a>
     </div>
-    <div ng-hide="!controllerNameEditing">
-      <input type="text" ng-model="newController.name" id="new-controller-name">
-      <a id="edit-controller-name-submit" ng-click="commitController()" class="btn btn-success btn-sm"><i class="fa fa-save"></i> Save</a>
-      <a id="edit-controller-name-cancel" ng-click="controllerNameEditing = false; newController = {}" class="btn btn-default btn-sm"><i class="fa fa-cancel"></i> Cancel</a>
-      <div class="row">
-        <div class="col-sm-2">
-          <div class="input-group">
-            <span class="input-group-btn">
-              <button ng-click="newControllerWidthChange('dec')" class="btn btn-default" type="button"><i class="fa fa-minus"></i></button>
-            </span>
-            <input type="text" class="form-control" disabled placeholder="{{newController.width}}">
-            <span class="input-group-btn">
-              <button ng-click="newControllerWidthChange('inc')" class="btn btn-default" type="button"><i class="fa fa-plus"></i></button>
-            </span>
-          </div><!-- /input-group -->
-        </div><!-- /.col-sm-2 -->
-      </div><!-- /.row -->
-    </div>
+    <form ng-hide="!controllerNameEditing">
+      <div class="form-group">
+        <label for="new-controller-name" class="dc-label">Cabinet Name</label>
+        <input type="text" ng-model="newController.name" id="new-controller-name" class="form-control input-lg">
+      </div>
+      <div class="form-group form-inline">
+        <div class="input-group" style="display: block; width: 100%">
+          <label for="controller-width-selector" class="dc-label">Number of Cabinets
+          <a class="dc-tooltip" alt="Indicate the width (in number of cabinets) of this server cabinet group. Each cabinet has 5 sensors stacked vertically.">
+              <i class="fa fa-info-circle"></i>
+            </a>
+          </label>
+        </div>
+        <div class="input-group" id="controller-width-selector">
+          <span class="input-group-btn">
+            <button ng-click="newControllerWidthChange('dec')" class="btn btn-default" type="button"><i class="fa fa-minus"></i></button>
+          </span>
+          <input type="text" class="form-control" disabled value="{{newController.width}}">
+          <span class="input-group-btn">
+            <button ng-click="newControllerWidthChange('inc')" class="btn btn-default" type="button"><i class="fa fa-plus"></i></button>
+          </span>
+        </div>
+      </div>
+      <div class="form-group">
+        <a id="edit-controller-name-submit" ng-click="commitController()" class="btn btn-success btn-sm"><i class="fa fa-save"></i> Save</a>
+        <a id="edit-controller-name-cancel" ng-click="controllerNameEditing = false; newController = {}" class="btn btn-default btn-sm"><i class="fa fa-cancel"></i> Cancel</a>
+      </div>
+    </form>
   </section>
   <section id="data-section">
     <p class="centered">{{formatDate(dates[dates.length - 1 - dateIdx])}}</p>
     <input type="range" ng-model="dateIdx" ng-change="currentDate = dates[dates.length - 1 - dateIdx]" min="0" max="5" id="date-slider">
-    <ul>
-      <li ng-repeat="reading in readings">{{reading.sensor_addr}}: {{CtoF(reading.temp)}}</li>
+    <ul id="readings-display-mode-picker" class="nav nav-pills dc-pills">
+      <li role="presentation" ng-click="displayMode = 'server'" ng-class="{'active': displayMode == 'server'}"><a class="link-cursor"><i class="fa fa-server"></i> Server</a></li>
+      <li role="presentation" ng-click="displayMode = 'table'" ng-class="{'active': displayMode == 'table'}"><a class="link-cursor"><i class="fa fa-table"></i> Table</a></li>
     </ul>
+    <div class="readings-display" ng-hide="displayMode == 'server'">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Controller MAC</th>
+            <th>Bus</th>
+            <th>Sensor Address</th>
+            <th>Time</th>
+            <th>Temperature</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="reading in readings"
+              ng-class="{'warning': CtoF(reading.temp) > 70,
+                         'danger' : CtoF(reading.temp) > 80}">
+            <td>{{reading.controller}}</td>
+            <td>{{reading.bus}}</td>
+            <td>{{reading.sensor_addr}}</td>
+            <td>{{formatDate(reading.time)}}</td>
+            <td>{{CtoF(reading.temp)}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </section>
   <button logout>Logout</button>
 </div>
