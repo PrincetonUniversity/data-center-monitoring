@@ -707,38 +707,31 @@ app.post('/facilities/:facility/controllers/addremove/:addOrRemove/:controller',
 });
 
 
-app.post('/facilities/:facility/controllers/rename/:controller', function (req, res) {
+app.post('/facilities/:facility/controllers/update', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = accessLevels.user;
   function ifAuthorized() {
     var user = ticket.username;
-    var controller = decodeURIComponent(req.params.controller);
+    var controller = req.body.controller;
     function ifOwner() {
-      var newName = req.body.newName;
       var facility = decodeURIComponent(req.params.facility);
       Facility.findOne({'controllers.id': controller}, 'controllers', function (err, record) {
         if (err)
           res.sendStatus(500);
         else {
-          var newRecord;
-          record.controllers.forEach(function (current, index) {
-            if (current.id == controller) {
-              newRecord = current;
-            }
-          });
-          newRecord.name = newName;
+          var newRecord = controller;
           var update = {$set: {"controllers.$": newRecord}};
-          Facility.update({name: facility, 'controllers.id': controller}, update, function (err) {
+          Facility.update({name: facility, 'controllers.id': controller.id}, update, function (err, newController) {
             if (err)
               res.sendStatus(500);
             else {
-              res.send({newName: newName});
+              res.send({newController: newRecord});
             }
           });
         }
       });
     }
-    checkControllerAccess(res, controller, user, ifOwner);
+    checkControllerAccess(res, controller.id, user, ifOwner);
   }
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });

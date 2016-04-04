@@ -34,21 +34,58 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
   };
 
   $scope.controllers = [];
+  $scope.currentControllerIdx = 0;
+  $scope.currentController = function () {
+    if ($scope.controllers) {
+      if ($scope.controllers.length > 0)
+        return $scope.controllers[$scope.currentControllerIdx];
+    }
+    else
+      return;
+  };
+  $scope.currentControllerId = function () {
+    if ($scope.controllers) {
+      if ($scope.controllers.length > 0)
+        return $scope.controllers[$scope.currentControllerIdx].id;
+    }
+    else
+      return;
+  };
+  $scope.currentControllerName = function () {
+    if ($scope.controllers)
+      if ($scope.controllers.length > 0)
+        return $scope.controllers[$scope.currentControllerIdx].name;
+    else
+      return;
+  };
+  $scope.currentControllerWidth = function () {
+    if ($scope.controllers)
+      if ($scope.controllers.length > 0)
+        return $scope.controllers[$scope.currentControllerIdx].width;
+    else
+      return;
+  };
+  $scope.currentControllerWidthChange = function (direction) {
+    if (direction == 'dec' && $scope.controllers[$scope.currentControllerIdx].width > 1)
+      $scope.controllers[$scope.currentControllerIdx].width--;
+    if (direction == 'inc' && $scope.controllers[$scope.currentControllerIdx].width < 10)
+      $scope.controllers[$scope.currentControllerIdx].width++;
+  };
   $scope.fetchControllers = function () {
     var ticket = JSON.parse($cookies.get('ticket'));
     var facility = encodeURIComponent($scope.currentFacility);
     $http.post('/api/facilities/' + facility + '/list/controllers', {ticket: ticket})
     .success(function (data, status, headers, config) {
       $scope.controllers = data;
-      $scope.controllerIDs = [];
-      $scope.controllerNames = [];
       if ($scope.controllers) {
-        $scope.controllers.forEach(function (current, index) {
-          $scope.controllerIDs.push(current.id);
-          $scope.controllerNames.push(current.name);
-        });
-        $scope.currentController = $scope.controllers[0].id;
-        $scope.newControllerName = $scope.controllers[0].name;
+        //$scope.currentControllerIdx = 0;
+        /*$(document).ready(function () {
+          setTimeout(function () {
+            $('#controller-select').val(0);
+            console.log('done');
+          }, 200);
+        });*/
+        $scope.newControllerName = $scope.currentControllerName();
         $scope.fetchDates();
       }
     })
@@ -60,7 +97,7 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
   $scope.dates = [];
   $scope.fetchDates = function () {
     var ticket = JSON.parse($cookies.get('ticket'));
-    var controller = encodeURIComponent($scope.currentController);
+    var controller = encodeURIComponent($scope.currentControllerId());
     $http.post('/api/sensors/list/dates/' + controller + '/limit/2016', {ticket: ticket})
     .success(function (data, status, headers, config) {
       $scope.dates = data;
@@ -78,7 +115,7 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
 
   $scope.fetchReadings = function () {
     var ticket = JSON.parse($cookies.get('ticket'));
-    var controller = encodeURIComponent($scope.currentController);
+    var controller = encodeURIComponent($scope.currentControllerId());
     var date = $scope.currentDate;
     $http.post('/api/sensors/readings/' + controller + '/' + date, {ticket: ticket})
     .success(function (data, status, headers, config) {
@@ -92,16 +129,15 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     });
   };
 
-  $scope.renameController = function () {
+  $scope.commitController = function () {
     var ticket = JSON.parse($cookies.get('ticket'));
-    var controller = encodeURIComponent($scope.currentController);
+    var controller = $scope.currentController();
+    controller.name = $scope.newControllerName;
     var facility = encodeURIComponent($scope.currentFacility);
-    $http.post('/api/facilities/' + facility + '/controllers/rename/' + controller,
-               {ticket: ticket, newName: $scope.newControllerName})
+    $http.post('/api/facilities/' + facility + '/controllers/update',
+               {ticket: ticket, controller: controller})
     .success(function (data, status, headers, config) {
-      var controllerIdx = $scope.controllerIDs.indexOf($scope.currentController);
-      $scope.controllerNames[controllerIdx] = data.newName;
-      $scope.controllers[controllerIdx].name = data.newName;
+      $scope.controllers[$scope.currentControllerIdx] = data.newController;
       $scope.controllerNameEditing = false;
     })
     .error(function (data, status, headers, config) {
