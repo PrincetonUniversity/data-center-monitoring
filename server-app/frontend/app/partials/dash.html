@@ -24,6 +24,7 @@
       <i class="fa fa-edit"></i>
     </a>
     <a id="edit-controller-name-submit" ng-click="renameController()" ng-hide="!controllerNameEditing" class="btn btn-success btn-sm"><i class="fa fa-save"></i> Save</a>
+    <a id="edit-controller-name-cancel" ng-click="controllerNameEditing = !controllerNameEditing" ng-hide="!controllerNameEditing" class="btn btn-default btn-sm"><i class="fa fa-cancel"></i> Cancel</a>
   </section>
   <section>
     <p class="centered">{{formatDate(dates[dates.length - 1 - dateIdx])}}</p>

@@ -13,9 +13,6 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
 
   $scope.formatDate = function (dateString) {
     var date = new Date(dateString);
-    var localTime = date.getTime();
-    var localOffset = date.getTimezoneOffset() * 60000;
-    // obtain UTC time in msec
     return date.toLocaleString();
   };
 
