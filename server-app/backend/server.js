@@ -74,7 +74,8 @@ var facilitySchema = mongoose.Schema({
   name: String,
   controllers: [{
     id: String,
-    name: String
+    name: String,
+    width: Number
   }],
   owners: [String]
 });
@@ -369,7 +370,7 @@ app.post('/sensors/list/dates/:controller/limit/:limit', function (req, res) {
   var accessLevel = accessLevels.user;
   function ifAuthorized() {
     var user = ticket.username;
-    var controller = req.params.controller;
+    var controller = decodeURIComponent(req.params.controller);
     function ifOwner() {
       var limit = parseInt(req.params.limit);
       Reading.aggregate([
@@ -399,7 +400,7 @@ app.post('/sensors/list/dates/:controller/all', function (req, res) {
   var accessLevel = accessLevels.user;
   function ifAuthorized() {
     var user = ticket.username;
-    var controller = req.params.controller;
+    var controller = decodeURIComponent(req.params.controller);
     function ifOwner() {
       var limit = parseInt(req.params.limit);
       Reading.aggregate([
@@ -427,7 +428,7 @@ app.post('/sensors/readings/:controller/:time', function (req, res) {
   var accessLevel = accessLevels.user;
   function ifAuthorized() {
     var user = ticket.username;
-    var controller = req.params.controller;
+    var controller = decodeURIComponent(req.params.controller);
     function ifOwner() {
       Reading.find({
         'controller': controller,
@@ -680,13 +681,14 @@ app.post('/facilities/:facility/controllers/addremove/:addOrRemove/:controller',
   var accessLevel = accessLevels.admin;
   function ifAuthorized() {
     var facility = decodeURIComponent(req.params.facility);
-    var id = req.params.controller;
+    var id = decodeURIComponent(req.params.controller);
     var update;
     if (req.params.addOrRemove == 'add') {
-      update = {$addToSet: {controllers: {id: id, name: id}}};
+      var query
+      update = {$addToSet: {controllers: {id: id, name: id, width: 5}}};
     }
     else if (req.params.addOrRemove == 'remove') {
-      update = {$pull: {'controllers.id': controller}};
+      update = {$pull: {controllers: {id: id}}};
     }
     else {
       res.status(400).send();
@@ -710,16 +712,66 @@ app.post('/facilities/:facility/controllers/rename/:controller', function (req, 
   var accessLevel = accessLevels.user;
   function ifAuthorized() {
     var user = ticket.username;
-    var controller = req.params.controller;
+    var controller = decodeURIComponent(req.params.controller);
     function ifOwner() {
       var newName = req.body.newName;
       var facility = decodeURIComponent(req.params.facility);
-      var update = {$set: {"controllers.$": {id: controller, name: newName}}};
-      Facility.update({name: facility, 'controllers.id': controller}, update, function (err) {
+      Facility.findOne({'controllers.id': controller}, 'controllers', function (err, record) {
         if (err)
           res.sendStatus(500);
         else {
-          res.send({newName: newName});
+          var newRecord;
+          record.controllers.forEach(function (current, index) {
+            if (current.id == controller) {
+              newRecord = current;
+            }
+          });
+          newRecord.name = newName;
+          var update = {$set: {"controllers.$": newRecord}};
+          Facility.update({name: facility, 'controllers.id': controller}, update, function (err) {
+            if (err)
+              res.sendStatus(500);
+            else {
+              res.send({newName: newName});
+            }
+          });
+        }
+      });
+    }
+    checkControllerAccess(res, controller, user, ifOwner);
+  }
+  checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
+});
+
+
+app.post('/facilities/:facility/controllers/layout/:controller/setwidth', function (req, res) {
+  var ticket = req.body.ticket;
+  var accessLevel = accessLevels.user;
+  function ifAuthorized() {
+    var user = ticket.username;
+    var controller = decodeURIComponent(req.params.controller);
+    function ifOwner() {
+      var newWidth = req.body.newWidth;
+      var facility = decodeURIComponent(req.params.facility);
+      Facility.findOne({'controllers.id': controller}, 'controllers', function (err, record) {
+        if (err)
+          res.sendStatus(500);
+        else {
+          var newRecord;
+          record.controllers.forEach(function (current, index) {
+            if (current.id == controller) {
+              newRecord = current;
+            }
+          });
+          newRecord.width = newWidth;
+          var update = {$set: {"controllers.$": newRecord}};
+          Facility.update({name: facility, 'controllers.id': controller}, update, function (err) {
+            if (err)
+              res.sendStatus(500);
+            else {
+              res.send({newName: newName});
+            }
+          });
         }
       });
     }

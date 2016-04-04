@@ -60,7 +60,7 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
   $scope.dates = [];
   $scope.fetchDates = function () {
     var ticket = JSON.parse($cookies.get('ticket'));
-    var controller = $scope.currentController;
+    var controller = encodeURIComponent($scope.currentController);
     $http.post('/api/sensors/list/dates/' + controller + '/limit/2016', {ticket: ticket})
     .success(function (data, status, headers, config) {
       $scope.dates = data;
@@ -78,7 +78,7 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
 
   $scope.fetchReadings = function () {
     var ticket = JSON.parse($cookies.get('ticket'));
-    var controller = $scope.currentController;
+    var controller = encodeURIComponent($scope.currentController);
     var date = $scope.currentDate;
     $http.post('/api/sensors/readings/' + controller + '/' + date, {ticket: ticket})
     .success(function (data, status, headers, config) {
@@ -94,7 +94,7 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
 
   $scope.renameController = function () {
     var ticket = JSON.parse($cookies.get('ticket'));
-    var controller = $scope.currentController;
+    var controller = encodeURIComponent($scope.currentController);
     var facility = encodeURIComponent($scope.currentFacility);
     $http.post('/api/facilities/' + facility + '/controllers/rename/' + controller,
                {ticket: ticket, newName: $scope.newControllerName})

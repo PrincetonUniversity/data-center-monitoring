@@ -194,7 +194,8 @@ cont.controller('adminController', function ($scope, $filter, $http, $location, 
   $scope.changeFacilityController = function (addOrRemove) {
     var ticket = JSON.parse($cookies.get('ticket'));
     var facility = encodeURIComponent($scope.currentFacilityForControllers);
-    var controller = $scope.currentController;
+    var controller = encodeURIComponent($scope.currentController);
+    console.log(controller);
     $http.post('/api/facilities/' + facility + '/controllers/addremove/' + addOrRemove + '/' + controller, {ticket: ticket})
     .success(function (data, status, headers, config) {
       $scope.fetchFacilityControllers();
