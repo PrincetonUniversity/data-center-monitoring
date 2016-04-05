@@ -25,7 +25,7 @@
             <div class="form-group">
               <div class="col-sm-offset-3 col-sm-9">
                 <button ng-click="login()" ng-disabled="!userValid()" class="btn btn-success" id="login-button">Log in <i class="fa fa-sign-in"></i></button>
-                <button ng-click="userMode = 'register'" class="btn btn-default">Sign up <i class="fa fa-user"></i></button>
+                <button ng-click="userMode = 'register'" class="btn btn-default">Need an account? Sign up <i class="fa fa-user"></i></button>
               </div>
             </div>
           </form>
@@ -48,8 +48,8 @@
             </div>
             <div class="form-group">
               <div class="col-sm-offset-3 col-sm-10">
-                <button ng-click="register()" ng-disabled="!newUserValid()" class="btn btn-default" id="register-button">Register</button>
-                <button ng-click="userMode = 'login'" class="btn btn-default">Log in <i class="fa fa-user"></i></button>
+                <button ng-click="register()" ng-disabled="!newUserValid()" class="btn btn-success" id="register-button">Sign up <i class="fa fa-user"></i></button>
+                <button ng-click="userMode = 'login'" class="btn btn-default">Already have an account? Log in <i class="fa fa-sign-in"></i></button>
               </div>
             </div>
           </form>
