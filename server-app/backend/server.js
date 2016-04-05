@@ -104,14 +104,53 @@ function randomString(length) {
 
 // Registers a new user account
 app.post('/auth/register', function (req, res) {
+  var ticket = req.body.ticket;
+  var accessLevel = accessLevels.admin;
+  function ifAuthorized () {
+    console.log('Request to register new user received.');
+    var user = {
+      username: req.body.user.username,
+      token: '',
+      salt: randomString(20),
+      accessLevel: parseInt(req.body.user.accessLevel)
+    };
+
+    User.findOne({username: user.username}, function (err, record) {
+      if (record) {
+        res.status(409).send({msg: 'User already exists.'});
+      }
+      else {
+        user.token = crypto.createHmac('sha256', 'dcsense-server')
+                     .update(user.username + req.body.user.password + user.salt)
+                     .digest('hex');
+
+        var mUser = new User(user);
+        mUser.save(function (err) {
+          if (err) {
+            res.status(500).send({msg: 'The server could not process your request.'});
+          }
+          else {
+            console.log('User ' + user.username + ' successfully registered.');
+            res.end();
+          }
+        });
+      }
+
+    });
+  }
+  checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
+});
+
+
+// Registers a new user account
+app.post('/auth/register-nonadmin', function (req, res) {
   console.log('Request to register new user received.');
   var user = {
     username: req.body.user.username,
     token: '',
     salt: randomString(20),
-    accessLevel: parseInt(req.body.user.accessLevel)
+    accessLevel: accessLevels.user
   };
-
   User.findOne({username: user.username}, function (err, record) {
     if (record) {
       res.status(409).send({msg: 'User already exists.'});

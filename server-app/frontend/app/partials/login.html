@@ -5,25 +5,51 @@
         <h1>Data Center Monitor</h1>
         <h3 style="margin-bottom: 2em;">Princeton University</h3>
         <div id="login-box">
-          <form class="form-horizontal">
+          <!-- Login Form -->
+          <form class="form-horizontal" ng-hide="userMode != 'login'">
             <div class="form-group">
-              <p class="centered">Log in to your facility dashboard:</p>
+              <p class="centered" ng-hide="userMode != 'login'">Log in to your facility dashboard:</p>
             </div>
             <div class="form-group">
               <label for="username" class="col-sm-3 control-label">Username</label>
               <div class="col-sm-9">
-                <input ng-model="user.username" type="text" class="form-control" id="username" placeholder="At least 5 characters">
+                <input ng-model="user.username" type="text" class="form-control username" autocapitalize="off" autocorrect="off">
               </div>
             </div>
             <div class="form-group">
               <label for="password" class="col-sm-3 control-label">Password</label>
               <div class="col-sm-9">
-                <input ng-model="user.password" type="password" class="form-control" id="password" placeholder="At least 6 characters">
+                <input ng-model="user.password" type="password" class="form-control password">
               </div>
             </div>
             <div class="form-group">
               <div class="col-sm-offset-3 col-sm-9">
-                <button ng-click="login()" ng-disabled="!userValid()" class="btn btn-success" id="login-button">Log in <i class="fa fa-sign-in"></i>  </button>
+                <button ng-click="login()" ng-disabled="!userValid()" class="btn btn-success" id="login-button">Log in <i class="fa fa-sign-in"></i></button>
+                <button ng-click="userMode = 'register'" class="btn btn-default">Sign up <i class="fa fa-user"></i></button>
+              </div>
+            </div>
+          </form>
+          <!-- New User Registration Form -->
+          <form class="form-horizontal" ng-hide="userMode != 'register'">
+            <div class="form-group">
+              <p class="centered" ng-hide="userMode != 'register'">Create an account:</p>
+            </div>
+            <div class="form-group">
+              <label for="username" class="col-sm-3 control-label">Username</label>
+              <div class="col-sm-9">
+                <input ng-model="newUser.username" type="text" class="form-control username" placeholder="At least 5 characters">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="password" class="col-sm-3 control-label">Password</label>
+              <div class="col-sm-9">
+                <input ng-model="newUser.password" type="password" class="form-control password" placeholder="At least 6 characters">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-3 col-sm-10">
+                <button ng-click="register()" ng-disabled="!newUserValid()" class="btn btn-default" id="register-button">Register</button>
+                <button ng-click="userMode = 'login'" class="btn btn-default">Log in <i class="fa fa-user"></i></button>
               </div>
             </div>
           </form>

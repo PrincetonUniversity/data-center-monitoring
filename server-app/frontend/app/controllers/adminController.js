@@ -40,8 +40,9 @@ cont.controller('adminController', function ($scope, $filter, $http, $location, 
 
   $scope.register = function () {
     $('#register-button').attr('disabled', 'disabled');
+    var ticket = JSON.parse($cookies.get('ticket'));
     var user = $scope.user;
-    $http.post('/api/auth/register', {user: user})
+    $http.post('/api/auth/register', {user: user, ticket: ticket})
       .success(function (data, status, headers, config) {
         alert('User ' + user.username + ' successfully registered.');
         $scope.user = {
