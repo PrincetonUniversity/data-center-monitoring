@@ -28,7 +28,7 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
   }
 
   $scope.readingsDate = function () {
-    var d = new Date(new Date($scope.dates[$scope.dates.length - 1 - $scope.dateIdx]).getTime() - (new Date().getTimezoneOffset() * 60000));
+    var d = new Date($scope.dates[$scope.dates.length - 1 - $scope.dateIdx]);
     var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
     return {
       date: months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear(),
