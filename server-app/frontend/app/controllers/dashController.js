@@ -16,6 +16,26 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     return date.toLocaleString();
   };
 
+  function formatAMPM(date) {
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0'+minutes : minutes;
+    var strTime = hours + ':' + minutes + ' ' + ampm;
+    return strTime;
+  }
+
+  $scope.readingsDate = function () {
+    var d = new Date(new Date($scope.dates[$scope.dates.length - 1 - $scope.dateIdx]).getTime() - (new Date().getTimezoneOffset() * 60000));
+    var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+    return {
+      date: months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear(),
+      time: formatAMPM(d)
+    };
+  };
+
   $scope.facilities = [];
   $scope.currentFacility = '';
   $scope.fetchFacilities = function () {

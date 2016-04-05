@@ -54,12 +54,25 @@
     </form>
   </section>
   <section id="data-section">
-    <p class="centered">{{formatDate(dates[dates.length - 1 - dateIdx])}}</p>
-    <input type="range" ng-model="dateIdx" ng-change="currentDate = dates[dates.length - 1 - dateIdx]" min="0" max="5" id="date-slider">
-    <ul id="readings-display-mode-picker" class="nav nav-pills dc-pills">
-      <li role="presentation" ng-click="displayMode = 'server'" ng-class="{'active': displayMode == 'server'}"><a class="link-cursor"><i class="fa fa-server"></i> Server</a></li>
-      <li role="presentation" ng-click="displayMode = 'table'" ng-class="{'active': displayMode == 'table'}"><a class="link-cursor"><i class="fa fa-table"></i> Table</a></li>
-    </ul>
+    <p class="dc-label">Climate Data</p>
+    <div id="date-control">
+      <div id="date-display">
+        <p class="centered date">{{readingsDate().date}}</p>
+        <hr>
+        <p class="centered time">{{readingsDate().time}}</p>
+      </div>
+      <p class="dc-label centered">Drag to Change Date
+        <a class="dc-tooltip" alt="Scrub through climate data on this cabinet group for (up to) the last 2 weeks.">
+          <i class="fa fa-info-circle"></i>
+        </a>
+      </p>
+      <input type="range" ng-model="dateIdx" ng-change="currentDate = dates[dates.length - 1 - dateIdx]" min="0" max="5" id="date-slider">
+      <ul id="readings-display-mode-picker" class="nav nav-pills dc-pills">
+        <li role="presentation" ng-click="displayMode = 'server'" ng-class="{'active': displayMode == 'server'}"><a class="link-cursor"><i class="fa fa-server"></i> Cabinet</a></li>
+        <li role="presentation" ng-click="displayMode = 'table'" ng-class="{'active': displayMode == 'table'}"><a class="link-cursor"><i class="fa fa-table"></i> Table</a></li>
+      </ul>
+    </div>
+    <!-- Table View -->
     <div class="readings-display" ng-hide="displayMode == 'server'">
       <table class="table">
         <thead>

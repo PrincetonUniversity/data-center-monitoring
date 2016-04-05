@@ -120,6 +120,7 @@ input[type=text], textarea
 
 .dc-tooltip:hover:after
 {
+  text-align: left;
   background: #333;
   background: rgba(0,0,0,.9);
   border-radius: 5px;
@@ -255,7 +256,7 @@ input[type=text], textarea
   background-color: #777;
   height: 3px;
   border-radius: 5px;
-  margin: 2em 0;
+  margin: 0.5em 0 2em 0;
   /*box-shadow: inset 1px 1px 3px rgba(0,0,0,0.6);*/
 }
 
@@ -266,10 +267,29 @@ input[type=text], textarea
 
 #date-slider::-webkit-slider-thumb
 {
-    -webkit-appearance: none;
-    width: 17px;
-    height: 17px;
-    border-radius: 50%;
-    background: #fff;
-    box-shadow: 1px 1px 7px rgba(0,0,0,0.75);
+  -webkit-appearance: none;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 1px 1px 7px rgba(0,0,0,0.75);
+}
+
+#date-display
+{
+  font-size: 1.5em;
+  font-weight: 600;
+  width: 8em;
+  margin: 0 auto 1em auto;
+}
+
+#date-display hr
+{
+  margin: .25em;
+  border-color: #aaa;
+}
+
+#date-display .time
+{
+  font-size: .9em;
 }
