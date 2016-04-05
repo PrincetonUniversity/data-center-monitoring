@@ -248,3 +248,28 @@ input[type=text], textarea
 {
   clear: right;
 }
+
+#date-slider
+{
+  -webkit-appearance: none;
+  background-color: #777;
+  height: 3px;
+  border-radius: 5px;
+  margin: 2em 0;
+  /*box-shadow: inset 1px 1px 3px rgba(0,0,0,0.6);*/
+}
+
+#date-slider:focus
+{
+  outline: none;
+}
+
+#date-slider::-webkit-slider-thumb
+{
+    -webkit-appearance: none;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 1px 1px 7px rgba(0,0,0,0.75);
+}
