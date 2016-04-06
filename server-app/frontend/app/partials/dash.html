@@ -17,8 +17,8 @@
           <i class="fa fa-info-circle"></i>
         </a>
       </p>
-      <select id="controller-select" ng-model="currentControllerIdx" ng-change="fetchDates()">
-        <option ng-repeat="controller in controllers track by $index" value="{{$index}}" ng-selected="$first">{{controller.name}}</option>
+      <select id="controller-select" ng-model="currentControllerIdx" ng-change="fetchDates()" convert-to-number>
+        <option ng-repeat="controller in controllers track by $index" value="{{$index}}">{{controller.name}}</option>
       </select>
       <a id="edit-controller-name" ng-click="editController()" class="dc-tooltip" alt="Click to edit the name of this cabinet">
         <i class="fa fa-pencil"></i>
