@@ -303,7 +303,7 @@ app.post('/auth/sessionstatus', function (req, res) {
  * storage of one reading every 10 minutes for each BeagleBone separately. */
 app.post('/sensors/submitreadings', function (req, res) {
   var readings = req.body;
-  console.log(readings.length + ' readings received');
+  console.log(readings.length + ' readings received from ' + req.connection.remoteAddress);
   var controller = req.body[0].controller;
 
   // Check for a existing 'readingcounter' object
