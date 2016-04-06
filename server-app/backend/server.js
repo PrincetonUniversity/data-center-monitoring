@@ -70,12 +70,22 @@ var ticketSchema = mongoose.Schema({
 
 var Ticket = mongoose.model('Ticket', ticketSchema);
 
+var facilityCabinetSchema = mongoose.Schema(
+  {
+    bus: [Number], // 5-element arrays for the 5 sensors on each cabinet door
+    addr: [Number]
+  }
+);
+
 var facilitySchema = mongoose.Schema({
   name: String,
   controllers: [{
     id: String,
     name: String,
-    width: Number
+    width: Number,
+    layout: [ // Array of cabinets (should contain 'width' elements)
+      facilityCabinetSchema
+    ]
   }],
   owners: [String]
 });
@@ -721,10 +731,32 @@ app.post('/facilities/:facility/controllers/addremove/:addOrRemove/:controller',
   function ifAuthorized() {
     var facility = decodeURIComponent(req.params.facility);
     var id = decodeURIComponent(req.params.controller);
+    
     var update;
     if (req.params.addOrRemove == 'add') {
-      var query
-      update = {$addToSet: {controllers: {id: id, name: id, width: 5}}};
+      // Build empty 5x5 layout map for unmapped server cabinet group
+      var defaultWidth = 2;
+      var numSensorsPerCabinet = 5;
+      var layout = [];
+      var bus = [];
+      var addr = [];
+      for (var i = 0; i < numSensorsPerCabinet; i++) {
+        bus.push(0);
+        addr.push(0);
+      }
+      var cabinet = {bus: bus, addr: addr};
+      for (var j = 0; j < defaultWidth; j++) {
+        layout.push(cabinet);
+      }
+      
+      update = {$addToSet: {
+        controllers: {
+          id: id, 
+          name: id, 
+          width: defaultWidth,
+          layout: layout
+        }
+      }};
     }
     else if (req.params.addOrRemove == 'remove') {
       update = {$pull: {controllers: {id: id}}};

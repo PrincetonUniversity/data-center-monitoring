@@ -72,6 +72,20 @@
         <li role="presentation" ng-click="displayMode = 'table'" ng-class="{'active': displayMode == 'table'}"><a class="link-cursor"><i class="fa fa-table"></i> Table</a></li>
       </ul>
     </div>
+    <!-- Server View -->
+    <div class="readings-display" id="readings-display-server" ng-hide="displayMode == 'table'">
+      <div class="inline-block" id="cabinet-wrapper">
+        <!--Display each server cabinet-->
+        <div class="cabinet" ng-repeat="cabinet in currentControllerLayout()">
+          <div class="bg"><span class="invisible">.</span></div>
+          <div class="cabinet-sensors">
+            <div class="sensor" ng-repeat="bus in cabinet.bus track by $index">
+              <span>{{CtoF(readingsBySensor[bus + '-' + cabinet.addr[$index]])}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Table View -->
     <div class="readings-display" ng-hide="displayMode == 'server'">
       <table class="table">

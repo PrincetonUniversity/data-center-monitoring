@@ -293,3 +293,59 @@ input[type=text], textarea
 {
   font-size: .9em;
 }
+
+.readings-display .cabinet
+{
+  display: inline-block;
+  height: 350px;
+  width: 150px;
+  margin-right: -10px;
+  position: relative;
+}
+
+.readings-display .cabinet .bg {
+  display: block;
+  background: url('../img/server-rack.svg') top left;
+  background-size: contain;
+  height: 350px;
+  width: 150px;
+  opacity:0.4;
+}
+
+.readings-display .cabinet .cabinet-sensors
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 2em 2em 2em 0.8em;
+}
+
+.readings-display .cabinet .cabinet-sensors .sensor
+{
+  margin: 1.6em auto;
+  text-align: center;
+  padding: 0.5em;
+}
+
+.readings-display .cabinet .cabinet-sensors .sensor span
+{
+  padding: 0.5em;
+  background: rgba(255,255,255,0.8);
+  border-radius: 1em;
+}
+
+.inline-block
+{
+  display: inline-block;
+}
+
+#cabinet-wrapper
+{
+  padding-right: 10px;
+}
+
+#readings-display-server
+{
+  text-align: center;
+}

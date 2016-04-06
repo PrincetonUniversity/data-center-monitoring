@@ -7,8 +7,13 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
   $scope.dateIdx = 0;
 
   $scope.CtoF = function (c) {
-    var f = parseFloat(c) * 9/5 + 32;
-    return f.toFixed(1);
+    if (typeof(c) != 'string') {
+      var f = c * 9/5 + 32;
+      return f.toFixed(1);
+    }
+    else {
+      return c;
+    }
   };
 
   $scope.formatDate = function (dateString) {
@@ -85,6 +90,14 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     else
       return;
   };
+  $scope.currentControllerLayout = function () {
+    if ($scope.controllers) {
+      if ($scope.controllers.length > 0)
+        return $scope.controllers[$scope.currentControllerIdx].layout;
+    }
+    else
+      return;
+  };
   $scope.newControllerWidthChange = function (direction) {
     if (direction == 'dec' && $scope.newController.width > 1)
       $scope.newController.width--;
@@ -98,13 +111,6 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     .success(function (data, status, headers, config) {
       $scope.controllers = data;
       if ($scope.controllers) {
-        //$scope.currentControllerIdx = 0;
-        /*$(document).ready(function () {
-          setTimeout(function () {
-            $('#controller-select').val(0);
-            console.log('done');
-          }, 200);
-        });*/
         $scope.newControllerName = $scope.currentControllerName();
         $scope.fetchDates();
       }
@@ -141,7 +147,14 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     .success(function (data, status, headers, config) {
       $scope.readings = data;
       if ($scope.readings) {
-
+        // Build a list of readings indexable by bus number and sensor address.
+        // e.g. readingsBySensor['2-47'] produces the temperature from sensor at
+        // address 47 of bus 2 of the current controller.
+        $scope.readingsBySensor = {'0-0': 'No sensor.'};
+        $scope.readings.forEach(function (current, index) {
+            $scope.readingsBySensor[current.bus + '-' + current.sensor_addr] = current.temp;
+        });
+        console.log($scope.readingBySensor);
       }
     })
     .error(function (data, status, headers, config) {
@@ -150,6 +163,42 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
   };
 
   $scope.commitController = function () {
+    // If user is reducing cabinet group width
+    if ($scope.newController.width < $scope.currentControllerWidth()) {
+      if (!confirm('Reducing the width of your cabinet group will delete sensor ' 
+        + 'mappings for the rightmost cabinet(s). Are you sure you want to ' 
+        + 'continue?')) {
+          return;
+      }
+      // Copy only the first N cabinets, where N is the new width
+      var layout = [];
+      for (var i = 0; i < $scope.newController.width; i++) {
+        layout.push($scope.currentControllerLayout()[i]);
+      }
+      $scope.newController.layout = layout;
+    }
+    // If user is expanding cabinet group width
+    else if ($scope.newController.width > $scope.currentControllerWidth()) {
+      var layout = [];
+      for (var i = 0; i < $scope.currentControllerWidth(); i++) {
+        layout.push($scope.currentControllerLayout()[i]);
+      }
+      var bus = [];
+      var addr = [];
+      var numSensorsPerCabinet = 5;
+      for (var i = 0; i < numSensorsPerCabinet; i++) {
+        bus.push(0);
+        addr.push(0);
+      }
+      var cabinet = {bus: bus, addr: addr};
+      var numExtraCabinets = $scope.newController.width - $scope.currentControllerWidth();
+      for (var i = 0; i < numExtraCabinets; i++) {
+        layout.push(cabinet);
+      }
+      $scope.newController.layout = layout;
+    }
+    
+    
     var ticket = JSON.parse($cookies.get('ticket'));
     var controller = $scope.newController;
     var facility = encodeURIComponent($scope.currentFacility);
@@ -172,7 +221,8 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     $scope.newController = {
       name: $scope.currentControllerName(),
       id: $scope.currentControllerId(),
-      width: $scope.currentControllerWidth()
+      width: $scope.currentControllerWidth(),
+      layout: $scope.currentControllerLayout()
     };
   };
 
