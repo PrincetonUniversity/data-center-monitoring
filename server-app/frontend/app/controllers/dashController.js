@@ -5,14 +5,18 @@ var cont = angular.module('dcsense.controllers');
 cont.controller('dashController', function ($scope, $filter, $http, $location, $cookies) {
 
   $scope.dateIdx = 0;
+  $scope.loading = true;
+  $scope.displayMode = 'server';
+  $scope.controllerNameEditing = false;
+  $scope.cabinetMode = 'view';
 
   $scope.CtoF = function (c) {
-    if (typeof(c) != 'string') {
+    if (c && typeof(c) != 'string') {
       var f = c * 9/5 + 32;
-      return f.toFixed(1);
+      return f.toFixed(1) + '°F';
     }
     else {
-      return c;
+      return 'No sensor.';
     }
   };
 
@@ -44,6 +48,7 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
   $scope.facilities = [];
   $scope.currentFacility = '';
   $scope.fetchFacilities = function () {
+    $scope.loading = true;
     var ticket = JSON.parse($cookies.get('ticket'));
     $http.post('/api/facilities/list', {ticket: ticket})
     .success(function (data, status, headers, config) {
@@ -105,6 +110,7 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
       $scope.newController.width++;
   };
   $scope.fetchControllers = function () {
+    $scope.loading = true;
     var ticket = JSON.parse($cookies.get('ticket'));
     var facility = encodeURIComponent($scope.currentFacility);
     $http.post('/api/facilities/' + facility + '/list/controllers', {ticket: ticket})
@@ -122,6 +128,7 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
 
   $scope.dates = [];
   $scope.fetchDates = function () {
+    $scope.loading = true;
     var ticket = JSON.parse($cookies.get('ticket'));
     var controller = encodeURIComponent($scope.currentControllerId());
     $http.post('/api/sensors/list/dates/' + controller + '/limit/2016', {ticket: ticket})
@@ -150,16 +157,46 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
         // Build a list of readings indexable by bus number and sensor address.
         // e.g. readingsBySensor['2-47'] produces the temperature from sensor at
         // address 47 of bus 2 of the current controller.
-        $scope.readingsBySensor = {'0-0': 'No sensor.'};
+        $scope.readingsBySensor = {
+          '0-0': 'No sensor.'
+        };
         $scope.readings.forEach(function (current, index) {
             $scope.readingsBySensor[current.bus + '-' + current.sensor_addr] = current.temp;
         });
-        console.log($scope.readingBySensor);
+        $scope.fetchAddressMappingList();
+        $scope.loading = false;
       }
     })
     .error(function (data, status, headers, config) {
       alert('Server error.');
     });
+  };
+  
+  $scope.fetchAddressMappingList = function () {
+    var ticket = JSON.parse($cookies.get('ticket'));
+    var controller = encodeURIComponent($scope.currentControllerId());
+    var date = $scope.currentDate;
+    $http.get('/api/sensors/addressmappings/')
+    .success(function (data, status, headers, config) {
+      $scope.map = data;
+      console.log(data);
+    })
+    .error(function (data, status, headers, config) {
+      alert('Server error.');
+    });
+  };
+  
+  $scope.unicodeSwitchesFromBinary = function (binary) {
+    var ret = '';
+    for (var i = 0; i < binary.length; i++) {
+      if (binary.charAt(i) == '1') {
+        ret = ret + '▀ ';
+      }
+      if (binary.charAt(i) == '0') {
+        ret = ret + '▄ ';
+      }
+    }
+    return ret;
   };
 
   $scope.commitController = function () {
@@ -214,8 +251,6 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     });
   };
 
-  $scope.controllerNameEditing = false;
-
   $scope.editController = function () {
     $scope.controllerNameEditing = true;
     $scope.newController = {
@@ -226,14 +261,52 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     };
   };
 
-  $scope.displayMode = 'server';
-
   $('#date-slider').mouseup(function () { // Desktop
     $scope.fetchReadings();
   });
   $('#date-slider').on('touchend', function () { // Mobile
     $scope.fetchReadings();
   });
+  
+  $scope.enableCabinetMapping = function () {
+    if (!confirm('Are you sure you want to edit the sensor mappings for this cabinet?'))
+      return;
+    $scope.cabinetMode = 'mapping';
+    console.log($scope.currentControllerLayout());
+  };
+  
+  $scope.disableCabinetMapping = function () {
+    $scope.cabinetMode = 'view';
+  };
+  
+  $scope.currentMapping = '';
+  $scope.currentMappingCabinet = function () {
+    if ($scope.currentMapping == '')
+      return;
+    return $scope.currentMapping.split('-')[0];
+  };
+  $scope.currentMappingSensor = function () {
+    if ($scope.currentMapping == '')
+      return;
+    return $scope.currentMapping.split('-')[1];
+  };
+  $scope.editSensorMapping = function (sensor) {
+    if ($scope.cabinetMode != 'mapping')
+      return;
+    $scope.currentMapping = sensor;
+    $scope.newController = {
+      name: $scope.currentControllerName(),
+      id: $scope.currentControllerId(),
+      width: $scope.currentControllerWidth(),
+      layout: $scope.currentControllerLayout()
+    };
+    $('.cabinet').css('opacity', 0.4);
+  };
+  $scope.disableSensorMapping = function (sensor) {
+    $scope.currentMapping = '';
+    $('.cabinet').css('opacity', 1);
+    $scope.commitController();
+  };
 
   $scope.fetchFacilities();
 

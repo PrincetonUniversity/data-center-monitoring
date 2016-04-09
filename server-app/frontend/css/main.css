@@ -85,7 +85,7 @@ input[type=text], textarea
   text-align: justify;
 }
 
-#page-dash select
+#page-dash #controller-select
 {
   background: none;
   border: none;
@@ -348,4 +348,35 @@ input[type=text], textarea
 #readings-display-server
 {
   text-align: center;
+}
+
+#data-loading
+{
+  margin: 10% 0;
+  font-size: 6em;
+  text-align: center;
+  color: #666;
+}
+
+button i
+{
+  cursor: pointer;
+}
+
+.sensor-mapping-editor
+{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -10em;
+  margin-top: -3em;
+  width: 20em;
+  overflow: visible;
+  padding: 2em;
+  background: rgba(255,255,255,0.8);
+  border-radius: 1em;
+  -webkit-box-shadow: 0px 10px 30px 0px rgba(0, 0, 0, 0.7);
+  -moz-box-shadow:    0px 10px 30px 0px rgba(0, 0, 0, 0.7);
+  box-shadow:         0px 10px 30px 0px rgba(0, 0, 0, 0.7);
+  z-index: 100;
 }

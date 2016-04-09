@@ -11,6 +11,7 @@
     </select>
   </section>
   <section id="controllers">
+    <!-- Controller Selector -->
     <div ng-hide="controllerNameEditing">
       <p class="dc-label">Cabinet Groups
         <a class="dc-tooltip" alt="Sets of connected server cabinets with sensors installed at your facility. Select a cabinet to see climate data.">
@@ -24,6 +25,7 @@
         <i class="fa fa-pencil"></i>
       </a>
     </div>
+    <!-- Controller editor -->
     <form ng-hide="!controllerNameEditing">
       <div class="form-group">
         <label for="new-controller-name" class="dc-label">Cabinet Name</label>
@@ -53,7 +55,14 @@
       </div>
     </form>
   </section>
-  <section id="data-section">
+  <!-- Loading Indicator -->
+  <section id="data-loading" ng-hide="!loading">
+    <span>
+      <i class="fa fa-refresh fa-spin"></i>
+    </span>
+  </section>
+  <!-- Readings Display Section -->
+  <section id="data-section" ng-hide="loading">
     <p class="dc-label">Climate Data</p>
     <div id="date-control">
       <div id="date-display">
@@ -74,16 +83,46 @@
     </div>
     <!-- Server View -->
     <div class="readings-display" id="readings-display-server" ng-hide="displayMode == 'table'">
+      <div class="sensor-mapping-editor" ng-hide="currentMapping == ''">
+        <div class="form-group">
+          <a ng-click="disableSensorMapping()"><i class="fa fa-close"></i></a>
+          <select ng-model="controllers[currentControllerIdx].layout[currentMappingCabinet()].addr[currentMappingSensor()]" 
+                  class="form-control" convert-to-number>
+            <option value="0">No sensor</option>
+            <option ng-repeat="config in map.switchConfigs"
+                    value="{{map.mappings[config]}}">
+              {{unicodeSwitchesFromBinary(config)}}
+            </option>
+          </select>
+          <select ng-model="controllers[currentControllerIdx].layout[currentMappingCabinet()].bus[currentMappingSensor()]" 
+                  class="form-control" convert-to-number>
+            <option value="0">Not selected</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+          </select>
+        </div>
+      </div>
       <div class="inline-block" id="cabinet-wrapper">
         <!--Display each server cabinet-->
-        <div class="cabinet" ng-repeat="cabinet in currentControllerLayout()">
+        <div class="cabinet" ng-repeat="cabinet in currentControllerLayout() track by $index">
           <div class="bg"><span class="invisible">.</span></div>
           <div class="cabinet-sensors">
-            <div class="sensor" ng-repeat="bus in cabinet.bus track by $index">
+            <div class="sensor" ng-repeat="bus in cabinet.bus track by $index"
+                 ng-click="editSensorMapping($parent.$index + '-' + $index)">
               <span>{{CtoF(readingsBySensor[bus + '-' + cabinet.addr[$index]])}}</span>
             </div>
           </div>
         </div>
+      </div>
+      <div id="toggle-cabinet-lock">
+        <button ng-click="enableCabinetMapping()"
+                class="btn btn-default btn-sm" ng-hide="cabinetMode != 'view'">
+          <i class="fa fa-lock"></i>
+        </button>
+        <button ng-click="disableCabinetMapping()"
+                class="btn btn-default btn-sm" ng-hide="cabinetMode != 'mapping'">
+          <i class="fa fa-unlock"></i>
+        </button>
       </div>
     </div>
     <!-- Table View -->
