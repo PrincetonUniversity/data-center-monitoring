@@ -519,6 +519,35 @@ app.post('/sensors/readings/bysensor/:controller/:addr/:bus/2weeks', function (r
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
+// Sends all readings above a given threshold 'temp' for the given 'controller'
+// in the last 2 weeks 
+app.post('/sensors/readings/hightemps/:controller/:temp/2weeks', function (req, res) {
+  var ticket = req.body.ticket;
+  var accessLevel = accessLevels.user;
+  function ifAuthorized() {
+    var user = ticket.username;
+    var controller = decodeURIComponent(req.params.controller);
+    var thresholdF = parseFloat(decodeURIComponent(req.params.temp));
+    var thresholdC = (thresholdF - 32) * 5/9;
+    var twoWeeksMS = 1000*60*60*24*14;
+    var twoWeeksAgo = new Date(new Date().getTime() - twoWeeksMS);
+    function ifOwner() {
+      Reading.find({
+        'controller': controller,
+        'temp': {$gt: thresholdC},
+        'time': {$gt: twoWeeksAgo}})
+        .sort({time: -1})
+        .limit(2048)
+      .exec(
+        function (err, readings) {
+          res.send(readings);
+      });
+    }
+    checkControllerAccess(res, controller, user, ifOwner);
+  }
+  checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
+});
+
 // Sends the sensor readings taken on a given 'controller' at a given 'time'.
 app.post('/sensors/readings/bydate/:controller/:time', function (req, res) {
   var ticket = req.body.ticket;

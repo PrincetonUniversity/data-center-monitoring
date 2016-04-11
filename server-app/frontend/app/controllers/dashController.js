@@ -9,6 +9,7 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
   $scope.displayMode = 'server';
   $scope.controllerNameEditing = false;
   $scope.cabinetMode = 'view';
+  $scope.alertThreshold = 70;
 
   $scope.CtoF = function (c) {
     if (c && typeof(c) != 'string') {
@@ -117,8 +118,8 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     .success(function (data, status, headers, config) {
       $scope.controllers = data;
       if ($scope.controllers) {
-        $scope.newControllerName = $scope.currentControllerName();
         $scope.fetchDates();
+        $scope.getAlerts();
       }
     })
     .error(function (data, status, headers, config) {
@@ -346,6 +347,21 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
       console.log(data);
       $('#graph1').empty();
       var l1 = new LineGraph({containerId: 'graph1', data: data});
+    })
+    .error(function (data, status, headers, config) {
+      alert('Server error.');
+    });
+  };
+  
+  $scope.alertReadings = [];
+  $scope.getAlerts = function () {
+    var ticket = JSON.parse($cookies.get('ticket'));
+    var controller = encodeURIComponent($scope.currentControllerId());
+    var threshold = encodeURIComponent($scope.alertThreshold);
+    $http.post('/api/sensors/readings/hightemps/' + controller + '/' + threshold + '/2weeks', {ticket: ticket})
+    .success(function (data, status, headers, config) {
+      $scope.alertReadings = data;
+      $scope.lastAlertThreshold = $scope.alertThreshold;
     })
     .error(function (data, status, headers, config) {
       alert('Server error.');

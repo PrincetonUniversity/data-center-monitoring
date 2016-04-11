@@ -79,10 +79,11 @@
       <ul id="readings-display-mode-picker" class="nav nav-pills dc-pills">
         <li role="presentation" ng-click="displayMode = 'server'" ng-class="{'active': displayMode == 'server'}"><a class="link-cursor"><i class="fa fa-server"></i> Cabinet</a></li>
         <li role="presentation" ng-click="displayMode = 'table'" ng-class="{'active': displayMode == 'table'}"><a class="link-cursor"><i class="fa fa-table"></i> Table</a></li>
+        <li role="presentation" ng-click="displayMode = 'alerts'" ng-class="{'active': displayMode == 'alerts'}"><a class="link-cursor"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Alerts</a></li>
       </ul>
     </div>
     <!-- Server View -->
-    <div class="readings-display" id="readings-display-server" ng-hide="displayMode == 'table'">
+    <div class="readings-display" id="readings-display-server" ng-hide="displayMode != 'server'">
       <!-- Sensor Mapping Popup Editor -->
       <form class="sensor-mapping-editor" ng-hide="currentMapping == ''">
         <div class="form-group">
@@ -146,7 +147,7 @@
       </div>
     </div>
     <!-- Table View -->
-    <div class="readings-display" ng-hide="displayMode == 'server'">
+    <div class="readings-display" ng-hide="displayMode != 'table'">
       <table class="table">
         <thead>
           <tr>
@@ -162,6 +163,36 @@
               ng-class="{'warning': CtoF(reading.temp) > 70,
                          'danger' : CtoF(reading.temp) > 80}">
             <td>{{reading.controller}}</td>
+            <td>{{reading.bus}}</td>
+            <td>{{reading.sensor_addr}}</td>
+            <td>{{formatDate(reading.time)}}</td>
+            <td>{{CtoF(reading.temp)}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="readings-display" ng-hide="displayMode != 'alerts'">
+      <form class="form-inline" id="alert-controller">
+        <div class="form-group">
+          <label>Get all readings above this temperature (°F): </label>
+          <input ng-model="alertThreshold" type="number" class="form-control">
+          <button ng-click="getAlerts()" type="submit" class="btn btn-sm btn-success">Go</button>
+        </div>
+      </form>
+      <p class="centered" id="no-alerts-message" ng-hide="alertReadings.length > 0">No readings above {{lastAlertThreshold}}°F were recorded in the last 2 weeks for this server cabinet group.</p>
+      <table class="table" ng-hide="alertReadings.length == 0">
+        <thead>
+          <tr>
+            <th>Bus</th>
+            <th>Sensor Address</th>
+            <th>Time</th>
+            <th>Temperature</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="reading in alertReadings"
+              ng-class="{'warning': CtoF(reading.temp) > 70,
+                         'danger' : CtoF(reading.temp) > 80}">
             <td>{{reading.bus}}</td>
             <td>{{reading.sensor_addr}}</td>
             <td>{{formatDate(reading.time)}}</td>
