@@ -83,25 +83,45 @@
     </div>
     <!-- Server View -->
     <div class="readings-display" id="readings-display-server" ng-hide="displayMode == 'table'">
-      <div class="sensor-mapping-editor" ng-hide="currentMapping == ''">
+      <!-- Sensor Mapping Popup Editor -->
+      <form class="sensor-mapping-editor" ng-hide="currentMapping == ''">
         <div class="form-group">
-          <a ng-click="disableSensorMapping()"><i class="fa fa-close"></i></a>
-          <select ng-model="controllers[currentControllerIdx].layout[currentMappingCabinet()].addr[currentMappingSensor()]" 
-                  class="form-control" convert-to-number>
-            <option value="0">No sensor</option>
-            <option ng-repeat="config in map.switchConfigs"
-                    value="{{map.mappings[config]}}">
-              {{unicodeSwitchesFromBinary(config)}}
-            </option>
-          </select>
-          <select ng-model="controllers[currentControllerIdx].layout[currentMappingCabinet()].bus[currentMappingSensor()]" 
+          <p class="close-button">
+            <a ng-click="disableSensorMapping()"><i class="fa fa-close"></i></a>
+          </p>
+          <h3>
+            Sensor Mapping
+          </h3>
+          <p style="text-align: left">
+            Use this window to specify the sensor whose data to display at the selected location. Select both the switch configuration displayed on the sensor and the bus (cable) the sensor is attached to. Changes made here are autosaved.  
+          </p>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-6 control-label">Switch Configuration</label>
+          <div class="col-sm-6">
+            <select ng-model="controllers[currentControllerIdx].layout[currentMappingCabinet()].addr[currentMappingSensor()]" 
+                    class="form-control" convert-to-number>
+              <option value="0">No sensor</option>
+              <option ng-repeat="config in map.switchConfigs"
+                      value="{{map.mappings[config]}}">
+                {{unicodeSwitchesFromBinary(config)}} &ndash; {{config}}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-6 control-label">Bus</label>
+          <div class="col-sm-6">
+            <select ng-model="controllers[currentControllerIdx].layout[currentMappingCabinet()].bus[currentMappingSensor()]" 
                   class="form-control" convert-to-number>
             <option value="0">Not selected</option>
             <option value="1">1</option>
             <option value="2">2</option>
           </select>
+          </div>
         </div>
-      </div>
+      </form>
+      <!-- Server Cabinet Representations -->
       <div class="inline-block" id="cabinet-wrapper">
         <!--Display each server cabinet-->
         <div class="cabinet" ng-repeat="cabinet in currentControllerLayout() track by $index">
@@ -117,11 +137,11 @@
       <div id="toggle-cabinet-lock">
         <button ng-click="enableCabinetMapping()"
                 class="btn btn-default btn-sm" ng-hide="cabinetMode != 'view'">
-          <i class="fa fa-lock"></i>
+          Sensor Locations <i class="fa fa-lock"></i>
         </button>
         <button ng-click="disableCabinetMapping()"
                 class="btn btn-default btn-sm" ng-hide="cabinetMode != 'mapping'">
-          <i class="fa fa-unlock"></i>
+          Sensor Locations <i class="fa fa-unlock"></i>
         </button>
       </div>
     </div>
