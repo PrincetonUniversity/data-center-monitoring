@@ -150,7 +150,7 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     var ticket = JSON.parse($cookies.get('ticket'));
     var controller = encodeURIComponent($scope.currentControllerId());
     var date = $scope.currentDate;
-    $http.post('/api/sensors/readings/' + controller + '/' + date, {ticket: ticket})
+    $http.post('/api/sensors/readings/bydate/' + controller + '/' + date, {ticket: ticket})
     .success(function (data, status, headers, config) {
       $scope.readings = data;
       if ($scope.readings) {
@@ -290,6 +290,27 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
       return;
     return $scope.currentMapping.split('-')[1];
   };
+  
+  $scope.currentSensor = '';
+  $scope.currentSensorCabinet = function () {
+    if ($scope.currentSensor == '')
+      return;
+    return $scope.currentSensor.split('-')[0];
+  };
+  $scope.currentSensorRow = function () {
+    if ($scope.currentSensor == '')
+      return;
+    return $scope.currentSensor.split('-')[1];
+  };
+  
+  $scope.sensorClick = function (sensor) {
+    if ($scope.cabinetMode == 'mapping') {
+      $scope.editSensorMapping(sensor);
+    }
+    else {
+      $scope.displaySensorGraph(sensor);
+    }
+  };
   $scope.editSensorMapping = function (sensor) {
     if ($scope.cabinetMode != 'mapping')
       return;
@@ -306,6 +327,28 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     $scope.currentMapping = '';
     $('.cabinet').css('opacity', 1);
     $scope.commitController();
+  };
+  $scope.displaySensorGraph = function (sensor) {
+    var ticket = JSON.parse($cookies.get('ticket'));
+    
+    $scope.currentSensor = sensor;
+    var controller = encodeURIComponent($scope.currentControllerId());
+    var layout = $scope.currentControllerLayout();
+    var bus = layout[$scope.currentSensorCabinet()].bus[$scope.currentSensorRow()];
+    var addr = layout[$scope.currentSensorCabinet()].addr[$scope.currentSensorRow()]
+    
+    if (bus == 0 || addr == 0) {
+      return;
+    }
+    
+    $http.post('/api/sensors/readings/bysensor/' + controller + '/' + addr + '/' + bus + '/2weeks', {ticket: ticket})
+    .success(function (data, status, headers, config) {
+      console.log(data);
+      var l1 = new LineGraph({containerId: 'graph1', data: data});
+    })
+    .error(function (data, status, headers, config) {
+      alert('Server error.');
+    });
   };
 
   $scope.fetchFacilities();

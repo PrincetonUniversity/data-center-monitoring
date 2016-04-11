@@ -471,8 +471,55 @@ app.post('/sensors/list/dates/:controller/all', function (req, res) {
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
+// Sends all readings from the last 2 weeks for a particular 
+app.post('/sensors/readings/bysensor/:controller/:addr/:bus/2weeks', function (req, res) {
+  var ticket = req.body.ticket;
+  var accessLevel = accessLevels.user;
+  function ifAuthorized() {
+    var user = ticket.username;
+    var controller = decodeURIComponent(req.params.controller);
+    var bus = req.params.bus;
+    var addr = req.params.addr;
+    function ifOwner() {
+      Reading.find({
+        'controller': controller,
+        'bus': bus,
+        'sensor_addr': addr})
+        .sort({time: -1})
+        .limit(2048)
+      .exec(
+        function (err, readings) {
+          // Format data for d3 line graph library
+          var data = {};
+          data.values = [[]];
+          data.minVal = 500; // assuming servers will never get over 500 degrees F
+          readings.forEach(function (current, index) {
+            data.values[0].push((parseFloat(current.temp) * 9/5 + 32).toFixed(1)); // Add value in F
+            if (index == readings.length - 1) {
+              var d = new Date(current.time);
+              data.start = d.getTime();
+            }
+            if (index == 0) {
+              var d = new Date(current.time);
+              data.end = d.getTime();
+            }
+            if ((parseFloat(current.temp) * 9/5 + 32).toFixed(1) < data.minVal) {
+              data.minVal = (parseFloat(current.temp) * 9/5 + 32).toFixed(1);
+            }
+          });
+          data.step = (data.end - data.start) / (readings.length - 1);
+          data.names = ['Sensor Readings'];
+          data.rounding = [1];
+          res.send(data);
+      });
+    }
+    checkControllerAccess(res, controller, user, ifOwner);
+  }
+  checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
+});
+
 // Sends the sensor readings taken on a given 'controller' at a given 'time'.
-app.post('/sensors/readings/:controller/:time', function (req, res) {
+app.post('/sensors/readings/bydate/:controller/:time', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = accessLevels.user;
   function ifAuthorized() {
