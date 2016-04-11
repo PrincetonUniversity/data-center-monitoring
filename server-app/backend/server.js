@@ -508,7 +508,7 @@ app.post('/sensors/readings/bysensor/:controller/:addr/:bus/2weeks', function (r
             }
           });
           data.step = (data.end - data.start) / (readings.length - 1);
-          data.names = ['Sensor Readings'];
+          data.names = ['Temperature:'];
           data.rounding = [1];
           res.send(data);
       });

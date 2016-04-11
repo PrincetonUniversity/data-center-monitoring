@@ -129,7 +129,7 @@
           <div class="cabinet-sensors">
             <div class="sensor" ng-repeat="bus in cabinet.bus track by $index"
                  ng-click="sensorClick($parent.$index + '-' + $index)">
-              <span>{{CtoF(readingsBySensor[bus + '-' + cabinet.addr[$index]])}}</span>
+              <span ng-class="{'sensor-highlight' : currentSensor == $parent.$index + '-' + $index}">{{CtoF(readingsBySensor[bus + '-' + cabinet.addr[$index]])}}</span>
             </div>
           </div>
         </div>
@@ -172,7 +172,7 @@
     </div>
   </section>
   <section>
-    	<div id="graph1" class="aGraph" style="position:relative;width:100%;height:400px"></div>
+    	<div id="graph1" class="line-graph" style="position:relative;width:100%;height:400px"></div>
   </section>
   <button logout>Logout</button>
 </div>

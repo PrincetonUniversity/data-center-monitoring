@@ -414,3 +414,18 @@ button i
   text-align: right;
   margin-top: 2em;
 }
+
+.line-graph .scale-button-group
+{
+  display: none;
+}
+
+.line-graph .date-label-group
+{
+  display: none;
+}
+
+.sensor-highlight
+{
+  border: 3px solid #666;
+}
