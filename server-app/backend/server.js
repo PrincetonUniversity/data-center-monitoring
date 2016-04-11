@@ -1000,7 +1000,7 @@ app.post('/sensors/export/all/:startDate/:endDate', function (req, res) {
     function ifOwner() {
       var startDate = new Date(parseInt(decodeURIComponent(req.params.startDate)));
       var endDate = new Date(parseInt(decodeURIComponent(req.params.endDate)));
-      ResearchReading.find({
+      Reading.find({
         time: {
           $gt: startDate,
           $lt: endDate
