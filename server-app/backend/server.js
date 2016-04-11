@@ -494,7 +494,8 @@ app.post('/sensors/readings/bysensor/:controller/:addr/:bus/2weeks', function (r
           data.values = [[]];
           data.minVal = 500; // assuming servers will never get over 500 degrees F
           readings.forEach(function (current, index) {
-            data.values[0].push((parseFloat(current.temp) * 9/5 + 32).toFixed(1)); // Add value in F
+            var temp = (parseFloat(readings[readings.length - index - 1].temp) * 9/5 + 32).toFixed(1);
+            data.values[0].push(temp); // Add value in F
             if (index == readings.length - 1) {
               var d = new Date(current.time);
               data.start = d.getTime();
@@ -503,8 +504,8 @@ app.post('/sensors/readings/bysensor/:controller/:addr/:bus/2weeks', function (r
               var d = new Date(current.time);
               data.end = d.getTime();
             }
-            if ((parseFloat(current.temp) * 9/5 + 32).toFixed(1) < data.minVal) {
-              data.minVal = (parseFloat(current.temp) * 9/5 + 32).toFixed(1);
+            if (temp < data.minVal) {
+              data.minVal = temp;
             }
           });
           data.step = (data.end - data.start) / (readings.length - 1);
