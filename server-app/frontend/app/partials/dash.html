@@ -80,6 +80,7 @@
         <li role="presentation" ng-click="displayMode = 'server'" ng-class="{'active': displayMode == 'server'}"><a class="link-cursor"><i class="fa fa-server"></i> Cabinet</a></li>
         <li role="presentation" ng-click="displayMode = 'table'" ng-class="{'active': displayMode == 'table'}"><a class="link-cursor"><i class="fa fa-table"></i> Table</a></li>
         <li role="presentation" ng-click="displayMode = 'alerts'" ng-class="{'active': displayMode == 'alerts'}"><a class="link-cursor"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Alerts</a></li>
+        <li role="presentation" ng-click="displayMode = 'export'" ng-class="{'active': displayMode == 'export'}"><a class="link-cursor"><i class="fa fa-floppy-o" aria-hidden="true"></i> Export</a></li>
       </ul>
     </div>
     <!-- Server View -->
@@ -200,6 +201,9 @@
           </tr>
         </tbody>
       </table>
+    </div>
+    <div class="readings-display" ng-hide="displayMode != 'export'">
+      <button ng-click="export()">Export</button>
     </div>
   </section>
   <section>

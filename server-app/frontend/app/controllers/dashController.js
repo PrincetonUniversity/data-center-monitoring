@@ -367,6 +367,23 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
       alert('Server error.');
     });
   };
+  
+  $scope.export = function () {
+    var startDate = encodeURIComponent(0);
+    var endDate = encodeURIComponent(new Date().getTime());
+    var ticket = JSON.parse($cookies.get('ticket'));
+    $http.post('/api/sensors/export/all/' + startDate + '/' + endDate, {ticket: ticket})
+    .success(function (data, status, headers, config) {
+      var a = document.createElement('a');
+      var file = new Blob([data], {type: 'text/csv'});
+      a.href = URL.createObjectURL(file);
+      a.download = 'dcsense.csv';
+      a.click();
+    })
+    .error(function (data, status, headers, config) {
+      alert('Server error.');
+    });
+  }
 
   $scope.fetchFacilities();
 

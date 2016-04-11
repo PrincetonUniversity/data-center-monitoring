@@ -13,6 +13,7 @@ var crypto = require('crypto');
 var compression = require('compression');
 var async = require('async');
 var fs = require('fs');
+var json2csv = require('json2csv');
 
 var static = express();
 var app = express();
@@ -988,6 +989,56 @@ app.get('/sensors/addressmappings', function (req, res) {
     "111000"
   ];
   res.send({mappings: mappings, switchConfigs: switchConfigs});
+});
+
+app.post('/sensors/export/all/:startDate/:endDate', function (req, res) {
+  var ticket = req.body.ticket;
+  var accessLevel = accessLevels.user;
+  function ifAuthorized() {
+    var user = ticket.username;
+    var controller = decodeURIComponent(req.params.controller);
+    function ifOwner() {
+      var startDate = new Date(parseInt(decodeURIComponent(req.params.startDate)));
+      var endDate = new Date(parseInt(decodeURIComponent(req.params.endDate)));
+      ResearchReading.find({
+        time: {
+          $gt: startDate,
+          $lt: endDate
+        }
+      }, function (err, readings) {
+        if (err)
+          res.sendStatus(500);
+        else {
+          var fields = [
+            'controller',
+            'bus',
+            'sensor_addr',
+            'time',
+            'temp'
+          ];
+          json2csv({data: readings, fields: fields}, function(err, csv) {
+            if (err) {
+              res.status(500).send({msg:err});
+            }
+            else {
+              var filename = randomString(20);
+              fs.writeFile(filename, csv, function (err) {
+                if (err)
+                  res.sendStatus(500);
+                else {
+                  res.sendFile(__dirname + '/' + filename, function () {
+                    fs.unlinkSync(filename);
+                  });
+                }
+              });
+            }
+          });
+        }
+      });
+    }
+    checkControllerAccess(res, controller, user, ifOwner);
+  }
+  checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
 
 
