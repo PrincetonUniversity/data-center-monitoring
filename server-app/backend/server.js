@@ -993,7 +993,7 @@ app.get('/sensors/addressmappings', function (req, res) {
 
 app.post('/sensors/export/all/:startDate/:endDate', function (req, res) {
   var ticket = req.body.ticket;
-  var accessLevel = accessLevels.user;
+  var accessLevel = accessLevels.admin;
   function ifAuthorized() {
     var user = ticket.username;
     var controller = decodeURIComponent(req.params.controller);
@@ -1034,6 +1034,65 @@ app.post('/sensors/export/all/:startDate/:endDate', function (req, res) {
             }
           });
         }
+      });
+    }
+    checkControllerAccess(res, controller, user, ifOwner);
+  }
+  checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
+});
+
+app.post('/sensors/export/byfacility/:facility/:startDate/:endDate', function (req, res) {
+  var ticket = req.body.ticket;
+  var accessLevel = accessLevels.admin;
+  function ifAuthorized() {
+    var user = ticket.username;
+    var controller = decodeURIComponent(req.params.controller);
+    function ifOwner() {
+      var startDate = new Date(parseInt(decodeURIComponent(req.params.startDate)));
+      var endDate = new Date(parseInt(decodeURIComponent(req.params.endDate)));
+      var facility = decodeURIComponent(req.params.facility);
+      Facility.findOne({name: facility}, function (err, facility) {
+        var query = [];
+        facility.controllers.forEach(function (current, index) {
+          query.push({controller: current.id});
+        });
+        console.log(query);
+        Reading.find({
+          $or: query,
+          time: {
+            $gt: startDate,
+            $lt: endDate
+          }
+        }, function (err, readings) {
+          if (err)
+            res.sendStatus(500);
+          else {
+            var fields = [
+              'controller',
+              'bus',
+              'sensor_addr',
+              'time',
+              'temp'
+            ];
+            json2csv({data: readings, fields: fields}, function(err, csv) {
+              if (err) {
+                res.status(500).send({msg:err});
+              }
+              else {
+                var filename = randomString(20);
+                fs.writeFile(filename, csv, function (err) {
+                  if (err)
+                    res.sendStatus(500);
+                  else {
+                    res.sendFile(__dirname + '/' + filename, function () {
+                      fs.unlinkSync(filename);
+                    });
+                  }
+                });
+              }
+            });
+          }
+        });
       });
     }
     checkControllerAccess(res, controller, user, ifOwner);

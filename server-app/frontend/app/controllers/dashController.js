@@ -377,7 +377,8 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     
     var range = $scope.exportRange;
     var startDate, endDate;
-    if (!range) {
+    console.log(range);
+    if (!range || range && (!range.start && !range.end)) {
       startDate = encodeURIComponent(0);
       endDate = encodeURIComponent(new Date().getTime());
     }
@@ -391,7 +392,8 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     }
     
     var ticket = JSON.parse($cookies.get('ticket'));
-    $http.post('/api/sensors/export/all/' + startDate + '/' + endDate, {ticket: ticket})
+    var facility = encodeURIComponent($scope.currentFacility);
+    $http.post('/api/sensors/export/byfacility/' + facility + '/' + startDate + '/' + endDate, {ticket: ticket})
     .success(function (data, status, headers, config) {
       var a = document.createElement('a');
       var file = new Blob([data], {type: 'text/csv'});
