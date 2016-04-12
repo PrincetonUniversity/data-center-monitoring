@@ -3,6 +3,7 @@
 var cont = angular.module('dcsense.controllers');
 
 cont.controller('dashController', function ($scope, $filter, $http, $location, $cookies) {
+  document.title = 'Dashboard | Data Center Monitor';
 
   $scope.dateIdx = 0;
   $scope.loading = true;

@@ -3,6 +3,8 @@
 var cont = angular.module('dcsense.controllers');
 
 cont.controller('loginController', function ($scope, $filter, $http, $location) {
+  
+  document.title = 'Data Center Monitor from Princeton University';
 
   $.cookie.json = true;
 

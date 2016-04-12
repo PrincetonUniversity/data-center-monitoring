@@ -4,6 +4,8 @@ var cont = angular.module('dcsense.controllers');
 
 cont.controller('adminController', function ($scope, $filter, $http, $location, $cookies) {
 
+  document.title = 'Admin Panel | Data Center Monitor';
+
   $scope.user = {
     username: '',
     password: '',
