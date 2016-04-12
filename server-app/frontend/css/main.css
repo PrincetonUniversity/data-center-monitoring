@@ -323,17 +323,17 @@ input[type=text], textarea
   top: 0;
   left: 0;
   width: 100%;
-  padding: 2em 2em 2em 0.8em;
+  padding: 2em 1em 1em 0.4em;
 }
 
 .readings-display .cabinet .cabinet-sensors .sensor
 {
   margin: 1.6em auto;
   text-align: center;
-  padding: 0.5em;
+  padding: .5em 0;
 }
 
-.readings-display .cabinet .cabinet-sensors .sensor span
+.readings-display .cabinet .cabinet-sensors .sensor .sensor-text
 {
   padding: 0.5em;
   background: rgba(255,255,255,0.8);
@@ -377,7 +377,7 @@ button i
   margin-top: -3em;
   width: 30em;
   padding: 1em;
-  background: rgba(255,255,255,0.8);
+  background: #eee;
   border-radius: 1em;
   -webkit-box-shadow: 0px 10px 30px 0px rgba(0, 0, 0, 0.7);
   -moz-box-shadow:    0px 10px 30px 0px rgba(0, 0, 0, 0.7);

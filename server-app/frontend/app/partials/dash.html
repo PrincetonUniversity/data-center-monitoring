@@ -131,7 +131,19 @@
           <div class="cabinet-sensors">
             <div class="sensor" ng-repeat="bus in cabinet.bus track by $index"
                  ng-click="sensorClick($parent.$index + '-' + $index)">
-              <span ng-class="{'sensor-highlight' : currentSensor == $parent.$index + '-' + $index}">{{CtoF(readingsBySensor[bus + '-' + cabinet.addr[$index]])}}</span>
+              <span ng-class="{'sensor-highlight' : currentSensor == $parent.$index + '-' + $index}">
+                <span class="sensor-text" ng-hide="cabinetMode != 'view'">
+                  {{CtoF(readingsBySensor[bus + '-' + cabinet.addr[$index]])}}
+                </span>
+                <span ng-hide="cabinetMode != 'mapping'">
+                  <span class="sensor-text" ng-hide="bus != 0 && cabinet.addr[$index] != 0">
+                    No sensor.
+                  </span>
+                  <span class="sensor-text" ng-hide="bus == 0 || cabinet.addr[$index] == 0">
+                    Bus: {{bus}}, Addr: {{cabinet.addr[$index]}}
+                  </span>
+                </span>
+              </span>
             </div>
           </div>
         </div>
@@ -146,6 +158,7 @@
           Sensor Locations <i class="fa fa-unlock"></i>
         </button>
       </div>
+      <div id="graph1" class="line-graph" style="position:relative;width:100%;height:400px"></div>
     </div>
     <!-- Table View -->
     <div class="readings-display" ng-hide="displayMode != 'table'">
@@ -205,9 +218,6 @@
     <div class="readings-display" ng-hide="displayMode != 'export'">
       <button ng-click="export()">Export</button>
     </div>
-  </section>
-  <section>
-    	<div id="graph1" class="line-graph" style="position:relative;width:100%;height:400px"></div>
   </section>
   <button logout>Logout</button>
 </div>
