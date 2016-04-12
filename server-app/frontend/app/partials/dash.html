@@ -216,7 +216,21 @@
       </table>
     </div>
     <div class="readings-display" ng-hide="displayMode != 'export'">
-      <button ng-click="export()">Export</button>
+      <h3>Export Sensor Data</h3>
+      <p>Use this tool to generate a CSV document containing all available data for your facility. </p>
+      <form>
+        <div class="form-group col-md-6">
+          <label>Start date:</label>
+          <input class="form-control" type="date" ng-model="exportRange.start">
+        </div>
+        <div class="form-group col-md-6">
+          <label>End date:</label>
+          <input class="form-control" type="date" ng-model="exportRange.end">
+        </div>
+        <div class="form-group">
+          <button ng-click="export()" class="btn btn-success btn-lg">Export</button>
+        </div>
+      </form>
     </div>
   </section>
   <button logout>Logout</button>

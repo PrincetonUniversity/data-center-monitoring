@@ -374,8 +374,22 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
   };
   
   $scope.export = function () {
-    var startDate = encodeURIComponent(0);
-    var endDate = encodeURIComponent(new Date().getTime());
+    
+    var range = $scope.exportRange;
+    var startDate, endDate;
+    if (!range) {
+      startDate = encodeURIComponent(0);
+      endDate = encodeURIComponent(new Date().getTime());
+    }
+    else if (range && (!range.start || !range.end)) {
+      alert('Select both a start and end date or select neither.');
+      return;
+    }
+    else {
+      startDate = range.start.getTime();
+      endDate = range.end.getTime();
+    }
+    
     var ticket = JSON.parse($cookies.get('ticket'));
     $http.post('/api/sensors/export/all/' + startDate + '/' + endDate, {ticket: ticket})
     .success(function (data, status, headers, config) {
