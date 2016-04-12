@@ -10,6 +10,7 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
   $scope.controllerNameEditing = false;
   $scope.cabinetMode = 'view';
   $scope.alertThreshold = 70;
+  $scope.exportLoading = false;
 
   $scope.CtoF = function (c) {
     if (c && typeof(c) != 'string') {
@@ -391,6 +392,8 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
       endDate = range.end.getTime();
     }
     
+    $scope.exportLoading = true;
+    
     var ticket = JSON.parse($cookies.get('ticket'));
     var facility = encodeURIComponent($scope.currentFacility);
     $http.post('/api/sensors/export/byfacility/' + facility + '/' + startDate + '/' + endDate, {ticket: ticket})
@@ -400,9 +403,11 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
       a.href = URL.createObjectURL(file);
       a.download = 'dcsense.csv';
       a.click();
+      $scope.exportLoading = false;
     })
     .error(function (data, status, headers, config) {
       alert('Server error.');
+      $scope.exportLoading = false;
     });
   }
 

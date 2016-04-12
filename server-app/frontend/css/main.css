@@ -355,7 +355,7 @@ input[type=text], textarea
   text-align: center;
 }
 
-#data-loading
+.data-loading
 {
   margin: 10% 0;
   font-size: 6em;

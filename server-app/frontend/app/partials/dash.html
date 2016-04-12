@@ -56,7 +56,7 @@
     </form>
   </section>
   <!-- Loading Indicator -->
-  <section id="data-loading" ng-hide="!loading">
+  <section class="data-loading" ng-hide="!loading">
     <span>
       <i class="fa fa-refresh fa-spin"></i>
     </span>
@@ -222,7 +222,12 @@
     <div class="readings-display" ng-hide="displayMode != 'export'">
       <h3>Export Sensor Data</h3>
       <p>Use this tool to generate a CSV document containing all available data for your facility. </p>
-      <form>
+      <section class="data-loading" ng-hide="!exportLoading">
+        <span>
+          <i class="fa fa-refresh fa-spin"></i>
+        </span>
+      </section>
+      <form ng-hide="exportLoading">
         <div class="form-group col-md-6">
           <label>Start date:</label>
           <input class="form-control" type="date" ng-model="exportRange.start">
