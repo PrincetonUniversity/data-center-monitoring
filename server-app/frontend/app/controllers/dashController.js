@@ -352,7 +352,7 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     $http.post('/api/sensors/readings/bysensor/' + controller + '/' + addr + '/' + bus + '/2weeks', {ticket: ticket})
     .success(function (data, status, headers, config) {
       console.log(data);
-      $('#graph1').empty();
+      $scope.clearGraph();
       var l1 = new LineGraph({containerId: 'graph1', data: data});
     })
     .error(function (data, status, headers, config) {
@@ -411,6 +411,10 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
       $scope.exportLoading = false;
     });
   }
+  
+  $scope.clearGraph = function () {
+    $('#graph1').empty();
+  };
 
   $scope.fetchFacilities();
 

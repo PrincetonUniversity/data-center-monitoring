@@ -6,7 +6,7 @@
         <i class="fa fa-info-circle"></i>
       </a>
     </p>
-    <select class="controller-select" ng-model="currentFacility" ng-change="fetchControllers()">
+    <select class="controller-select" ng-model="currentFacility" ng-change="fetchControllers(); clearGraph()">
       <option ng-repeat="facility in facilities" value="{{facility.name}}">{{facility.name}}</option>
     </select>
   </section>
@@ -18,7 +18,7 @@
           <i class="fa fa-info-circle"></i>
         </a>
       </p>
-      <select class="controller-select" ng-model="currentControllerIdx" ng-change="fetchDates()" convert-to-number>
+      <select class="controller-select" ng-model="currentControllerIdx" ng-change="fetchDates(); clearGraph()" convert-to-number>
         <option ng-repeat="controller in controllers track by $index" value="{{$index}}">{{controller.name}}</option>
       </select>
       <a id="edit-controller-name" ng-click="editController()" class="dc-tooltip" alt="Click to edit the name of this cabinet">
