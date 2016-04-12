@@ -89,7 +89,7 @@ input[type=text], textarea
   text-align: justify;
 }
 
-#page-dash #controller-select
+#page-dash .controller-select
 {
   background: none;
   border: none;
