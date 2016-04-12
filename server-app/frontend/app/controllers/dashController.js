@@ -332,6 +332,11 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
   $scope.displaySensorGraph = function (sensor) {
     var ticket = JSON.parse($cookies.get('ticket'));
     
+    if ($scope.currentSensor == sensor) {
+      $scope.currentSensor = '';
+      return;
+    }
+    
     $scope.currentSensor = sensor;
     var controller = encodeURIComponent($scope.currentControllerId());
     var layout = $scope.currentControllerLayout();
