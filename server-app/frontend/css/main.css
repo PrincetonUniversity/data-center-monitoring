@@ -117,7 +117,7 @@ input[type=text], textarea
   position: relative;
   text-decoration: none;
   top: 0px;
-  left: 4px;
+  left: 14px;
   color: #666;
   font-size: .85em;
 }
@@ -130,7 +130,7 @@ input[type=text], textarea
   border-radius: 5px;
   top: -5px;
   color: #fff;
-  left: 20px;
+  left: 30px;
   content: attr(alt);
   padding: .75em 1em;
   position: absolute;
@@ -166,7 +166,7 @@ input[type=text], textarea
   border-color: transparent rgba(0,0,0,.9);
   border-width: 6px 6px 6px 0;
   bottom: 20px;
-  left: 14px;
+  left: 24px;
   content: "";
   position: absolute;
   z-index: 99;
@@ -444,4 +444,10 @@ form#alert-controller
   text-align: center;
   font-size: 1.4em;
   margin-top: 2em;
+}
+
+#page-dash #refresh-button
+{
+  float: right;
+  display: block;
 }

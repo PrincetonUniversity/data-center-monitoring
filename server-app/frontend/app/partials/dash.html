@@ -64,6 +64,10 @@
   <!-- Readings Display Section -->
   <section id="data-section" ng-hide="loading">
     <p class="dc-label">Climate Data</p>
+    <a ng-click="fetchDates()" id="refresh-button" class="btn btn-default dc-tooltip"
+            alt="Check for new data">
+      <i class="fa fa-refresh"></i>
+    </a>
     <div id="date-control">
       <div id="date-display">
         <p class="centered date">{{readingsDate().date}}</p>
