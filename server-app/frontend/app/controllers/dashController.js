@@ -206,6 +206,9 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
 
   $scope.commitController = function () {
     // If user is reducing cabinet group width
+    if (!$scope.newController) {
+      return;
+    }
     if ($scope.newController.width < $scope.currentControllerWidth()) {
       if (!confirm('Reducing the width of your cabinet group will delete sensor ' 
         + 'mappings for the rightmost cabinet(s). Are you sure you want to ' 
@@ -442,6 +445,37 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     $scope.currentSensor = '';
     $scope.currentMapping = '';
   };
+  
+  function getSensorLocation (sensor) {
+    console.log(sensor);
+    var layout = $scope.currentControllerLayout();
+    var position = {
+      cabinet: -1,
+      sensor: -1
+    };
+    for (var i = 0; i < layout.length; i++) {
+      var cabinet = layout[i];
+      for (var j = 0; j < cabinet.addr.length; j++) {
+        if (cabinet.addr[j] == sensor.addr && cabinet.bus[j] == sensor.bus) {
+          position = {cabinet: i, sensor: j};
+          return position;
+        }
+      }
+    }
+    return position;
+  };
+  
+  $scope.selectSensor = function (sensor) {
+    var position = getSensorLocation(sensor);
+    if (position.cabinet != -1) {
+      $scope.displayMode = 'server';
+      $scope.disableSensorMapping();
+      $scope.displaySensorGraph(position.cabinet + '-' + position.sensor);
+    }
+    else {
+      alert('You haven\'t mapped this sensor to a position on this cabinet group yet. You can map sensors from the Cabinet tab.');
+    }
+  }
 
   $scope.fetchFacilities();
 

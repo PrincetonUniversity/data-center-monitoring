@@ -166,7 +166,7 @@
     </div>
     <!-- Table View -->
     <div class="readings-display" ng-hide="displayMode != 'table'">
-      <table class="table">
+      <table class="table table-hover">
         <thead>
           <tr>
             <th>Controller MAC</th>
@@ -179,7 +179,8 @@
         <tbody>
           <tr ng-repeat="reading in readings"
               ng-class="{'warning': CtoF(reading.temp) > 70,
-                         'danger' : CtoF(reading.temp) > 80}">
+                         'danger' : CtoF(reading.temp) > 80}"
+              ng-click="selectSensor({bus: reading.bus, addr: reading.sensor_addr})">
             <td>{{reading.controller}}</td>
             <td>{{reading.bus}}</td>
             <td>{{reading.sensor_addr}}</td>
@@ -213,7 +214,7 @@
         </div>
       </div>
       <p class="centered" id="no-alerts-message" ng-hide="alertReadings.length > 0">No readings above {{lastAlert.threshold}}°F were recorded in the <span ng-hide="lastAlert.start || lastAlert.end">last 2 weeks</span><span ng-hide="!(lastAlert.start || lastAlert.end)">the specified timeframe</span> for this server cabinet group.</p>
-      <table class="table" ng-hide="alertReadings.length == 0">
+      <table class="table table-hover" ng-hide="alertReadings.length == 0">
         <thead>
           <tr>
             <th>Bus</th>
@@ -225,7 +226,8 @@
         <tbody>
           <tr ng-repeat="reading in alertReadings"
               ng-class="{'warning': CtoF(reading.temp) > 70,
-                         'danger' : CtoF(reading.temp) > 80}">
+                         'danger' : CtoF(reading.temp) > 80}"
+              ng-click="selectSensor({bus: reading.bus, addr: reading.sensor_addr})">
             <td>{{reading.bus}}</td>
             <td>{{reading.sensor_addr}}</td>
             <td>{{formatDate(reading.time)}}</td>
