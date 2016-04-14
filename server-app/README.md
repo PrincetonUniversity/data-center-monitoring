@@ -14,7 +14,7 @@ It allows both facility owners (i.e. HPCRC staff, EE dept. server room managers,
  1. **Install Dependencies:** Make sure Node.js and MongoDB are installed on the server.
  2. **Start MongoDB:** Either install MongoDB as a service, or run `$ mongod &` to start the MongoDB server in the background.
  3. **Install Node.js Server Dependencies:** From the `/backend` directory, run `$ npm install`.
- 4. **Start the Server:** From the `/backend` directory, run `$ nodejs server.js > ~/server.log 2> ~/server.err &`. This will run the server in the background and place the output in files called `server.log` and `server.err` in your home directory. 
+ 4. **Start the Server:** From the `/backend` directory, run `$ nodejs server.js local > ~/server.log 2> ~/server.err &`. This will run the server in the background and place the output in files called `server.log` and `server.err` in your home directory. Note that the `local` argument is used here to tell the server to connect to the MongoDB instance running locally, rather than the production database, which is hosted at `dcsense-data.princeton.edu`.
  5. **Create a Temporary Admin Account:** You'll need an admin account to log into the app and create more users. You'll need to start with a temporary admin account to be able to access the inside of the app at first. You can delete the account later, but the only way to get started is to manually insert the record yourself.
  
  ```bash
