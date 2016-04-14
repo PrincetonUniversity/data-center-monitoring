@@ -434,7 +434,8 @@ button i
   border: 3px solid #666;
 }
 
-form#alert-controller
+#alert-controller,
+#alert-controller form
 {
   text-align: center;
 }
@@ -450,4 +451,9 @@ form#alert-controller
 {
   float: right;
   display: block;
+}
+
+#alert-controller .form-group
+{
+  margin-bottom: .5em;
 }

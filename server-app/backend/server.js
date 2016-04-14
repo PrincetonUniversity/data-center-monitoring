@@ -531,7 +531,7 @@ app.post('/sensors/readings/bysensor/:controller/:addr/:bus/2weeks', function (r
 
 // Sends all readings above a given threshold 'temp' for the given 'controller'
 // in the last 2 weeks 
-app.post('/sensors/readings/hightemps/:controller/:temp/2weeks', function (req, res) {
+app.post('/sensors/readings/hightemps/:controller/:temp/:startDate/:endDate', function (req, res) {
   var ticket = req.body.ticket;
   var accessLevel = accessLevels.user;
   function ifAuthorized() {
@@ -539,15 +539,14 @@ app.post('/sensors/readings/hightemps/:controller/:temp/2weeks', function (req, 
     var controller = decodeURIComponent(req.params.controller);
     var thresholdF = parseFloat(decodeURIComponent(req.params.temp));
     var thresholdC = (thresholdF - 32) * 5/9;
-    var twoWeeksMS = 1000*60*60*24*14;
-    var twoWeeksAgo = new Date(new Date().getTime() - twoWeeksMS);
+    var startDate = new Date(parseInt(decodeURIComponent(req.params.startDate)));
+    var endDate = new Date(parseInt(decodeURIComponent(req.params.endDate)));
     function ifOwner() {
       Reading.find({
         'controller': controller,
         'temp': {$gt: thresholdC},
-        'time': {$gt: twoWeeksAgo}})
+        'time': {$gt: startDate, $lt: endDate}})
         .sort({time: -1})
-        .limit(2048)
       .exec(
         function (err, readings) {
           res.send(readings);

@@ -10,7 +10,9 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
   $scope.displayMode = 'server';
   $scope.controllerNameEditing = false;
   $scope.cabinetMode = 'view';
-  $scope.alertThreshold = 70;
+  $scope.alert = {
+    threshold: 70
+  };
   $scope.exportLoading = false;
 
   $scope.CtoF = function (c) {
@@ -364,11 +366,35 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
   $scope.getAlerts = function () {
     var ticket = JSON.parse($cookies.get('ticket'));
     var controller = encodeURIComponent($scope.currentControllerId());
-    var threshold = encodeURIComponent($scope.alertThreshold);
-    $http.post('/api/sensors/readings/hightemps/' + controller + '/' + threshold + '/2weeks', {ticket: ticket})
+    var threshold = encodeURIComponent($scope.alert.threshold);
+    
+    var range = $scope.alert;
+    var startDate, endDate;
+    var noRangeSpecified;
+    if (!range.start && !range.end) {
+      startDate = encodeURIComponent(new Date().getTime() - 2*7*24*60*60*1000);
+      endDate = encodeURIComponent(new Date().getTime());
+      noRangeSpecified = true;
+    }
+    else if ((range.end && !range.start) || (range.start && !range.end)) {
+      alert('Select both a start and end date or select neither.');
+      return;
+    }
+    else {
+      startDate = range.start.getTime();
+      endDate = range.end.getTime();
+      noRangeSpecified = false;
+    }
+    
+    $http.post('/api/sensors/readings/hightemps/' + controller + '/' + threshold + '/' + startDate + '/' + endDate, {ticket: ticket})
     .success(function (data, status, headers, config) {
       $scope.alertReadings = data;
-      $scope.lastAlertThreshold = $scope.alertThreshold;
+      $scope.lastAlert = {
+        threshold: threshold,
+        start: (noRangeSpecified) ? null : startDate,
+        end: (noRangeSpecified) ? null : endDate
+      };
+      //$scope.lastAlert.threshold = 
     })
     .error(function (data, status, headers, config) {
       alert('Server error.');
@@ -379,7 +405,6 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     
     var range = $scope.exportRange;
     var startDate, endDate;
-    console.log(range);
     if (!range || range && (!range.start && !range.end)) {
       startDate = encodeURIComponent(0);
       endDate = encodeURIComponent(new Date().getTime());

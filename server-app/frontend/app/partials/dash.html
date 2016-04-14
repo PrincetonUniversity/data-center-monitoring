@@ -189,15 +189,30 @@
         </tbody>
       </table>
     </div>
+    <!-- Alert View -->
     <div class="readings-display" ng-hide="displayMode != 'alerts'">
-      <form class="form-inline" id="alert-controller">
-        <div class="form-group">
-          <label>Get all readings above this temperature (°F): </label>
-          <input ng-model="alertThreshold" type="number" class="form-control">
+      <div id="alert-controller">
+        <form class="form-inline">
+          <div class="form-group">
+            <label>Get all readings above this temperature (°F): </label>
+            <input ng-model="alert.threshold" type="number" class="form-control">
+          </div>
+        </form>
+        <form class="form-inline">
+          <div class="form-group col-md-6">
+            <label>Start date:</label>
+            <input class="form-control" type="date" ng-model="alert.start">
+          </div>
+          <div class="form-group col-md-6">
+            <label>End date:</label>
+            <input class="form-control" type="date" ng-model="alert.end">
+          </div>
+        </form>
+        <div class="form-group centered">
           <button ng-click="getAlerts()" type="submit" class="btn btn-sm btn-success">Go</button>
         </div>
-      </form>
-      <p class="centered" id="no-alerts-message" ng-hide="alertReadings.length > 0">No readings above {{lastAlertThreshold}}°F were recorded in the last 2 weeks for this server cabinet group.</p>
+      </div>
+      <p class="centered" id="no-alerts-message" ng-hide="alertReadings.length > 0">No readings above {{lastAlert.threshold}}°F were recorded in the <span ng-hide="lastAlert.start || lastAlert.end">last 2 weeks</span><span ng-hide="!(lastAlert.start || lastAlert.end)">the specified timeframe</span> for this server cabinet group.</p>
       <table class="table" ng-hide="alertReadings.length == 0">
         <thead>
           <tr>
@@ -219,6 +234,7 @@
         </tbody>
       </table>
     </div>
+    <!-- Export Tab -->
     <div class="readings-display" ng-hide="displayMode != 'export'">
       <h3>Export Sensor Data</h3>
       <p>Use this tool to generate a CSV document containing all available data for your facility. </p>
