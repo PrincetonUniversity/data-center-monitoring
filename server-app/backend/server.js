@@ -14,6 +14,7 @@ var compression = require('compression');
 var async = require('async');
 var fs = require('fs');
 var json2csv = require('json2csv');
+var auth = require('./auth.js'); // private mongodb credentials
 
 var static = express();
 var app = express();
@@ -34,7 +35,8 @@ static.use('/api', app);
 
 // MongoDB Setup
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/dcsense');
+var host = 'dcsense-data.princeton.edu';
+mongoose.connect('mongodb://' + mongoCreds.user + ':' + mongoCreds.pwd + '@' + host + '/dcsense');
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function (callback) {
