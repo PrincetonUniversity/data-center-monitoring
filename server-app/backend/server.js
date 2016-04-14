@@ -35,8 +35,15 @@ static.use('/api', app);
 
 // MongoDB Setup
 var mongoose = require('mongoose');
-var host = 'dcsense-data.princeton.edu';
-mongoose.connect('mongodb://' + mongoCreds.user + ':' + mongoCreds.pwd + '@' + host + '/dcsense');
+var remoteHost = 'dcsense-data.princeton.edu';
+// Connect to local MongoDB if 'local' argument is specified at runtime, else
+// connect to remote host
+if (process.argv.length > 2 && process.argv[2] == 'local') {
+  mongoose.connect('mongodb://localhost/dcsense');  
+} else {
+  mongoose.connect('mongodb://' + mongoCreds.user + ':' + mongoCreds.pwd + '@' 
+                   + remoteHost + '/dcsense');
+}
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function (callback) {
