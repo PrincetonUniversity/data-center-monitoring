@@ -457,3 +457,8 @@ button i
 {
   margin-bottom: .5em;
 }
+
+table.table-clickable tr td
+{
+  cursor: pointer;
+}

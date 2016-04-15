@@ -301,7 +301,7 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
   
   $scope.currentSensor = '';
   $scope.currentSensorCabinet = function () {
-    if ($scope.currentSensor == '')
+    if (!$scope.currentSensor || $scope.currentSensor == '')
       return;
     return $scope.currentSensor.split('-')[0];
   };
@@ -344,6 +344,7 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
       return;
     }
     
+    console.log(sensor);
     $scope.currentSensor = sensor;
     var controller = encodeURIComponent($scope.currentControllerId());
     var layout = $scope.currentControllerLayout();
@@ -397,7 +398,6 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
         start: (noRangeSpecified) ? null : startDate,
         end: (noRangeSpecified) ? null : endDate
       };
-      //$scope.lastAlert.threshold = 
     })
     .error(function (data, status, headers, config) {
       alert('Server error.');
@@ -470,7 +470,9 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     if (position.cabinet != -1) {
       $scope.displayMode = 'server';
       $scope.disableSensorMapping();
-      $scope.displaySensorGraph(position.cabinet + '-' + position.sensor);
+      if ($scope.currentSensor != position.cabinet + '-' + position.sensor) {
+        $scope.displaySensorGraph(position.cabinet + '-' + position.sensor);
+      }
     }
     else {
       alert('You haven\'t mapped this sensor to a position on this cabinet group yet. You can map sensors from the Cabinet tab.');
