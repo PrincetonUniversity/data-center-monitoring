@@ -227,3 +227,6 @@ pip-log.txt
 # VS Code Files
 **/.vscode/*
 server-app/backend/auth.js
+
+# Eagle Lock Files
+**/*.lck
