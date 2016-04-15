@@ -26,7 +26,7 @@ def pyrun():
     #    print board_status['ioerr_addr']
 
     # Send readings to server (non-blocking)
-    com.send_to_server(readings)
+    com.send_to_server(readings, board_status)
 
 # Re-run every second
 schedule.every(5).seconds.do(pyrun)
