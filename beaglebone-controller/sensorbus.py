@@ -78,8 +78,9 @@ class SensorBus:
             except IOError, err:
                 self.status['err'] = True
                 self.status['type'] = "IOError"
-                self.status['err'] = err
+                self.status['msg'] = err
                 self.status['ioerr_addr'] = addrs[i]
+                self.status['ioerr_bus'] = self.bus
                 self.status['num_tries'] += 1
 
         return readings

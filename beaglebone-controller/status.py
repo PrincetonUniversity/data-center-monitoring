@@ -16,5 +16,6 @@ class Status:
             'type' : '',
             'msg' : '',
             'ioerr_addr' : -1,
+            'ioerr_bus': -1,
             'num_tries' : 0
         }
