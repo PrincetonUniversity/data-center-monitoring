@@ -2,6 +2,8 @@
 
 This directory contains files related to the circuit we build on the [BeagleBone Black Proto Cape from SparkFun](https://www.sparkfun.com/products/12774) in order to provide pull-up resistors for the 2 I<sup>2</sup>C buses and connections between BeagleBone pins and connector headers for the bus cables.
 
+![](/report/figures/cape.jpg)
+
 ## Schematic
 
 ![](/beaglebone-cape/beaglebone-cape.png)
