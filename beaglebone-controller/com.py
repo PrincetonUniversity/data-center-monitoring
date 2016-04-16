@@ -13,10 +13,10 @@ def send_to_server(data, board_status):
         newpid = os.fork()
         if newpid == 0:
             try:
-                payload = json.dumps(data)
+                payload = data
                 payload['status'] = board_status
                 headers = {'content-type': 'application/json'}
-                requests.post(server, headers=headers, data=payload)
+                requests.post(server, headers=headers, data=json.dumps(payload))
             except ConnectionError, err:
                 sys.stderr.write('Could not contact server:\n' + str(err))
             os._exit(0) # Kill child process
