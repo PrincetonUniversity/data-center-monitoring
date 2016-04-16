@@ -469,10 +469,10 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     var position = getSensorLocation(sensor);
     if (position.cabinet != -1) {
       $scope.displayMode = 'server';
-      $scope.disableSensorMapping();
-      if ($scope.currentSensor != position.cabinet + '-' + position.sensor) {
+      if ($scope.currentMapping != '')
+        $scope.disableSensorMapping();
+      if ($scope.currentSensor != position.cabinet + '-' + position.sensor)
         $scope.displaySensorGraph(position.cabinet + '-' + position.sensor);
-      }
     }
     else {
       alert('You haven\'t mapped this sensor to a position on this cabinet group yet. You can map sensors from the Cabinet tab.');
