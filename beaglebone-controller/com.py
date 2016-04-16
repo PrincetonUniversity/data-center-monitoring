@@ -13,8 +13,10 @@ def send_to_server(data, board_status):
         newpid = os.fork()
         if newpid == 0:
             try:
-                payload = data
-                payload['status'] = board_status
+                payload = {
+                    'data': data,
+                    'status': board_status
+                }
                 headers = {'content-type': 'application/json'}
                 requests.post(server, headers=headers, data=json.dumps(payload))
             except ConnectionError, err:

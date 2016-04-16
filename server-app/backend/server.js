@@ -322,7 +322,7 @@ app.post('/auth/sessionstatus', function (req, res) {
  * to query quickly. The 'readingcounters' collection is used to facilitate the
  * storage of one reading every 10 minutes for each BeagleBone separately. */
 app.post('/sensors/submitreadings', function (req, res) {
-  var readings = req.body;
+  var readings = req.body.data;
   console.log(readings.length + ' readings received from ' + req.connection.remoteAddress);
   var controller = req.body[0].controller;
 
