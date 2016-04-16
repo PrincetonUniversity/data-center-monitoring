@@ -3866,6 +3866,102 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 </deviceset>
 </devicesets>
 </library>
+<library name="con-molex">
+<description>&lt;b&gt;Molex Connectors&lt;/b&gt;&lt;p&gt;
+&lt;author&gt;Created by librarian@cadsoft.de&lt;/author&gt;</description>
+<packages>
+<package name="87758-1016">
+<description>&lt;b&gt;10 Pin - 2mm Dual Row Single Wafer, Vertical T/H HDR&lt;/b&gt;&lt;p&gt;
+Source: http://www.molex.com/pdm_docs/sd/877580616_sd.pdf</description>
+<wire x1="-4.85" y1="-1.9" x2="4.85" y2="-1.9" width="0.2032" layer="21"/>
+<wire x1="4.85" y1="-1.9" x2="4.85" y2="-0.4" width="0.2032" layer="21"/>
+<wire x1="4.85" y1="0.4" x2="4.85" y2="1.9" width="0.2032" layer="21"/>
+<wire x1="4.85" y1="1.9" x2="-4.85" y2="1.9" width="0.2032" layer="21"/>
+<wire x1="-4.85" y1="1.9" x2="-4.85" y2="0.4" width="0.2032" layer="21"/>
+<wire x1="-4.85" y1="-0.4" x2="-4.85" y2="-1.9" width="0.2032" layer="21"/>
+<wire x1="-4.85" y1="0.4" x2="-4.85" y2="-0.4" width="0.2032" layer="21" curve="-129.184564"/>
+<wire x1="4.85" y1="-0.4" x2="4.85" y2="0.4" width="0.2032" layer="21" curve="-129.184564"/>
+<pad name="1" x="-4" y="-1" drill="0.9" diameter="1.27"/>
+<pad name="2" x="-4" y="1" drill="0.9" diameter="1.27"/>
+<pad name="3" x="-2" y="-1" drill="0.9" diameter="1.27"/>
+<pad name="4" x="-2" y="1" drill="0.9" diameter="1.27"/>
+<pad name="5" x="0" y="-1" drill="0.9" diameter="1.27"/>
+<pad name="6" x="0" y="1" drill="0.9" diameter="1.27"/>
+<pad name="7" x="2" y="-1" drill="0.9" diameter="1.27"/>
+<pad name="8" x="2" y="1" drill="0.9" diameter="1.27"/>
+<pad name="9" x="4" y="-1" drill="0.9" diameter="1.27"/>
+<pad name="10" x="4" y="1" drill="0.9" diameter="1.27"/>
+<text x="-4.65" y="-1.75" size="0.3048" layer="21" font="vector">1</text>
+<text x="-4.62" y="-3.81" size="1.27" layer="25">&gt;NAME</text>
+<text x="1.73" y="-3.81" size="1.27" layer="27">&gt;VALUE</text>
+<rectangle x1="-4.25" y1="-1.25" x2="-3.75" y2="-0.75" layer="51"/>
+<rectangle x1="-4.25" y1="0.75" x2="-3.75" y2="1.25" layer="51"/>
+<rectangle x1="-2.25" y1="-1.25" x2="-1.75" y2="-0.75" layer="51"/>
+<rectangle x1="-2.25" y1="0.75" x2="-1.75" y2="1.25" layer="51"/>
+<rectangle x1="-0.25" y1="-1.25" x2="0.25" y2="-0.75" layer="51"/>
+<rectangle x1="-0.25" y1="0.75" x2="0.25" y2="1.25" layer="51"/>
+<rectangle x1="1.75" y1="-1.25" x2="2.25" y2="-0.75" layer="51"/>
+<rectangle x1="1.75" y1="0.75" x2="2.25" y2="1.25" layer="51"/>
+<rectangle x1="3.75" y1="-1.25" x2="4.25" y2="-0.75" layer="51"/>
+<rectangle x1="3.75" y1="0.75" x2="4.25" y2="1.25" layer="51"/>
+</package>
+</packages>
+<symbols>
+<symbol name="MV">
+<wire x1="1.27" y1="0" x2="0" y2="0" width="0.6096" layer="94"/>
+<text x="2.54" y="-0.762" size="1.524" layer="95">&gt;NAME</text>
+<text x="-0.762" y="1.397" size="1.778" layer="96">&gt;VALUE</text>
+<pin name="S" x="-2.54" y="0" visible="off" length="short" direction="pas"/>
+</symbol>
+<symbol name="M">
+<wire x1="1.27" y1="0" x2="0" y2="0" width="0.6096" layer="94"/>
+<text x="2.54" y="-0.762" size="1.524" layer="95">&gt;NAME</text>
+<pin name="S" x="-2.54" y="0" visible="off" length="short" direction="pas"/>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="87758-1016" prefix="X">
+<description>&lt;b&gt;10 Pin - 2mm Dual Row Single Wafer, Vertical T/H HDR&lt;/b&gt;&lt;p&gt;
+Source: http://www.molex.com/pdm_docs/sd/877580616_sd.pdf</description>
+<gates>
+<gate name="-1" symbol="MV" x="-10.16" y="5.08" addlevel="always"/>
+<gate name="-2" symbol="MV" x="10.16" y="5.08" addlevel="always"/>
+<gate name="-3" symbol="M" x="-10.16" y="2.54" addlevel="always"/>
+<gate name="-4" symbol="M" x="10.16" y="2.54" addlevel="always"/>
+<gate name="-5" symbol="M" x="-10.16" y="0" addlevel="always"/>
+<gate name="-6" symbol="M" x="10.16" y="0" addlevel="always"/>
+<gate name="-7" symbol="M" x="-10.16" y="-2.54" addlevel="always"/>
+<gate name="-8" symbol="M" x="10.16" y="-2.54" addlevel="always"/>
+<gate name="-9" symbol="M" x="-10.16" y="-5.08" addlevel="always"/>
+<gate name="-10" symbol="M" x="10.16" y="-5.08" addlevel="always"/>
+</gates>
+<devices>
+<device name="" package="87758-1016">
+<connects>
+<connect gate="-1" pin="S" pad="1"/>
+<connect gate="-10" pin="S" pad="10"/>
+<connect gate="-2" pin="S" pad="2"/>
+<connect gate="-3" pin="S" pad="3"/>
+<connect gate="-4" pin="S" pad="4"/>
+<connect gate="-5" pin="S" pad="5"/>
+<connect gate="-6" pin="S" pad="6"/>
+<connect gate="-7" pin="S" pad="7"/>
+<connect gate="-8" pin="S" pad="8"/>
+<connect gate="-9" pin="S" pad="9"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="MF" value="MOLEX" constant="no"/>
+<attribute name="MPN" value="87758-1016" constant="no"/>
+<attribute name="OC_FARNELL" value="7472340" constant="no"/>
+<attribute name="OC_NEWARK" value="59J1558" constant="no"/>
+</technology>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -3881,6 +3977,12 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <part name="R2" library="rcl" deviceset="R-US_" device="0207/15" value="5K"/>
 <part name="R3" library="rcl" deviceset="R-US_" device="0207/15" value="5K"/>
 <part name="R4" library="rcl" deviceset="R-US_" device="0207/15" value="5K"/>
+<part name="B1" library="con-molex" deviceset="87758-1016" device="" value="BUS1-HDR">
+<attribute name="MPN" value="BUS1-HDR"/>
+</part>
+<part name="B2" library="con-molex" deviceset="87758-1016" device="" value="BUS2-HDR">
+<attribute name="MPN" value="BUS2-HDR"/>
+</part>
 </parts>
 <sheets>
 <sheet>
@@ -3894,6 +3996,26 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <instance part="R2" gate="G$1" x="81.28" y="73.66" rot="R90"/>
 <instance part="R3" gate="G$1" x="91.44" y="73.66" rot="R90"/>
 <instance part="R4" gate="G$1" x="104.14" y="73.66" rot="R90"/>
+<instance part="B1" gate="-1" x="144.78" y="68.58"/>
+<instance part="B1" gate="-2" x="165.1" y="68.58"/>
+<instance part="B1" gate="-3" x="144.78" y="66.04"/>
+<instance part="B1" gate="-4" x="165.1" y="66.04"/>
+<instance part="B1" gate="-5" x="144.78" y="63.5"/>
+<instance part="B1" gate="-6" x="165.1" y="63.5"/>
+<instance part="B1" gate="-7" x="144.78" y="60.96"/>
+<instance part="B1" gate="-8" x="165.1" y="60.96"/>
+<instance part="B1" gate="-9" x="144.78" y="58.42"/>
+<instance part="B1" gate="-10" x="165.1" y="58.42"/>
+<instance part="B2" gate="-1" x="144.78" y="35.56"/>
+<instance part="B2" gate="-2" x="165.1" y="35.56"/>
+<instance part="B2" gate="-3" x="144.78" y="33.02"/>
+<instance part="B2" gate="-4" x="165.1" y="33.02"/>
+<instance part="B2" gate="-5" x="144.78" y="30.48"/>
+<instance part="B2" gate="-6" x="165.1" y="30.48"/>
+<instance part="B2" gate="-7" x="144.78" y="27.94"/>
+<instance part="B2" gate="-8" x="165.1" y="27.94"/>
+<instance part="B2" gate="-9" x="144.78" y="25.4"/>
+<instance part="B2" gate="-10" x="165.1" y="25.4"/>
 </instances>
 <busses>
 </busses>
@@ -3901,7 +4023,17 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <net name="GND" class="0">
 <segment>
 <pinref part="U$6" gate="P9" pin="DGND@2"/>
-<wire x1="60.96" y1="86.36" x2="190.5" y2="86.36" width="0.1524" layer="91"/>
+<wire x1="60.96" y1="86.36" x2="137.16" y2="86.36" width="0.1524" layer="91"/>
+<pinref part="B1" gate="-1" pin="S"/>
+<wire x1="137.16" y1="86.36" x2="139.7" y2="86.36" width="0.1524" layer="91"/>
+<wire x1="139.7" y1="86.36" x2="190.5" y2="86.36" width="0.1524" layer="91"/>
+<wire x1="142.24" y1="68.58" x2="139.7" y2="68.58" width="0.1524" layer="91"/>
+<wire x1="139.7" y1="68.58" x2="139.7" y2="86.36" width="0.1524" layer="91"/>
+<pinref part="B2" gate="-1" pin="S"/>
+<wire x1="142.24" y1="35.56" x2="137.16" y2="35.56" width="0.1524" layer="91"/>
+<wire x1="137.16" y1="35.56" x2="137.16" y2="86.36" width="0.1524" layer="91"/>
+<junction x="137.16" y="86.36"/>
+<junction x="139.7" y="86.36"/>
 </segment>
 </net>
 <net name="I2C1_SDA" class="0">
@@ -3947,7 +4079,9 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <wire x1="71.12" y1="83.82" x2="81.28" y2="83.82" width="0.1524" layer="91"/>
 <wire x1="81.28" y1="83.82" x2="91.44" y2="83.82" width="0.1524" layer="91"/>
 <wire x1="91.44" y1="83.82" x2="104.14" y2="83.82" width="0.1524" layer="91"/>
-<wire x1="104.14" y1="83.82" x2="190.5" y2="83.82" width="0.1524" layer="91"/>
+<wire x1="104.14" y1="83.82" x2="157.48" y2="83.82" width="0.1524" layer="91"/>
+<wire x1="157.48" y1="83.82" x2="160.02" y2="83.82" width="0.1524" layer="91"/>
+<wire x1="160.02" y1="83.82" x2="190.5" y2="83.82" width="0.1524" layer="91"/>
 <wire x1="104.14" y1="78.74" x2="104.14" y2="83.82" width="0.1524" layer="91"/>
 <pinref part="R3" gate="G$1" pin="2"/>
 <wire x1="91.44" y1="78.74" x2="91.44" y2="83.82" width="0.1524" layer="91"/>
@@ -3958,6 +4092,14 @@ Source: http://www.murata.com .. GRM43DR72E224KW01.pdf</description>
 <junction x="81.28" y="83.82"/>
 <junction x="91.44" y="83.82"/>
 <junction x="104.14" y="83.82"/>
+<pinref part="B1" gate="-10" pin="S"/>
+<wire x1="162.56" y1="58.42" x2="160.02" y2="58.42" width="0.1524" layer="91"/>
+<wire x1="160.02" y1="58.42" x2="160.02" y2="83.82" width="0.1524" layer="91"/>
+<pinref part="B2" gate="-10" pin="S"/>
+<wire x1="162.56" y1="25.4" x2="157.48" y2="25.4" width="0.1524" layer="91"/>
+<wire x1="157.48" y1="25.4" x2="157.48" y2="83.82" width="0.1524" layer="91"/>
+<junction x="157.48" y="83.82"/>
+<junction x="160.02" y="83.82"/>
 </segment>
 </net>
 </nets>

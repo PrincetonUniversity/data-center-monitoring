@@ -3973,10 +3973,10 @@ Source: http://www.molex.com/pdm_docs/sd/877580616_sd.pdf</description>
 </classes>
 <parts>
 <part name="U$6" library="SparkFun-Boards" deviceset="BEAGLE_BONE_BLACK_CAPE" device=""/>
-<part name="R1" library="rcl" deviceset="R-US_" device="0207/15" value="5K"/>
-<part name="R2" library="rcl" deviceset="R-US_" device="0207/15" value="5K"/>
-<part name="R3" library="rcl" deviceset="R-US_" device="0207/15" value="5K"/>
-<part name="R4" library="rcl" deviceset="R-US_" device="0207/15" value="5K"/>
+<part name="R1" library="rcl" deviceset="R-US_" device="0207/15" value="4.7K"/>
+<part name="R2" library="rcl" deviceset="R-US_" device="0207/15" value="4.7K"/>
+<part name="R3" library="rcl" deviceset="R-US_" device="0207/15" value="4.7K"/>
+<part name="R4" library="rcl" deviceset="R-US_" device="0207/15" value="4.7K"/>
 <part name="B1" library="con-molex" deviceset="87758-1016" device="" value="BUS1-HDR">
 <attribute name="MPN" value="BUS1-HDR"/>
 </part>
@@ -3989,6 +3989,11 @@ Source: http://www.molex.com/pdm_docs/sd/877580616_sd.pdf</description>
 <plain>
 <text x="149.352" y="87.63" size="1.778" layer="97">Cape GND Rail</text>
 <text x="149.606" y="80.772" size="1.778" layer="97">Cape 3.3V Rail</text>
+<wire x1="76.2" y1="78.74" x2="96.52" y2="78.74" width="0.1524" layer="97"/>
+<wire x1="96.52" y1="78.74" x2="96.52" y2="68.58" width="0.1524" layer="97"/>
+<wire x1="96.52" y1="68.58" x2="76.2" y2="68.58" width="0.1524" layer="97"/>
+<wire x1="76.2" y1="68.58" x2="76.2" y2="78.74" width="0.1524" layer="97"/>
+<text x="83.82" y="66.04" size="1.27" layer="97">Provided on Cape</text>
 </plain>
 <instances>
 <instance part="U$6" gate="P9" x="40.64" y="60.96"/>
