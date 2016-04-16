@@ -324,7 +324,7 @@ app.post('/auth/sessionstatus', function (req, res) {
 app.post('/sensors/submitreadings', function (req, res) {
   var readings = req.body.data;
   console.log(readings.length + ' readings received from ' + req.connection.remoteAddress);
-  var controller = req.body[0].controller;
+  var controller = readings[0].controller;
 
   // Check for a existing 'readingcounter' object
   ReadingCounter.findOne({controller: controller}, function (err, record) {
