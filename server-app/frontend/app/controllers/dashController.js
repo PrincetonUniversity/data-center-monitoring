@@ -480,7 +480,14 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
     else {
       alert('You haven\'t mapped this sensor to a position on this cabinet group yet. You can map sensors from the Cabinet tab.');
     }
-  }
+  };
+  
+  $scope.displayCabinetView = function () {
+    $scope.displayMode = 'server';
+    if ($scope.displayMode != 'server' && $scope.currentSensor != '') {
+      $scope.displaySensorGraph();
+    }
+  };
 
   $scope.fetchFacilities();
 
