@@ -4,13 +4,17 @@ The `dcsense` PCB is the sensing component of the system. It is a small PCB with
 
 ![](/report/figures/dcsense-board-straight.jpg)
 
-## Schematic
+## Layout
 
 ![](/dcsense-board/3.1-ryanoshea-final-miniaturized-version/V3_brd_filled.png)
 
 Reproduced below without copper pours for visibility.
 
 ![](/dcsense-board/3.1-ryanoshea-final-miniaturized-version/V3_brd.png)
+
+## Schematic
+
+![](/dcsense-board/3.1-ryanoshea-final-miniaturized-version/V3_sch.png)
 
 ## Addressing
 
