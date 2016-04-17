@@ -462,3 +462,54 @@ table.table-clickable tr td
 {
   cursor: pointer;
 }
+
+@media (min-width: 768px) {
+  .navbar {
+      border-radius: 0;
+  }
+}
+
+.navbar-blue
+{
+  background: #03a9f4;
+  border: none;
+  box-shadow: 0 1px 8px rgba(0,0,0,.3);
+}
+
+.navbar-blue .navbar-header,
+.navbar-blue .navbar-brand
+{
+  color: white;
+}
+
+.navbar-blue .navbar-brand
+{
+  font-family: Raleway;
+  font-weight: 900;
+  font-size: 1.5em;
+  text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.navbar-header #header-separator
+{
+  font-weight: normal;
+  margin-left: .25em;
+  margin-right: .25em;
+}
+
+.navbar-header #header-page
+{
+  font-weight: normal;
+  font-size: .8em;
+  font-family: "Open Sans";
+}
+
+.navbar-blue .navbar-nav>li>a
+{
+  color: white;
+}
+
+.navbar-inverse .navbar-nav>.open>a, .navbar-inverse .navbar-nav>.open>a:hover, .navbar-inverse .navbar-nav>.open>a:focus
+{
+  background: #0099CC;
+}

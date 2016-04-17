@@ -1,154 +1,177 @@
-<div class="container container-fluid">
-  <h1 class="centered">DCsense Administration</h1>
+<div id="page-dash">
+  <nav class="navbar navbar-inverse navbar-blue">
+    <div class="container container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <a class="navbar-brand">Data Center Monitor
+          <span id="header-separator"> | </span>
+          <span id="header-page">{{pageTitle}}</span>
+        </a>
+      </div>
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a>Logged in as: </a></li>
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i> {{username}} <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="/#/dashboard">Your Dashboard</a></li>
+              <li><a href="/#/admin" ng-hide="facilities.length < 2">Admin Panel</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a logout>Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div><!-- /.container-fluid -->
+  </nav>
+  <div class="container container-fluid">
+    <h2>Register a New User</h2>
+    <form class="form-horizontal">
+      <div class="form-group">
+        <label for="username" class="col-sm-2 control-label">Username</label>
+        <div class="col-sm-10">
+          <input ng-model="user.username" type="text" class="form-control" id="username" placeholder="At least 5 characters">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="password" class="col-sm-2 control-label">Password</label>
+        <div class="col-sm-10">
+          <input ng-model="user.password" type="password" class="form-control" id="password" placeholder="At least 6 characters">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="accessLevel" class="col-sm-2 control-label">User Type</label>
+        <div class="col-sm-10">
+          <select ng-model="user.accessLevel" class="form-control" id="accessLevel" required>
+            <option value="2" selected="selected">Normal User</option>
+            <option value="3">Admin</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button ng-click="register()" ng-disabled="!userValid()" class="btn btn-default" id="register-button">Register</button>
+        </div>
+      </div>
+    </form>
 
-  <h2>Register a New User</h2>
-  <form class="form-horizontal">
-    <div class="form-group">
-      <label for="username" class="col-sm-2 control-label">Username</label>
-      <div class="col-sm-10">
-        <input ng-model="user.username" type="text" class="form-control" id="username" placeholder="At least 5 characters">
+    <h2>Remove a User</h2>
+    <form class="form-horizontal">
+      <div class="form-group">
+        <label for="facilitytoremove-name" class="col-sm-2 control-label">User</label>
+        <div class="col-sm-10">
+          <select ng-model="userToRemove" id="usertoremove-list" class="form-control">
+            <option ng-repeat="user in users" value="{{user.username}}">{{user.username}}</option>
+          </select>
+        </div>
       </div>
-    </div>
-    <div class="form-group">
-      <label for="password" class="col-sm-2 control-label">Password</label>
-      <div class="col-sm-10">
-        <input ng-model="user.password" type="password" class="form-control" id="password" placeholder="At least 6 characters">
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button ng-click="removeUser()" ng-disabled="userToRemove == ''" class="btn btn-danger" id="user-remove-button">Delete User</button>
+        </div>
       </div>
-    </div>
-    <div class="form-group">
-      <label for="accessLevel" class="col-sm-2 control-label">User Type</label>
-      <div class="col-sm-10">
-        <select ng-model="user.accessLevel" class="form-control" id="accessLevel" required>
-          <option value="2" selected="selected">Normal User</option>
-          <option value="3">Admin</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-group">
-      <div class="col-sm-offset-2 col-sm-10">
-        <button ng-click="register()" ng-disabled="!userValid()" class="btn btn-default" id="register-button">Register</button>
-      </div>
-    </div>
-  </form>
+    </form>
 
-  <h2>Remove a User</h2>
-  <form class="form-horizontal">
-    <div class="form-group">
-      <label for="facilitytoremove-name" class="col-sm-2 control-label">User</label>
-      <div class="col-sm-10">
-        <select ng-model="userToRemove" id="usertoremove-list" class="form-control">
-          <option ng-repeat="user in users" value="{{user.username}}">{{user.username}}</option>
-        </select>
+    <h2>Add a New Facility</h2>
+    <form class="form-horizontal">
+      <div class="form-group">
+        <label for="facility-name" class="col-sm-2 control-label">Name</label>
+        <div class="col-sm-10">
+          <input ng-model="newFacility.name" type="text" class="form-control" id="facility-name" placeholder="At least 2 characters">
+        </div>
       </div>
-    </div>
-    <div class="form-group">
-      <div class="col-sm-offset-2 col-sm-10">
-        <button ng-click="removeUser()" ng-disabled="userToRemove == ''" class="btn btn-danger" id="user-remove-button">Delete User</button>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button ng-click="addFacility()" ng-disabled="!facilityValid()" class="btn btn-default" id="facility-add-button">Add</button>
+        </div>
       </div>
-    </div>
-  </form>
+    </form>
 
-  <h2>Add a New Facility</h2>
-  <form class="form-horizontal">
-    <div class="form-group">
-      <label for="facility-name" class="col-sm-2 control-label">Name</label>
-      <div class="col-sm-10">
-        <input ng-model="newFacility.name" type="text" class="form-control" id="facility-name" placeholder="At least 2 characters">
+    <h2>Remove a Facility</h2>
+    <form class="form-horizontal">
+      <div class="form-group">
+        <label for="facilitytoremove-name" class="col-sm-2 control-label">Facility</label>
+        <div class="col-sm-10">
+          <select ng-model="facilityToRemove" id="facilitytoremove-list" class="form-control">
+            <option ng-repeat="facility in facilities" value="{{facility.name}}">{{facility.name}}</option>
+          </select>
+        </div>
       </div>
-    </div>
-    <div class="form-group">
-      <div class="col-sm-offset-2 col-sm-10">
-        <button ng-click="addFacility()" ng-disabled="!facilityValid()" class="btn btn-default" id="facility-add-button">Add</button>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button ng-click="removeFacility()" ng-disabled="facilityToRemove == ''" class="btn btn-danger" id="facility-remove-button">Delete Facility</button>
+        </div>
       </div>
-    </div>
-  </form>
+    </form>
 
-  <h2>Remove a Facility</h2>
-  <form class="form-horizontal">
-    <div class="form-group">
-      <label for="facilitytoremove-name" class="col-sm-2 control-label">Facility</label>
-      <div class="col-sm-10">
-        <select ng-model="facilityToRemove" id="facilitytoremove-list" class="form-control">
-          <option ng-repeat="facility in facilities" value="{{facility.name}}">{{facility.name}}</option>
-        </select>
+    <h2>Manage Facility Owners</h2>
+    <form class="form-horizontal">
+      <div class="form-group">
+        <label for="facility-list" class="col-sm-2 control-label">Facility</label>
+        <div class="col-sm-10">
+          <select ng-model="currentFacility" ng-change="fetchFacilityOwners()" id="facility-list" class="form-control">
+            <option ng-repeat="facility in facilities" value="{{facility.name}}">{{facility.name}}</option>
+          </select>
+        </div>
       </div>
-    </div>
-    <div class="form-group">
-      <div class="col-sm-offset-2 col-sm-10">
-        <button ng-click="removeFacility()" ng-disabled="facilityToRemove == ''" class="btn btn-danger" id="facility-remove-button">Delete Facility</button>
+      <div class="form-group">
+        <div ng-hide="currentFacility == ''" class="col-sm-offset-2 col-sm-10">
+          <p>Current owners:
+            <span ng-repeat="user in owners track by $index">
+              {{user}}<span ng-show="$index < (owners.length - 1)">, </span>
+            </span>
+          </p>
+        </div>
       </div>
-    </div>
-  </form>
+      <div class="form-group">
+        <label for="users-list" class="col-sm-2 control-label">User to modify</label>
+        <div class="col-sm-10">
+          <select ng-model="currentUser" id="users-list" class="form-control">
+            <option ng-repeat="user in users" value="{{user.username}}">{{user.username}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button ng-click="changeFacilityOwner('add')"    ng-disabled="userIsOwner()  || currentFacility == '' || currentUser == ''"   class="btn btn-success">Add this user as owner</button>
+          <button ng-click="changeFacilityOwner('remove')" ng-disabled="!userIsOwner() || currentFacility == '' || currentUser == ''"  class="btn btn-danger">Remove this user from owners</button>
+        </div>
+      </div>
+    </form>
 
-  <h2>Manage Facility Owners</h2>
-  <form class="form-horizontal">
-    <div class="form-group">
-      <label for="facility-list" class="col-sm-2 control-label">Facility</label>
-      <div class="col-sm-10">
-        <select ng-model="currentFacility" ng-change="fetchFacilityOwners()" id="facility-list" class="form-control">
-          <option ng-repeat="facility in facilities" value="{{facility.name}}">{{facility.name}}</option>
-        </select>
+    <h2>Manage Controllers</h2>
+    <form class="form-horizontal">
+      <div class="form-group">
+        <label for="facility-list-2" class="col-sm-2 control-label">Facility</label>
+        <div class="col-sm-10">
+          <select ng-model="currentFacilityForControllers" ng-change="fetchFacilityControllers()" id="facility-list-2" class="form-control">
+            <option ng-repeat="facility in facilities" value="{{facility.name}}">{{facility.name}}</option>
+          </select>
+        </div>
       </div>
-    </div>
-    <div class="form-group">
-      <div ng-hide="currentFacility == ''" class="col-sm-offset-2 col-sm-10">
-        <p>Current owners:
-          <span ng-repeat="user in owners track by $index">
-            {{user}}<span ng-show="$index < (owners.length - 1)">, </span>
-          </span>
-        </p>
+      <div class="form-group">
+        <div ng-hide="currentFacilityForControllers == ''" class="col-sm-offset-2 col-sm-10">
+          <p>Current controllers:
+            <span ng-repeat="controller in facilityControllers track by $index">
+              {{controller.id}}<span ng-show="$index < (facilityControllers.length - 1)">, </span>
+            </span>
+          </p>
+        </div>
       </div>
-    </div>
-    <div class="form-group">
-      <label for="users-list" class="col-sm-2 control-label">User to modify</label>
-      <div class="col-sm-10">
-        <select ng-model="currentUser" id="users-list" class="form-control">
-          <option ng-repeat="user in users" value="{{user.username}}">{{user.username}}</option>
-        </select>
+      <div class="form-group">
+        <label for="controller-list" class="col-sm-2 control-label">Controller to modify</label>
+        <div class="col-sm-10">
+          <select ng-model="currentController" id="controller-list" class="form-control">
+            <option ng-repeat="controller in controllers" value="{{controller}}">{{controller}}</option>
+          </select>
+        </div>
       </div>
-    </div>
-    <div class="form-group">
-      <div class="col-sm-offset-2 col-sm-10">
-        <button ng-click="changeFacilityOwner('add')"    ng-disabled="userIsOwner()  || currentFacility == '' || currentUser == ''"   class="btn btn-success">Add this user as owner</button>
-        <button ng-click="changeFacilityOwner('remove')" ng-disabled="!userIsOwner() || currentFacility == '' || currentUser == ''"  class="btn btn-danger">Remove this user from owners</button>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button ng-click="changeFacilityController('add')"    ng-disabled="controllerInFacility()  || currentFacilityForControllers == '' || currentController == ''"   class="btn btn-success">Add this controller to facility</button>
+          <button ng-click="changeFacilityController('remove')" ng-disabled="!controllerInFacility() || currentFacilityForControllers == '' || currentController == ''"  class="btn btn-danger">Remove this controller from facility</button>
+        </div>
       </div>
-    </div>
-  </form>
-
-  <h2>Manage Controllers</h2>
-  <form class="form-horizontal">
-    <div class="form-group">
-      <label for="facility-list-2" class="col-sm-2 control-label">Facility</label>
-      <div class="col-sm-10">
-        <select ng-model="currentFacilityForControllers" ng-change="fetchFacilityControllers()" id="facility-list-2" class="form-control">
-          <option ng-repeat="facility in facilities" value="{{facility.name}}">{{facility.name}}</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-group">
-      <div ng-hide="currentFacilityForControllers == ''" class="col-sm-offset-2 col-sm-10">
-        <p>Current controllers:
-          <span ng-repeat="controller in facilityControllers track by $index">
-            {{controller.id}}<span ng-show="$index < (facilityControllers.length - 1)">, </span>
-          </span>
-        </p>
-      </div>
-    </div>
-    <div class="form-group">
-      <label for="controller-list" class="col-sm-2 control-label">Controller to modify</label>
-      <div class="col-sm-10">
-        <select ng-model="currentController" id="controller-list" class="form-control">
-          <option ng-repeat="controller in controllers" value="{{controller}}">{{controller}}</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-group">
-      <div class="col-sm-offset-2 col-sm-10">
-        <button ng-click="changeFacilityController('add')"    ng-disabled="controllerInFacility()  || currentFacilityForControllers == '' || currentController == ''"   class="btn btn-success">Add this controller to facility</button>
-        <button ng-click="changeFacilityController('remove')" ng-disabled="!controllerInFacility() || currentFacilityForControllers == '' || currentController == ''"  class="btn btn-danger">Remove this controller from facility</button>
-      </div>
-    </div>
-  </form>
-
-  <button logout>Logout</button>
+    </form>
+  </div>
 </div>

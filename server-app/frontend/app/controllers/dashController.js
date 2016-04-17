@@ -4,6 +4,9 @@ var cont = angular.module('dcsense.controllers');
 
 cont.controller('dashController', function ($scope, $filter, $http, $location, $cookies) {
   document.title = 'Dashboard | Data Center Monitor';
+  $scope.pageTitle = 'Dashboard';
+  $scope.username = JSON.parse($cookies.get('ticket')).username;
+  console.log($scope.user);
 
   $scope.dateIdx = 0;
   $scope.loading = true;

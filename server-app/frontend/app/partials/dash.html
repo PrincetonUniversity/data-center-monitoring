@@ -1,266 +1,292 @@
-<div id="page-dash" class="container container-fluid">
-  <section id="facilities" ng-hide="facilities.length < 2">
-    <p class="dc-label">
-      Facilities
-      <a class="dc-tooltip" alt="You can browse data from all facilities because you are an administrator.">
-        <i class="fa fa-info-circle"></i>
-      </a>
-    </p>
-    <select class="controller-select" ng-model="currentFacility" ng-change="fetchControllers(); clearGraph()">
-      <option ng-repeat="facility in facilities" value="{{facility.name}}">{{facility.name}}</option>
-    </select>
-  </section>
-  <section id="controllers">
-    <!-- Controller Selector -->
-    <div ng-hide="controllerNameEditing">
-      <p class="dc-label">Cabinet Groups
-        <a class="dc-tooltip" alt="Sets of connected server cabinets with sensors installed at your facility. Select a cabinet to see climate data.">
+<div id="page-dash">
+  <nav class="navbar navbar-inverse navbar-blue">
+    <div class="container container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <a class="navbar-brand">Data Center Monitor
+          <span id="header-separator"> | </span>
+          <span id="header-page">{{pageTitle}}</span>
+        </a>
+      </div>
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a>Logged in as: </a></li>
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user"></i> {{username}} <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="/#/dashboard">Your Dashboard</a></li>
+              <li><a href="/#/admin" ng-hide="facilities.length < 2">Admin Panel</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a logout>Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div><!-- /.container-fluid -->
+  </nav>
+  <div class="container container-fluid">
+    <section id="facilities" ng-hide="facilities.length < 2">
+      <p class="dc-label">
+        Facilities
+        <a class="dc-tooltip" alt="You can browse data from all facilities because you are an administrator.">
           <i class="fa fa-info-circle"></i>
         </a>
       </p>
-      <select class="controller-select" ng-model="currentControllerIdx" ng-change="fetchDates(); clearGraph()" convert-to-number>
-        <option ng-repeat="controller in controllers track by $index" value="{{$index}}">{{controller.name}}</option>
+      <select class="controller-select" ng-model="currentFacility" ng-change="fetchControllers(); clearGraph()">
+        <option ng-repeat="facility in facilities" value="{{facility.name}}">{{facility.name}}</option>
       </select>
-      <a id="edit-controller-name" ng-click="editController()" class="dc-tooltip" alt="Click to edit the name of this cabinet">
-        <i class="fa fa-pencil"></i>
-      </a>
-    </div>
-    <!-- Controller editor -->
-    <form ng-hide="!controllerNameEditing">
-      <div class="form-group">
-        <label for="new-controller-name" class="dc-label">Cabinet Name</label>
-        <input type="text" ng-model="newController.name" id="new-controller-name" class="form-control input-lg">
-      </div>
-      <div class="form-group form-inline">
-        <div class="input-group" style="display: block; width: 100%">
-          <label for="controller-width-selector" class="dc-label">Number of Cabinets
-          <a class="dc-tooltip" alt="Indicate the width (in number of cabinets) of this server cabinet group. Each cabinet has 5 sensors stacked vertically.">
-              <i class="fa fa-info-circle"></i>
-            </a>
-          </label>
-        </div>
-        <div class="input-group" id="controller-width-selector">
-          <span class="input-group-btn">
-            <button ng-click="newControllerWidthChange('dec')" class="btn btn-default" type="button"><i class="fa fa-minus"></i></button>
-          </span>
-          <input type="text" class="form-control" disabled value="{{newController.width}}">
-          <span class="input-group-btn">
-            <button ng-click="newControllerWidthChange('inc')" class="btn btn-default" type="button"><i class="fa fa-plus"></i></button>
-          </span>
-        </div>
-      </div>
-      <div class="form-group">
-        <a id="edit-controller-name-submit" ng-click="commitController()" class="btn btn-success btn-sm"><i class="fa fa-save"></i> Save</a>
-        <a id="edit-controller-name-cancel" ng-click="controllerNameEditing = false; newController = {}" class="btn btn-default btn-sm"><i class="fa fa-cancel"></i> Cancel</a>
-      </div>
-    </form>
-  </section>
-  <!-- Loading Indicator -->
-  <section class="data-loading" ng-hide="!loading">
-    <span>
-      <i class="fa fa-refresh fa-spin"></i>
-    </span>
-  </section>
-  <!-- Readings Display Section -->
-  <section id="data-section" ng-hide="loading">
-    <p class="dc-label">Climate Data</p>
-    <a ng-click="fetchDates()" id="refresh-button" class="btn btn-default dc-tooltip"
-            alt="Check for new data">
-      <i class="fa fa-refresh"></i>
-    </a>
-    <div id="date-control">
-      <div id="date-display">
-        <p class="centered date">{{readingsDate().date}}</p>
-        <hr>
-        <p class="centered time">{{readingsDate().time}}</p>
-      </div>
-      <p class="dc-label centered">Drag to Change Date
-        <a class="dc-tooltip" alt="Scrub through climate data on this cabinet group for (up to) the last 2 weeks.">
-          <i class="fa fa-info-circle"></i>
+    </section>
+    <section id="controllers">
+      <!-- Controller Selector -->
+      <div ng-hide="controllerNameEditing">
+        <p class="dc-label">Cabinet Groups
+          <a class="dc-tooltip" alt="Sets of connected server cabinets with sensors installed at your facility. Select a cabinet to see climate data.">
+            <i class="fa fa-info-circle"></i>
+          </a>
+        </p>
+        <select class="controller-select" ng-model="currentControllerIdx" ng-change="fetchDates(); clearGraph()" convert-to-number>
+          <option ng-repeat="controller in controllers track by $index" value="{{$index}}">{{controller.name}}</option>
+        </select>
+        <a id="edit-controller-name" ng-click="editController()" class="dc-tooltip" alt="Click to edit the name of this cabinet">
+          <i class="fa fa-pencil"></i>
         </a>
-      </p>
-      <input type="range" ng-model="dateIdx" ng-change="currentDate = dates[dates.length - 1 - dateIdx]" min="0" max="5" id="date-slider">
-      <ul id="readings-display-mode-picker" class="nav nav-pills dc-pills">
-        <li role="presentation" ng-click="displayMode = 'server'" ng-class="{'active': displayMode == 'server'}"><a class="link-cursor"><i class="fa fa-server"></i> Cabinet</a></li>
-        <li role="presentation" ng-click="displayMode = 'table'" ng-class="{'active': displayMode == 'table'}"><a class="link-cursor"><i class="fa fa-table"></i> Table</a></li>
-        <li role="presentation" ng-click="displayMode = 'alerts'" ng-class="{'active': displayMode == 'alerts'}"><a class="link-cursor"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Alerts</a></li>
-        <li role="presentation" ng-click="displayMode = 'export'" ng-class="{'active': displayMode == 'export'}"><a class="link-cursor"><i class="fa fa-floppy-o" aria-hidden="true"></i> Export</a></li>
-      </ul>
-    </div>
-    <!-- Server View -->
-    <div class="readings-display" id="readings-display-server" ng-hide="displayMode != 'server'">
-      <!-- Sensor Mapping Popup Editor -->
-      <form class="sensor-mapping-editor" ng-hide="currentMapping == ''">
+      </div>
+      <!-- Controller editor -->
+      <form ng-hide="!controllerNameEditing">
         <div class="form-group">
-          <p class="close-button">
-            <a ng-click="disableSensorMapping()"><i class="fa fa-close"></i></a>
-          </p>
-          <h3>
-            Sensor Mapping
-          </h3>
-          <p style="text-align: left">
-            Use this window to specify the sensor whose data to display at the selected location. Select both the switch configuration displayed on the sensor and the bus (cable) the sensor is attached to. Changes made here are autosaved.  
-          </p>
+          <label for="new-controller-name" class="dc-label">Cabinet Name</label>
+          <input type="text" ng-model="newController.name" id="new-controller-name" class="form-control input-lg">
         </div>
-        <div class="form-group">
-          <label class="col-sm-5 control-label">Switch Configuration</label>
-          <div class="col-sm-7">
-            <select ng-model="controllers[currentControllerIdx].layout[currentMappingCabinet()].addr[currentMappingSensor()]" 
-                    class="form-control" convert-to-number>
-              <option value="0">No sensor</option>
-              <option ng-repeat="config in map.switchConfigs"
-                      value="{{map.mappings[config]}}">
-                {{unicodeSwitchesFromBinary(config)}} &ndash; {{config}}
-              </option>
-            </select>
+        <div class="form-group form-inline">
+          <div class="input-group" style="display: block; width: 100%">
+            <label for="controller-width-selector" class="dc-label">Number of Cabinets
+            <a class="dc-tooltip" alt="Indicate the width (in number of cabinets) of this server cabinet group. Each cabinet has 5 sensors stacked vertically.">
+                <i class="fa fa-info-circle"></i>
+              </a>
+            </label>
+          </div>
+          <div class="input-group" id="controller-width-selector">
+            <span class="input-group-btn">
+              <button ng-click="newControllerWidthChange('dec')" class="btn btn-default" type="button"><i class="fa fa-minus"></i></button>
+            </span>
+            <input type="text" class="form-control" disabled value="{{newController.width}}">
+            <span class="input-group-btn">
+              <button ng-click="newControllerWidthChange('inc')" class="btn btn-default" type="button"><i class="fa fa-plus"></i></button>
+            </span>
           </div>
         </div>
         <div class="form-group">
-          <label class="col-sm-5 control-label">Bus</label>
-          <div class="col-sm-7">
-            <select ng-model="controllers[currentControllerIdx].layout[currentMappingCabinet()].bus[currentMappingSensor()]" 
-                  class="form-control" convert-to-number>
-            <option value="0">Not selected</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-          </select>
-          </div>
+          <a id="edit-controller-name-submit" ng-click="commitController()" class="btn btn-success btn-sm"><i class="fa fa-save"></i> Save</a>
+          <a id="edit-controller-name-cancel" ng-click="controllerNameEditing = false; newController = {}" class="btn btn-default btn-sm"><i class="fa fa-cancel"></i> Cancel</a>
         </div>
       </form>
-      <!-- Server Cabinet Representations -->
-      <div class="inline-block" id="cabinet-wrapper">
-        <!--Display each server cabinet-->
-        <div class="cabinet" ng-repeat="cabinet in currentControllerLayout() track by $index">
-          <div class="bg"><span class="invisible">.</span></div>
-          <div class="cabinet-sensors">
-            <div class="sensor" ng-repeat="bus in cabinet.bus track by $index"
-                 ng-click="sensorClick($parent.$index + '-' + $index)">
-              <span>
-                <span class="sensor-text" ng-hide="cabinetMode != 'view'" ng-class="{'sensor-highlight' : currentSensor == $parent.$index + '-' + $index}">
-                  {{CtoF(readingsBySensor[bus + '-' + cabinet.addr[$index]])}}
-                </span>
-                <span ng-hide="cabinetMode != 'mapping'">
-                  <span class="sensor-text" ng-hide="bus != 0 && cabinet.addr[$index] != 0" ng-class="{'sensor-highlight' : currentSensor == $parent.$index + '-' + $index}">
-                    No sensor.
+    </section>
+    <!-- Loading Indicator -->
+    <section class="data-loading" ng-hide="!loading">
+      <span>
+        <i class="fa fa-refresh fa-spin"></i>
+      </span>
+    </section>
+    <!-- Readings Display Section -->
+    <section id="data-section" ng-hide="loading">
+      <p class="dc-label">Climate Data</p>
+      <a ng-click="fetchDates()" id="refresh-button" class="btn btn-default dc-tooltip"
+              alt="Check for new data">
+        <i class="fa fa-refresh"></i>
+      </a>
+      <div id="date-control">
+        <div id="date-display">
+          <p class="centered date">{{readingsDate().date}}</p>
+          <hr>
+          <p class="centered time">{{readingsDate().time}}</p>
+        </div>
+        <p class="dc-label centered">Drag to Change Date
+          <a class="dc-tooltip" alt="Scrub through climate data on this cabinet group for (up to) the last 2 weeks.">
+            <i class="fa fa-info-circle"></i>
+          </a>
+        </p>
+        <input type="range" ng-model="dateIdx" ng-change="currentDate = dates[dates.length - 1 - dateIdx]" min="0" max="5" id="date-slider">
+        <ul id="readings-display-mode-picker" class="nav nav-pills dc-pills">
+          <li role="presentation" ng-click="displayMode = 'server'" ng-class="{'active': displayMode == 'server'}"><a class="link-cursor"><i class="fa fa-server"></i> Cabinet</a></li>
+          <li role="presentation" ng-click="displayMode = 'table'" ng-class="{'active': displayMode == 'table'}"><a class="link-cursor"><i class="fa fa-table"></i> Table</a></li>
+          <li role="presentation" ng-click="displayMode = 'alerts'" ng-class="{'active': displayMode == 'alerts'}"><a class="link-cursor"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Alerts</a></li>
+          <li role="presentation" ng-click="displayMode = 'export'" ng-class="{'active': displayMode == 'export'}"><a class="link-cursor"><i class="fa fa-floppy-o" aria-hidden="true"></i> Export</a></li>
+        </ul>
+      </div>
+      <!-- Server View -->
+      <div class="readings-display" id="readings-display-server" ng-hide="displayMode != 'server'">
+        <!-- Sensor Mapping Popup Editor -->
+        <form class="sensor-mapping-editor" ng-hide="currentMapping == ''">
+          <div class="form-group">
+            <p class="close-button">
+              <a ng-click="disableSensorMapping()"><i class="fa fa-close"></i></a>
+            </p>
+            <h3>
+              Sensor Mapping
+            </h3>
+            <p style="text-align: left">
+              Use this window to specify the sensor whose data to display at the selected location. Select both the switch configuration displayed on the sensor and the bus (cable) the sensor is attached to. Changes made here are autosaved.  
+            </p>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-5 control-label">Switch Configuration</label>
+            <div class="col-sm-7">
+              <select ng-model="controllers[currentControllerIdx].layout[currentMappingCabinet()].addr[currentMappingSensor()]" 
+                      class="form-control" convert-to-number>
+                <option value="0">No sensor</option>
+                <option ng-repeat="config in map.switchConfigs"
+                        value="{{map.mappings[config]}}">
+                  {{unicodeSwitchesFromBinary(config)}} &ndash; {{config}}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-5 control-label">Bus</label>
+            <div class="col-sm-7">
+              <select ng-model="controllers[currentControllerIdx].layout[currentMappingCabinet()].bus[currentMappingSensor()]" 
+                    class="form-control" convert-to-number>
+              <option value="0">Not selected</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+            </select>
+            </div>
+          </div>
+        </form>
+        <!-- Server Cabinet Representations -->
+        <div class="inline-block" id="cabinet-wrapper">
+          <!--Display each server cabinet-->
+          <div class="cabinet" ng-repeat="cabinet in currentControllerLayout() track by $index">
+            <div class="bg"><span class="invisible">.</span></div>
+            <div class="cabinet-sensors">
+              <div class="sensor" ng-repeat="bus in cabinet.bus track by $index"
+                  ng-click="sensorClick($parent.$index + '-' + $index)">
+                <span>
+                  <span class="sensor-text" ng-hide="cabinetMode != 'view'" ng-class="{'sensor-highlight' : currentSensor == $parent.$index + '-' + $index}">
+                    {{CtoF(readingsBySensor[bus + '-' + cabinet.addr[$index]])}}
                   </span>
-                  <span class="sensor-text" ng-hide="bus == 0 || cabinet.addr[$index] == 0" ng-class="{'sensor-highlight' : currentSensor == $parent.$index + '-' + $index}">
-                    Bus: {{bus}}, Addr: {{cabinet.addr[$index]}}
+                  <span ng-hide="cabinetMode != 'mapping'">
+                    <span class="sensor-text" ng-hide="bus != 0 && cabinet.addr[$index] != 0" ng-class="{'sensor-highlight' : currentSensor == $parent.$index + '-' + $index}">
+                      No sensor.
+                    </span>
+                    <span class="sensor-text" ng-hide="bus == 0 || cabinet.addr[$index] == 0" ng-class="{'sensor-highlight' : currentSensor == $parent.$index + '-' + $index}">
+                      Bus: {{bus}}, Addr: {{cabinet.addr[$index]}}
+                    </span>
                   </span>
                 </span>
-              </span>
+              </div>
             </div>
           </div>
         </div>
+        <div id="toggle-cabinet-lock">
+          <button ng-click="enableCabinetMapping()"
+                  class="btn btn-default btn-sm" ng-hide="cabinetMode != 'view'">
+            Sensor Locations <i class="fa fa-lock"></i>
+          </button>
+          <button ng-click="disableCabinetMapping()"
+                  class="btn btn-default btn-sm" ng-hide="cabinetMode != 'mapping'">
+            Sensor Locations <i class="fa fa-unlock"></i>
+          </button>
+        </div>
+        <div id="graph1" class="line-graph" ng-hide="currentSensor == ''" style="position:relative;width:100%;height:400px"></div>
       </div>
-      <div id="toggle-cabinet-lock">
-        <button ng-click="enableCabinetMapping()"
-                class="btn btn-default btn-sm" ng-hide="cabinetMode != 'view'">
-          Sensor Locations <i class="fa fa-lock"></i>
-        </button>
-        <button ng-click="disableCabinetMapping()"
-                class="btn btn-default btn-sm" ng-hide="cabinetMode != 'mapping'">
-          Sensor Locations <i class="fa fa-unlock"></i>
-        </button>
+      <!-- Table View -->
+      <div class="readings-display" ng-hide="displayMode != 'table'">
+        <table class="table table-hover table-clickable">
+          <thead>
+            <tr>
+              <th>Controller MAC</th>
+              <th>Bus</th>
+              <th>Sensor Address</th>
+              <th>Time</th>
+              <th>Temperature</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="reading in readings"
+                ng-class="{'warning': CtoF(reading.temp) > 70,
+                          'danger' : CtoF(reading.temp) > 80}"
+                ng-click="selectSensor({bus: reading.bus, addr: reading.sensor_addr})">
+              <td title="Click to see this sensor in cabinet view.">{{reading.controller}}</td>
+              <td title="Click to see this sensor in cabinet view.">{{reading.bus}}</td>
+              <td title="Click to see this sensor in cabinet view.">{{reading.sensor_addr}}</td>
+              <td title="Click to see this sensor in cabinet view.">{{formatDate(reading.time)}}</td>
+              <td title="Click to see this sensor in cabinet view.">{{CtoF(reading.temp)}}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <div id="graph1" class="line-graph" ng-hide="currentSensor == ''" style="position:relative;width:100%;height:400px"></div>
-    </div>
-    <!-- Table View -->
-    <div class="readings-display" ng-hide="displayMode != 'table'">
-      <table class="table table-hover table-clickable">
-        <thead>
-          <tr>
-            <th>Controller MAC</th>
-            <th>Bus</th>
-            <th>Sensor Address</th>
-            <th>Time</th>
-            <th>Temperature</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="reading in readings"
-              ng-class="{'warning': CtoF(reading.temp) > 70,
-                         'danger' : CtoF(reading.temp) > 80}"
-              ng-click="selectSensor({bus: reading.bus, addr: reading.sensor_addr})">
-            <td title="Click to see this sensor in cabinet view.">{{reading.controller}}</td>
-            <td title="Click to see this sensor in cabinet view.">{{reading.bus}}</td>
-            <td title="Click to see this sensor in cabinet view.">{{reading.sensor_addr}}</td>
-            <td title="Click to see this sensor in cabinet view.">{{formatDate(reading.time)}}</td>
-            <td title="Click to see this sensor in cabinet view.">{{CtoF(reading.temp)}}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <!-- Alert View -->
-    <div class="readings-display" ng-hide="displayMode != 'alerts'">
-      <div id="alert-controller">
-        <form class="form-inline">
-          <div class="form-group">
-            <label>Get all readings above this temperature (°F): </label>
-            <input ng-model="alert.threshold" type="number" class="form-control">
+      <!-- Alert View -->
+      <div class="readings-display" ng-hide="displayMode != 'alerts'">
+        <div id="alert-controller">
+          <form class="form-inline">
+            <div class="form-group">
+              <label>Get all readings above this temperature (°F): </label>
+              <input ng-model="alert.threshold" type="number" class="form-control">
+            </div>
+          </form>
+          <form class="form-inline">
+            <div class="form-group col-md-6">
+              <label>Start date:</label>
+              <input class="form-control" type="date" ng-model="alert.start">
+            </div>
+            <div class="form-group col-md-6">
+              <label>End date:</label>
+              <input class="form-control" type="date" ng-model="alert.end">
+            </div>
+          </form>
+          <div class="form-group centered">
+            <button ng-click="getAlerts()" type="submit" class="btn btn-sm btn-success">Go</button>
           </div>
-        </form>
-        <form class="form-inline">
+        </div>
+        <p class="centered" id="no-alerts-message" ng-hide="alertReadings.length > 0">No readings above {{lastAlert.threshold}}°F were recorded in the <span ng-hide="lastAlert.start || lastAlert.end">last 2 weeks</span><span ng-hide="!(lastAlert.start || lastAlert.end)">the specified timeframe</span> for this server cabinet group.</p>
+        <table class="table table-hover table-clickable" ng-hide="alertReadings.length == 0">
+          <thead>
+            <tr>
+              <th>Bus</th>
+              <th>Sensor Address</th>
+              <th>Time</th>
+              <th>Temperature</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="reading in alertReadings"
+                ng-class="{'warning': CtoF(reading.temp) > 70,
+                          'danger' : CtoF(reading.temp) > 80}"
+                ng-click="selectSensor({bus: reading.bus, addr: reading.sensor_addr})">
+              <td title="Click to see this sensor in cabinet view.">{{reading.bus}}</td>
+              <td title="Click to see this sensor in cabinet view.">{{reading.sensor_addr}}</td>
+              <td title="Click to see this sensor in cabinet view.">{{formatDate(reading.time)}}</td>
+              <td title="Click to see this sensor in cabinet view.">{{CtoF(reading.temp)}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Export Tab -->
+      <div class="readings-display" ng-hide="displayMode != 'export'">
+        <h3>Export Sensor Data</h3>
+        <p>Use this tool to generate a CSV document containing all available data for your facility. </p>
+        <section class="data-loading" ng-hide="!exportLoading">
+          <span>
+            <i class="fa fa-refresh fa-spin"></i>
+          </span>
+        </section>
+        <form ng-hide="exportLoading">
           <div class="form-group col-md-6">
             <label>Start date:</label>
-            <input class="form-control" type="date" ng-model="alert.start">
+            <input class="form-control" type="date" ng-model="exportRange.start">
           </div>
           <div class="form-group col-md-6">
             <label>End date:</label>
-            <input class="form-control" type="date" ng-model="alert.end">
+            <input class="form-control" type="date" ng-model="exportRange.end">
+          </div>
+          <div class="form-group">
+            <p class="centered">
+              <button ng-click="export()" class="btn btn-success btn-lg">Export</button>
+            </p>
           </div>
         </form>
-        <div class="form-group centered">
-          <button ng-click="getAlerts()" type="submit" class="btn btn-sm btn-success">Go</button>
-        </div>
       </div>
-      <p class="centered" id="no-alerts-message" ng-hide="alertReadings.length > 0">No readings above {{lastAlert.threshold}}°F were recorded in the <span ng-hide="lastAlert.start || lastAlert.end">last 2 weeks</span><span ng-hide="!(lastAlert.start || lastAlert.end)">the specified timeframe</span> for this server cabinet group.</p>
-      <table class="table table-hover table-clickable" ng-hide="alertReadings.length == 0">
-        <thead>
-          <tr>
-            <th>Bus</th>
-            <th>Sensor Address</th>
-            <th>Time</th>
-            <th>Temperature</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="reading in alertReadings"
-              ng-class="{'warning': CtoF(reading.temp) > 70,
-                         'danger' : CtoF(reading.temp) > 80}"
-              ng-click="selectSensor({bus: reading.bus, addr: reading.sensor_addr})">
-            <td title="Click to see this sensor in cabinet view.">{{reading.bus}}</td>
-            <td title="Click to see this sensor in cabinet view.">{{reading.sensor_addr}}</td>
-            <td title="Click to see this sensor in cabinet view.">{{formatDate(reading.time)}}</td>
-            <td title="Click to see this sensor in cabinet view.">{{CtoF(reading.temp)}}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <!-- Export Tab -->
-    <div class="readings-display" ng-hide="displayMode != 'export'">
-      <h3>Export Sensor Data</h3>
-      <p>Use this tool to generate a CSV document containing all available data for your facility. </p>
-      <section class="data-loading" ng-hide="!exportLoading">
-        <span>
-          <i class="fa fa-refresh fa-spin"></i>
-        </span>
-      </section>
-      <form ng-hide="exportLoading">
-        <div class="form-group col-md-6">
-          <label>Start date:</label>
-          <input class="form-control" type="date" ng-model="exportRange.start">
-        </div>
-        <div class="form-group col-md-6">
-          <label>End date:</label>
-          <input class="form-control" type="date" ng-model="exportRange.end">
-        </div>
-        <div class="form-group">
-          <p class="centered">
-            <button ng-click="export()" class="btn btn-success btn-lg">Export</button>
-          </p>
-        </div>
-      </form>
-    </div>
-  </section>
-  <button logout>Logout</button>
+    </section>
+  </div>
 </div>
