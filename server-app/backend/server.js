@@ -1051,20 +1051,19 @@ app.post('/sensors/export/all/:startDate/:endDate', function (req, res) {
 
 app.post('/sensors/export/byfacility/:facility/:startDate/:endDate', function (req, res) {
   var ticket = req.body.ticket;
-  var accessLevel = accessLevels.admin;
+  var accessLevel = accessLevels.user;
   function ifAuthorized() {
     var user = ticket.username;
     var controller = decodeURIComponent(req.params.controller);
+    var facility = decodeURIComponent(req.params.facility);
     function ifOwner() {
       var startDate = new Date(parseInt(decodeURIComponent(req.params.startDate)));
       var endDate = new Date(parseInt(decodeURIComponent(req.params.endDate)));
-      var facility = decodeURIComponent(req.params.facility);
       Facility.findOne({name: facility}, function (err, facility) {
         var query = [];
         facility.controllers.forEach(function (current, index) {
           query.push({controller: current.id});
         });
-        console.log(query);
         Reading.find({
           $or: query,
           time: {
@@ -1103,7 +1102,7 @@ app.post('/sensors/export/byfacility/:facility/:startDate/:endDate', function (r
         });
       });
     }
-    checkControllerAccess(res, controller, user, ifOwner);
+    checkFacilityAccess(res, user, facility, ifOwner);
   }
   checkSessionStatus(res, ticket, accessLevel, ifAuthorized);
 });
