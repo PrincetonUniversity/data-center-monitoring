@@ -92,7 +92,7 @@ cont.controller('adminController', function ($scope, $filter, $http, $location, 
     if (confirm(warning)) {
       $http.post('/api/facilities/' + facility + '/remove', {ticket: ticket})
       .success(function (data, status, headers, config) {
-        alert('Facility ' + facility.name + ' successfully deleted.');
+        alert('Facility ' + $scope.facilityToRemove + ' successfully deleted.');
         $scope.fetchFacilities();
         $('#facility-remove-button').removeAttr('disabled');
       })
