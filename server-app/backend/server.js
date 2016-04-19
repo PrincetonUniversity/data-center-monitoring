@@ -521,6 +521,7 @@ app.post('/sensors/readings/bysensor/:controller/:addr/:bus/2weeks', function (r
           data.step = (data.end - data.start) / (readings.length - 1);
           data.names = ['Temperature:'];
           data.rounding = [1];
+          data.colors = ['#0099CC'];
           res.send(data);
       });
     }
