@@ -18,8 +18,8 @@ def pyrun():
     readings = readings1 + readings2
 
     # Traces
-    #if not board_status['err']:
-    #    print readings
+    if not board_status['err']:
+        print len(readings)
     #else:
     #    print board_status['type']
     #    print board_status['msg']
