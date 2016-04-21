@@ -319,7 +319,11 @@ cont.controller('dashController', function ($scope, $filter, $http, $location, $
       $scope.editSensorMapping(sensor);
     }
     else {
-      $scope.displaySensorGraph(sensor);
+      var layout = $scope.currentControllerLayout();
+      var bus = layout[sensor.split('-')[0]].bus[sensor.split('-')[1]];
+      var addr = layout[sensor.split('-')[0]].addr[sensor.split('-')[1]];
+      if (bus != 0 && addr != 0)
+        $scope.displaySensorGraph(sensor);
     }
   };
   $scope.editSensorMapping = function (sensor) {
