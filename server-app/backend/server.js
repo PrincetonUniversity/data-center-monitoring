@@ -325,6 +325,7 @@ app.post('/sensors/submitreadings', function (req, res) {
   var readings = req.body.data;
   console.log(readings.length + ' readings received from ' + req.connection.remoteAddress);
   var controller = readings[0].controller;
+  var timestamp = new Date();
 
   // Check for a existing 'readingcounter' object
   ReadingCounter.findOne({controller: controller}, function (err, record) {
@@ -340,7 +341,7 @@ app.post('/sensors/submitreadings', function (req, res) {
       // Save the readings in the research collection
       readings.forEach(function (current, index) {
         currentReading = current;
-        currentReading['time'] = new Date(current['time']*1000);
+        currentReading['time'] = timestamp;
         var researchReading = new ResearchReading(currentReading);
         researchReading.save();
       });
@@ -370,7 +371,7 @@ app.post('/sensors/submitreadings', function (req, res) {
         // Also save to production collection if necessary
         readings.forEach(function (current, index) {
           currentReading = current;
-          currentReading['time'] = new Date(current['time']*1000);
+          currentReading['time'] = timestamp;
           // Save to research collection
           var researchReading = new ResearchReading(currentReading);
           researchReading.save();
