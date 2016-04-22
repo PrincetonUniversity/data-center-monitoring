@@ -49,6 +49,9 @@ app.config(function ($routeProvider) {
         }
       }
     })
+    .when('/about', {
+      templateUrl: 'app/partials/about.html'
+    })
     .when('/forbidden', {
       templateUrl: 'app/partials/forbidden.html'
     })
