@@ -189,7 +189,10 @@
             Sensor Locations <i class="fa fa-unlock"></i>
           </button>
         </div>
-        <div id="graph1" class="line-graph" ng-hide="currentSensor == ''" style="position:relative;width:100%;height:400px"></div>
+        <section id="graph" ng-hide="currentSensor == ''">
+          <h4 class="centered">Graphing measurements from the selected sensor for the last 2 weeks:</h4>
+          <div id="graph1" class="line-graph" style="position:relative;width:100%;height:400px"></div>
+        </section>
       </div>
       <!-- Table View -->
       <div class="readings-display" ng-hide="displayMode != 'table'">
