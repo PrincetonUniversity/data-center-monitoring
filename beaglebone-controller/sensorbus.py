@@ -54,7 +54,7 @@ class SensorBus:
 
         if len(addrs) > 0:
 
-            i= 0
+            i = 0
 
             # Read temp data (in degrees C) for each sensor in addrs
 
