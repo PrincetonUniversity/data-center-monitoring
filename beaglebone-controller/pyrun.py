@@ -20,15 +20,15 @@ def pyrun():
     # Traces
     if not board_status['err']:
         print len(readings)
-    #else:
-    #    print board_status['type']
-    #    print board_status['msg']
-    #    print board_status['ioerr_addr']
+    else:
+        print board_status['type']
+        print board_status['msg']
+        print board_status['ioerr_addr']
 
     # Send readings to server (non-blocking)
     com.send_to_server(readings, board_status)
 
-# Re-run every second
+# Re-run every five seconds
 schedule.every(5).seconds.do(pyrun)
 while 1:
     schedule.run_pending()
