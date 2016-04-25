@@ -1,5 +1,3 @@
-
-
 import string
 import smbus
 import subprocess
@@ -18,7 +16,8 @@ class SensorBus:
 
         # Grab i2cdetect output for given bus
         scanoutput = open("scanoutput.txt", "w")
-        subprocess.check_call(['/usr/sbin/i2cdetect', '-y', '-r', str(self.busnum)], stdout=scanoutput)
+        subprocess.check_call(['/usr/sbin/i2cdetect', 
+          '-y', '-r', str(self.busnum)], stdout=scanoutput)
 
         # Start reading i2cdetect output
         f = open("scanoutput.txt", "r")
