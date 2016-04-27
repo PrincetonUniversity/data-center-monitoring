@@ -349,7 +349,7 @@ UsedLibrary="C:/Program Files/EAGLE/lbr/zilog.lbr"
 
 [Win_1]
 Type="Board Editor"
-Loc="-8 -31 591 368"
+Loc="0 0 599 399"
 State=0
 Number=2
 File="C:/Users/ryan/OneDrive/Princeton/Senior/Thesis/data-center-monitoring/dcsense-board/3.1-ryanoshea-final-miniaturized-version/V3.brd"
@@ -401,11 +401,11 @@ Number=0
 
 [Win_3]
 Type="Schematic Editor"
-Loc="-8 -31 591 368"
-State=2
+Loc="-8 -8 1911 1008"
+State=1
 Number=1
-File="C:/Users/ryan/OneDrive/Princeton/Senior/Thesis/data-center-monitoring/dcsense-board/3.1-ryanoshea-final-miniaturized-version/V3.sch"
-View="3.24206 2.30632 125.231 76.095"
+File="beaglebone-cape.sch"
+View="-29.4989 -6.8581 247.126 118.503"
 WireWidths=" 0 0.3048 0.6096 0.8128 1.016 1.27 1.4224 1.6764 1.778 1.9304 2.1844 2.54 3.81 6.4516 0.4064 0.1524"
 PadDiameters=" 0.254 0.3048 0.4064 0.6096 0.8128 1.016 1.27 1.4224 1.6764 1.778 1.9304 2.1844 2.54 3.81 6.4516 0"
 PadDrills=" 0.5 0.6 0.7 0.9 1 1.1 1.2 1.3 1.4 1.5 1.6 2 2.2 2.8 3.2 0.8"
@@ -444,6 +444,7 @@ ArcDirection=0
 AddLevel=2
 PadsSameType=0
 Layer=91
+Views=" 1: -29.4989 -6.8581 247.126 118.503"
 Sheet="1"
 
 [Desktop]
