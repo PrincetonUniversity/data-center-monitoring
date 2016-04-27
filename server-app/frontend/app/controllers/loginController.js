@@ -65,9 +65,10 @@ cont.controller('loginController', function ($scope, $filter, $http, $location) 
     var user = $scope.newUser;
     $http.post('/api/auth/register-nonadmin', {user: user})
       .success(function (data, status, headers, config) {
-        alert('User ' + user.username + ' successfully registered.');
-        $scope.user = user;
-        $scope.login();
+        alert('User ' + user.username + ' successfully registered. Please wait '
+          + 'for an admin to give your account access to data from your facility.'
+          + ' Then, you can log in and view your facility dashboard.');
+        location.reload();
       })
       .error(function (data, status, headers, config) {
         alert(data.msg);
