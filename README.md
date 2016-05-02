@@ -9,4 +9,4 @@ Work on this project was conducted by:
  - Peter de Groot '15
  - Rahul Subramanian '14
  
-**For a full breakdown of the project, see the [report](ryanoshea-thesis-midterm-report.pdf).**
+**For a full breakdown of the project, see the [report](/report-roshea/O'Shea_Ryan_Thesis.pdf).**
