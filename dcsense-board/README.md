@@ -2,7 +2,7 @@
 
 The `dcsense` PCB is the sensing component of the system. It is a small PCB with a TI TMP175 digital temperature sensor, DIP switches for configuring the sensor's I<sup>2</sup>C address, and a header for connecting the board to a ribbon cable via a connector. Other features include a power indicator LED and 2 decoupling capacitors.
 
-![](/report/figures/dcsense-board-straight.jpg)
+![](/report-roshea/figures/dcsense-board-straight.jpg)
 
 ## Layout
 
@@ -26,4 +26,4 @@ The valid address configurations are listed here, along with the decimal address
 
 The 3 major versions of the board are shown below.
 
-![](/report/figures/dcsense-board-versions.jpg)
+![](/report-roshea/figures/dcsense-board-versions.jpg)
